@@ -6,6 +6,5 @@ xcuserdata/
 *.xcuserstate
 
 # secrets
-*.xcconfig
 .env
 .env.local
