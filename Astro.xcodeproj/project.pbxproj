@@ -6,6 +6,14 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		620B153F2FD054A30090AFAB /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = 620B153E2FD054A30090AFAB /* Auth */; };
+		620B15412FD054A30090AFAB /* PostgREST in Frameworks */ = {isa = PBXBuildFile; productRef = 620B15402FD054A30090AFAB /* PostgREST */; };
+		620B15432FD054A30090AFAB /* Storage in Frameworks */ = {isa = PBXBuildFile; productRef = 620B15422FD054A30090AFAB /* Storage */; };
+		620B15452FD054A30090AFAB /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 620B15442FD054A30090AFAB /* Supabase */; };
+		620B15482FD055600090AFAB /* Apollo in Frameworks */ = {isa = PBXBuildFile; productRef = 620B15472FD055600090AFAB /* Apollo */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		620B14EE2FCF75290090AFAB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -29,9 +37,34 @@
 		620B14F72FCF75290090AFAB /* AstroUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AstroUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		620B15102FCF7D020090AFAB /* Exceptions for "Astro" folder in "Astro" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+				resources/ConfigRelease.xcconfig,
+			);
+			target = 620B14DF2FCF75280090AFAB /* Astro */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		620B15112FCF7D020090AFAB /* Exceptions for "Astro" folder in "Compile Sources" phase from "Astro" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = 620B14DC2FCF75280090AFAB /* Sources */;
+			membershipExceptions = (
+				resources/ConfigRelease.xcconfig,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		620B14E22FCF75280090AFAB /* Astro */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				620B15102FCF7D020090AFAB /* Exceptions for "Astro" folder in "Astro" target */,
+				620B15112FCF7D020090AFAB /* Exceptions for "Astro" folder in "Compile Sources" phase from "Astro" target */,
+			);
 			path = Astro;
 			sourceTree = "<group>";
 		};
@@ -52,6 +85,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				620B15482FD055600090AFAB /* Apollo in Frameworks */,
+				620B15452FD054A30090AFAB /* Supabase in Frameworks */,
+				620B15432FD054A30090AFAB /* Storage in Frameworks */,
+				620B15412FD054A30090AFAB /* PostgREST in Frameworks */,
+				620B153F2FD054A30090AFAB /* Auth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +150,11 @@
 			);
 			name = Astro;
 			packageProductDependencies = (
+				620B153E2FD054A30090AFAB /* Auth */,
+				620B15402FD054A30090AFAB /* PostgREST */,
+				620B15422FD054A30090AFAB /* Storage */,
+				620B15442FD054A30090AFAB /* Supabase */,
+				620B15472FD055600090AFAB /* Apollo */,
 			);
 			productName = Astro;
 			productReference = 620B14E02FCF75280090AFAB /* Astro.app */;
@@ -195,6 +238,10 @@
 			);
 			mainGroup = 620B14D72FCF75280090AFAB;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				620B153D2FD054A30090AFAB /* XCRemoteSwiftPackageReference "supabase-swift" */,
+				620B15462FD055600090AFAB /* XCRemoteSwiftPackageReference "apollo-ios" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 620B14E12FCF75280090AFAB /* Products */;
 			projectDirPath = "";
@@ -271,6 +318,8 @@
 /* Begin XCBuildConfiguration section */
 		620B14FF2FCF75290090AFAB /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 620B14E22FCF75280090AFAB /* Astro */;
+			baseConfigurationReferenceRelativePath = resources/ConfigDev.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -335,6 +384,8 @@
 		};
 		620B15002FCF75290090AFAB /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 620B14E22FCF75280090AFAB /* Astro */;
+			baseConfigurationReferenceRelativePath = resources/ConfigRelease.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -391,6 +442,8 @@
 		};
 		620B15022FCF75290090AFAB /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 620B14E22FCF75280090AFAB /* Astro */;
+			baseConfigurationReferenceRelativePath = resources/ConfigDev.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -403,11 +456,14 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Astro/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.news";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mlr.Astro;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -423,6 +479,8 @@
 		};
 		620B15032FCF75290090AFAB /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 620B14E22FCF75280090AFAB /* Astro */;
+			baseConfigurationReferenceRelativePath = resources/ConfigRelease.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -435,11 +493,14 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Astro/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.news";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mlr.Astro;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -455,6 +516,8 @@
 		};
 		620B15052FCF75290090AFAB /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 620B14E22FCF75280090AFAB /* Astro */;
+			baseConfigurationReferenceRelativePath = resources/ConfigDev.xcconfig;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -476,6 +539,8 @@
 		};
 		620B15062FCF75290090AFAB /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 620B14E22FCF75280090AFAB /* Astro */;
+			baseConfigurationReferenceRelativePath = resources/ConfigRelease.xcconfig;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -497,6 +562,8 @@
 		};
 		620B15082FCF75290090AFAB /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 620B14E22FCF75280090AFAB /* Astro */;
+			baseConfigurationReferenceRelativePath = resources/ConfigDev.xcconfig;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -516,6 +583,8 @@
 		};
 		620B15092FCF75290090AFAB /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 620B14E22FCF75280090AFAB /* Astro */;
+			baseConfigurationReferenceRelativePath = resources/ConfigRelease.xcconfig;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -573,6 +642,53 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		620B153D2FD054A30090AFAB /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/supabase/supabase-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.5.1;
+			};
+		};
+		620B15462FD055600090AFAB /* XCRemoteSwiftPackageReference "apollo-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apollographql/apollo-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.1.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		620B153E2FD054A30090AFAB /* Auth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 620B153D2FD054A30090AFAB /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Auth;
+		};
+		620B15402FD054A30090AFAB /* PostgREST */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 620B153D2FD054A30090AFAB /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = PostgREST;
+		};
+		620B15422FD054A30090AFAB /* Storage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 620B153D2FD054A30090AFAB /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Storage;
+		};
+		620B15442FD054A30090AFAB /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 620B153D2FD054A30090AFAB /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
+		};
+		620B15472FD055600090AFAB /* Apollo */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 620B15462FD055600090AFAB /* XCRemoteSwiftPackageReference "apollo-ios" */;
+			productName = Apollo;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 620B14D82FCF75280090AFAB /* Project object */;
 }

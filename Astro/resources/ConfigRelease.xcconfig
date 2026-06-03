@@ -1,0 +1,13 @@
+//
+//  ConfigRelease.swift
+//  Astro
+//
+//  Created by Mathias La Rochelle on 2026-06-02.
+//
+
+PRODUCT_NAME = Astro
+PRODUCT_BUNDLE_IDENTIFIER = com.mlr.Astro
+SUPABASE_URL = https://bxmogibkelbcnqaupgob.supabase.co
+SUPABASE_KEY = sb_publishable_q0sUzmFb82ySlVW_SV1kHg_Ekvggh4H
+GRAPHQL_ENDPOINT = https://bxmogibkelbcnqaupgob.supabase.co/graphql/v1
+HAS_UNIQUE_BUCKETS = true

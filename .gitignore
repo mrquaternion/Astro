@@ -1,0 +1,11 @@
+# macOS
+.DS_Store
+
+# Xcode user data
+xcuserdata/
+*.xcuserstate
+
+# secrets
+*.xcconfig
+.env
+.env.local
