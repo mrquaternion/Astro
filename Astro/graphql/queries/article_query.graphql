@@ -1,0 +1,18 @@
+query Article {
+  articleCollection {
+    edges {
+      node {
+        id
+        article_id
+        title
+        summary
+        url_string
+        published_at
+        website_name
+        image_url_string
+        launches
+        events
+      }
+    }
+  }
+}

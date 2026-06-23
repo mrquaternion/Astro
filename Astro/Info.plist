@@ -2,8 +2,14 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>GRAPHQL_ENDPOINT</key>
+	<string>$(GRAPHQL_ENDPOINT)</string>
 	<key>HAS_UNIQUE_BUCKETS</key>
 	<string>$(HAS_UNIQUE_BUCKETS)</string>
+	<key>MBXAccessToken</key>
+	<string>$(MBXAccessToken)</string>
+	<key>SNAPI_ENDPOINT</key>
+	<string>$(SNAPI_ENDPOINT)</string>
 	<key>SUPABASE_KEY</key>
 	<string>$(SUPABASE_KEY)</string>
 	<key>SUPABASE_URL</key>

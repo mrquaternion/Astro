@@ -37,9 +37,10 @@ Required values:
 - `SUPABASE_URL`
 - `SUPABASE_KEY`
 - `GRAPHQL_ENDPOINT`
+- `MBXAccessToken`
 - `HAS_UNIQUE_BUCKETS`
 
-For private local overrides, create a separate `*.xcconfig.local` file and keep it out of source control.
+For private local overrides, create `Astro/resources/ConfigDev.local.xcconfig` and `Astro/resources/ConfigRelease.local.xcconfig`. Those files are ignored by Git.
 
 ## GraphQL
 

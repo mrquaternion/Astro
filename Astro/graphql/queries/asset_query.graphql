@@ -1,0 +1,18 @@
+query Asset {
+  assetCollection {
+    edges {
+      node {
+        id
+        name
+        summary
+        model_file_name
+        tle_file_name
+        snapshot_file_name
+        model_storage_path
+        tle_storage_path
+        snapshot_storage_path
+        updated_at
+      }
+    }
+  }
+}

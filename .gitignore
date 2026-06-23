@@ -23,8 +23,10 @@ xcuserdata/
 
 # Apollo iOS local tooling
 apollo-ios-cli
+apollo-codegen-config.json
 
 # Local config and secrets
 .env
 .env.local
 *.xcconfig.local
+*.local.xcconfig
