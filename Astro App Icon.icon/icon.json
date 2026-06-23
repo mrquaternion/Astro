@@ -1,0 +1,62 @@
+{
+  "fill-specializations" : [
+    {
+      "value" : {
+        "automatic-gradient" : "display-p3:0.04899,0.08696,0.15336,1.00000"
+      }
+    },
+    {
+      "appearance" : "dark",
+      "value" : {
+        "automatic-gradient" : "display-p3:0.04935,0.08894,0.15486,1.00000"
+      }
+    }
+  ],
+  "groups" : [
+    {
+      "hidden" : false,
+      "layers" : [
+        {
+          "fill" : {
+            "solid" : "srgb:0.00000,0.05014,0.09340,1.00000"
+          },
+          "hidden" : false,
+          "image-name" : "test-logo-astro-p2-2.svg",
+          "name" : "test-logo-astro-p2-2",
+          "position" : {
+            "scale" : 18,
+            "translation-in-points" : [
+              -10,
+              -70
+            ]
+          }
+        },
+        {
+          "image-name" : "test-logo-astro-p1.svg",
+          "name" : "test-logo-astro-p1",
+          "position" : {
+            "scale" : 18,
+            "translation-in-points" : [
+              0,
+              0
+            ]
+          }
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "circles" : [
+      "watchOS"
+    ],
+    "squares" : "shared"
+  }
+}

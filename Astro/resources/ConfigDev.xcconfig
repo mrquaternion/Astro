@@ -6,8 +6,11 @@
 //
 
 PRODUCT_NAME = Astro Demo
-PRODUCT_BUNDLE_IDENTIFIER = com.mlr.Astro.dev
-SUPABASE_URL = https://bxmogibkelbcnqaupgob.supabase.co
-SUPABASE_KEY = sb_publishable_q0sUzmFb82ySlVW_SV1kHg_Ekvggh4H
-GRAPHQL_ENDPOINT = https://bxmogibkelbcnqaupgob.supabase.co/graphql/v1
+PRODUCT_BUNDLE_IDENTIFIER = com.mlr.astro.dev
+SUPABASE_URL =
+SUPABASE_KEY =
+GRAPHQL_ENDPOINT =
+MBXAccessToken =
 HAS_UNIQUE_BUCKETS = false
+
+#include? "ConfigDev.local.xcconfig"

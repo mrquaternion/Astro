@@ -7,11 +7,21 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		620B153F2FD054A30090AFAB /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = 620B153E2FD054A30090AFAB /* Auth */; };
-		620B15412FD054A30090AFAB /* PostgREST in Frameworks */ = {isa = PBXBuildFile; productRef = 620B15402FD054A30090AFAB /* PostgREST */; };
-		620B15432FD054A30090AFAB /* Storage in Frameworks */ = {isa = PBXBuildFile; productRef = 620B15422FD054A30090AFAB /* Storage */; };
-		620B15452FD054A30090AFAB /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 620B15442FD054A30090AFAB /* Supabase */; };
-		620B15482FD055600090AFAB /* Apollo in Frameworks */ = {isa = PBXBuildFile; productRef = 620B15472FD055600090AFAB /* Apollo */; };
+		620B17272FD08AFA0090AFAB /* Apollo in Frameworks */ = {isa = PBXBuildFile; productRef = 620B17262FD08AFA0090AFAB /* Apollo */; };
+		620B17292FD08B0D0090AFAB /* Storage in Frameworks */ = {isa = PBXBuildFile; productRef = 620B17282FD08B0D0090AFAB /* Storage */; };
+		628A1B1A2FD1CC4C00EA0C88 /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = 628A1B192FD1CC4C00EA0C88 /* Auth */; };
+		628A1B1C2FD1CC5100EA0C88 /* PostgREST in Frameworks */ = {isa = PBXBuildFile; productRef = 628A1B1B2FD1CC5100EA0C88 /* PostgREST */; };
+		628A1B1E2FD1CC5400EA0C88 /* Storage in Frameworks */ = {isa = PBXBuildFile; productRef = 628A1B1D2FD1CC5400EA0C88 /* Storage */; };
+		628A1B202FD1CC5800EA0C88 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 628A1B1F2FD1CC5800EA0C88 /* Supabase */; };
+		628A1B222FD1CC5C00EA0C88 /* Apollo in Frameworks */ = {isa = PBXBuildFile; productRef = 628A1B212FD1CC5C00EA0C88 /* Apollo */; };
+		628A1B242FD1CC7400EA0C88 /* ApolloAPI in Frameworks */ = {isa = PBXBuildFile; productRef = 628A1B232FD1CC7400EA0C88 /* ApolloAPI */; };
+		628A1B272FD1CCF000EA0C88 /* MapboxMaps in Frameworks */ = {isa = PBXBuildFile; productRef = 628A1B262FD1CCF000EA0C88 /* MapboxMaps */; };
+		628A1C5C2FD2D95200EA0C88 /* SatelliteKit in Frameworks */ = {isa = PBXBuildFile; productRef = 628A1C5B2FD2D95200EA0C88 /* SatelliteKit */; };
+		628A1E092FD4920C00EA0C88 /* BezelKit in Frameworks */ = {isa = PBXBuildFile; productRef = 628A1E082FD4920C00EA0C88 /* BezelKit */; };
+		62ACD6042FE5E2800027195E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 62ACD6032FE5E2800027195E /* LaunchScreen.storyboard */; };
+		62ACD6082FE5F9450027195E /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 62ACD6072FE5F9450027195E /* StoreKit.framework */; };
+		62B1E2A62FDC3CF4002D5DDA /* VariableBlur in Frameworks */ = {isa = PBXBuildFile; productRef = 62B1E2A52FDC3CF4002D5DDA /* VariableBlur */; };
+		62E98EC92FD519D100A4DCA7 /* Astro App Icon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 62E98EC82FD519D100A4DCA7 /* Astro App Icon.icon */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,16 +45,27 @@
 		620B14E02FCF75280090AFAB /* Astro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Astro.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		620B14ED2FCF75290090AFAB /* AstroTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AstroTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		620B14F72FCF75290090AFAB /* AstroUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AstroUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		62ACD6032FE5E2800027195E /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		62ACD6072FE5F9450027195E /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		62E98EC82FD519D100A4DCA7 /* Astro App Icon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = "Astro App Icon.icon"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
 		620B15102FCF7D020090AFAB /* Exceptions for "Astro" folder in "Astro" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				graphql/queries/article_query.graphql,
 				Info.plist,
 				resources/ConfigRelease.xcconfig,
 			);
 			target = 620B14DF2FCF75280090AFAB /* Astro */;
+		};
+		62B1E1F02FDB12FE002D5DDA /* Exceptions for "Astro" folder in "AstroTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"AstroStore-TestFlight.storekit",
+			);
+			target = 620B14EC2FCF75290090AFAB /* AstroTests */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -53,6 +74,8 @@
 			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
 			buildPhase = 620B14DC2FCF75280090AFAB /* Sources */;
 			membershipExceptions = (
+				graphql/queries/article_query.graphql,
+				resources/ConfigDev.xcconfig,
 				resources/ConfigRelease.xcconfig,
 			);
 		};
@@ -64,6 +87,7 @@
 			exceptions = (
 				620B15102FCF7D020090AFAB /* Exceptions for "Astro" folder in "Astro" target */,
 				620B15112FCF7D020090AFAB /* Exceptions for "Astro" folder in "Compile Sources" phase from "Astro" target */,
+				62B1E1F02FDB12FE002D5DDA /* Exceptions for "Astro" folder in "AstroTests" target */,
 			);
 			path = Astro;
 			sourceTree = "<group>";
@@ -85,11 +109,17 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				620B15482FD055600090AFAB /* Apollo in Frameworks */,
-				620B15452FD054A30090AFAB /* Supabase in Frameworks */,
-				620B15432FD054A30090AFAB /* Storage in Frameworks */,
-				620B15412FD054A30090AFAB /* PostgREST in Frameworks */,
-				620B153F2FD054A30090AFAB /* Auth in Frameworks */,
+				628A1E092FD4920C00EA0C88 /* BezelKit in Frameworks */,
+				628A1B242FD1CC7400EA0C88 /* ApolloAPI in Frameworks */,
+				628A1B222FD1CC5C00EA0C88 /* Apollo in Frameworks */,
+				628A1B202FD1CC5800EA0C88 /* Supabase in Frameworks */,
+				628A1C5C2FD2D95200EA0C88 /* SatelliteKit in Frameworks */,
+				628A1B1E2FD1CC5400EA0C88 /* Storage in Frameworks */,
+				628A1B1C2FD1CC5100EA0C88 /* PostgREST in Frameworks */,
+				62B1E2A62FDC3CF4002D5DDA /* VariableBlur in Frameworks */,
+				628A1B272FD1CCF000EA0C88 /* MapboxMaps in Frameworks */,
+				628A1B1A2FD1CC4C00EA0C88 /* Auth in Frameworks */,
+				62ACD6082FE5F9450027195E /* StoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -97,6 +127,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				620B17292FD08B0D0090AFAB /* Storage in Frameworks */,
+				620B17272FD08AFA0090AFAB /* Apollo in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -113,10 +145,13 @@
 		620B14D72FCF75280090AFAB = {
 			isa = PBXGroup;
 			children = (
+				62ACD6032FE5E2800027195E /* LaunchScreen.storyboard */,
 				620B14E22FCF75280090AFAB /* Astro */,
 				620B14F02FCF75290090AFAB /* AstroTests */,
 				620B14FA2FCF75290090AFAB /* AstroUITests */,
+				620B17252FD08AFA0090AFAB /* Frameworks */,
 				620B14E12FCF75280090AFAB /* Products */,
+				62E98EC82FD519D100A4DCA7 /* Astro App Icon.icon */,
 			);
 			sourceTree = "<group>";
 		};
@@ -128,6 +163,14 @@
 				620B14F72FCF75290090AFAB /* AstroUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		620B17252FD08AFA0090AFAB /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				62ACD6072FE5F9450027195E /* StoreKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -150,11 +193,16 @@
 			);
 			name = Astro;
 			packageProductDependencies = (
-				620B153E2FD054A30090AFAB /* Auth */,
-				620B15402FD054A30090AFAB /* PostgREST */,
-				620B15422FD054A30090AFAB /* Storage */,
-				620B15442FD054A30090AFAB /* Supabase */,
-				620B15472FD055600090AFAB /* Apollo */,
+				628A1B192FD1CC4C00EA0C88 /* Auth */,
+				628A1B1B2FD1CC5100EA0C88 /* PostgREST */,
+				628A1B1D2FD1CC5400EA0C88 /* Storage */,
+				628A1B1F2FD1CC5800EA0C88 /* Supabase */,
+				628A1B212FD1CC5C00EA0C88 /* Apollo */,
+				628A1B232FD1CC7400EA0C88 /* ApolloAPI */,
+				628A1B262FD1CCF000EA0C88 /* MapboxMaps */,
+				628A1C5B2FD2D95200EA0C88 /* SatelliteKit */,
+				628A1E082FD4920C00EA0C88 /* BezelKit */,
+				62B1E2A52FDC3CF4002D5DDA /* VariableBlur */,
 			);
 			productName = Astro;
 			productReference = 620B14E02FCF75280090AFAB /* Astro.app */;
@@ -178,6 +226,8 @@
 			);
 			name = AstroTests;
 			packageProductDependencies = (
+				620B17262FD08AFA0090AFAB /* Apollo */,
+				620B17282FD08B0D0090AFAB /* Storage */,
 			);
 			productName = AstroTests;
 			productReference = 620B14ED2FCF75290090AFAB /* AstroTests.xctest */;
@@ -241,6 +291,10 @@
 			packageReferences = (
 				620B153D2FD054A30090AFAB /* XCRemoteSwiftPackageReference "supabase-swift" */,
 				620B15462FD055600090AFAB /* XCRemoteSwiftPackageReference "apollo-ios" */,
+				628A1B252FD1CCF000EA0C88 /* XCRemoteSwiftPackageReference "mapbox-maps-ios" */,
+				628A1C5A2FD2D95200EA0C88 /* XCRemoteSwiftPackageReference "SatelliteKit" */,
+				628A1E072FD491D600EA0C88 /* XCRemoteSwiftPackageReference "BezelKit" */,
+				62B1E2A42FDC3CF4002D5DDA /* XCRemoteSwiftPackageReference "VariableBlur" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 620B14E12FCF75280090AFAB /* Products */;
@@ -259,6 +313,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				62ACD6042FE5E2800027195E /* LaunchScreen.storyboard in Resources */,
+				62E98EC92FD519D100A4DCA7 /* Astro App Icon.icon in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -376,7 +432,8 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = macosx;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mlr.astro.dev;
+				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -435,7 +492,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 26.5;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
-				SDKROOT = macosx;
+				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 			};
 			name = Release;
@@ -445,11 +502,11 @@
 			baseConfigurationReferenceAnchor = 620B14E22FCF75280090AFAB /* Astro */;
 			baseConfigurationReferenceRelativePath = resources/ConfigDev.xcconfig;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "Astro App Icon";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = LLT44AL679;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -459,21 +516,29 @@
 				INFOPLIST_FILE = Astro/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.news";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIStatusBarHidden = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
-					"@executable_path/../Frameworks",
+					"@executable_path/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.mlr.Astro;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mlr.astro;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -482,11 +547,11 @@
 			baseConfigurationReferenceAnchor = 620B14E22FCF75280090AFAB /* Astro */;
 			baseConfigurationReferenceRelativePath = resources/ConfigRelease.xcconfig;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "Astro App Icon";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = LLT44AL679;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -496,21 +561,29 @@
 				INFOPLIST_FILE = Astro/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.news";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIStatusBarHidden = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
-					"@executable_path/../Frameworks",
+					"@executable_path/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.mlr.Astro;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mlr.astro;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -529,10 +602,13 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.mlr.AstroTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Astro.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Astro";
 			};
 			name = Debug;
@@ -552,10 +628,13 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.mlr.AstroTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Astro.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Astro";
 			};
 			name = Release;
@@ -573,10 +652,13 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.mlr.AstroUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = Astro;
 			};
 			name = Debug;
@@ -594,10 +676,13 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.mlr.AstroUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = Astro;
 			};
 			name = Release;
@@ -660,33 +745,100 @@
 				minimumVersion = 2.1.2;
 			};
 		};
+		628A1B252FD1CCF000EA0C88 /* XCRemoteSwiftPackageReference "mapbox-maps-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/mapbox/mapbox-maps-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.0.0;
+			};
+		};
+		628A1C5A2FD2D95200EA0C88 /* XCRemoteSwiftPackageReference "SatelliteKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/gavineadie/SatelliteKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.1.2;
+			};
+		};
+		628A1E072FD491D600EA0C88 /* XCRemoteSwiftPackageReference "BezelKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/markbattistella/BezelKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 26.5.26;
+			};
+		};
+		62B1E2A42FDC3CF4002D5DDA /* XCRemoteSwiftPackageReference "VariableBlur" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/nikstar/VariableBlur";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		620B153E2FD054A30090AFAB /* Auth */ = {
+		620B17262FD08AFA0090AFAB /* Apollo */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 620B153D2FD054A30090AFAB /* XCRemoteSwiftPackageReference "supabase-swift" */;
-			productName = Auth;
+			package = 620B15462FD055600090AFAB /* XCRemoteSwiftPackageReference "apollo-ios" */;
+			productName = Apollo;
 		};
-		620B15402FD054A30090AFAB /* PostgREST */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 620B153D2FD054A30090AFAB /* XCRemoteSwiftPackageReference "supabase-swift" */;
-			productName = PostgREST;
-		};
-		620B15422FD054A30090AFAB /* Storage */ = {
+		620B17282FD08B0D0090AFAB /* Storage */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 620B153D2FD054A30090AFAB /* XCRemoteSwiftPackageReference "supabase-swift" */;
 			productName = Storage;
 		};
-		620B15442FD054A30090AFAB /* Supabase */ = {
+		628A1B192FD1CC4C00EA0C88 /* Auth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 620B153D2FD054A30090AFAB /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Auth;
+		};
+		628A1B1B2FD1CC5100EA0C88 /* PostgREST */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 620B153D2FD054A30090AFAB /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = PostgREST;
+		};
+		628A1B1D2FD1CC5400EA0C88 /* Storage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 620B153D2FD054A30090AFAB /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Storage;
+		};
+		628A1B1F2FD1CC5800EA0C88 /* Supabase */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 620B153D2FD054A30090AFAB /* XCRemoteSwiftPackageReference "supabase-swift" */;
 			productName = Supabase;
 		};
-		620B15472FD055600090AFAB /* Apollo */ = {
+		628A1B212FD1CC5C00EA0C88 /* Apollo */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 620B15462FD055600090AFAB /* XCRemoteSwiftPackageReference "apollo-ios" */;
 			productName = Apollo;
+		};
+		628A1B232FD1CC7400EA0C88 /* ApolloAPI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 620B15462FD055600090AFAB /* XCRemoteSwiftPackageReference "apollo-ios" */;
+			productName = ApolloAPI;
+		};
+		628A1B262FD1CCF000EA0C88 /* MapboxMaps */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 628A1B252FD1CCF000EA0C88 /* XCRemoteSwiftPackageReference "mapbox-maps-ios" */;
+			productName = MapboxMaps;
+		};
+		628A1C5B2FD2D95200EA0C88 /* SatelliteKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 628A1C5A2FD2D95200EA0C88 /* XCRemoteSwiftPackageReference "SatelliteKit" */;
+			productName = SatelliteKit;
+		};
+		628A1E082FD4920C00EA0C88 /* BezelKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 628A1E072FD491D600EA0C88 /* XCRemoteSwiftPackageReference "BezelKit" */;
+			productName = BezelKit;
+		};
+		62B1E2A52FDC3CF4002D5DDA /* VariableBlur */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 62B1E2A42FDC3CF4002D5DDA /* XCRemoteSwiftPackageReference "VariableBlur" */;
+			productName = VariableBlur;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

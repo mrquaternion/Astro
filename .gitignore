@@ -1,10 +1,32 @@
 # macOS
 .DS_Store
 
-# Xcode user data
+# Xcode
+build/
+DerivedData/
 xcuserdata/
 *.xcuserstate
+*.moved-aside
+*.pbxuser
+*.perspectivev3
+*.mode1v3
+*.mode2v3
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+*.xcodeproj.bak
+*.pbxproj.bak
 
-# secrets
+# Swift Package Manager
+.build/
+
+# Apollo iOS local tooling
+apollo-ios-cli
+apollo-codegen-config.json
+
+# Local config and secrets
 .env
 .env.local
+*.xcconfig.local
+*.local.xcconfig

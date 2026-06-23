@@ -1,5 +1,5 @@
 {
-  "originHash" : "029f73a4641494f38dc710d11633b2355514b94b4c85a2d0cff180cf765aa20f",
+  "originHash" : "ba007e62d86b3fa50e6be9727381929c2e12bd8bf97f1d766804cf7139aa1cb3",
   "pins" : [
     {
       "identity" : "apollo-ios",
@@ -7,6 +7,51 @@
       "location" : "https://github.com/apollographql/apollo-ios.git",
       "state" : {
         "revision" : "38c202227d0f09508e573dcf22f54885cfb0c5d4",
+        "version" : "2.1.2"
+      }
+    },
+    {
+      "identity" : "bezelkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/markbattistella/BezelKit",
+      "state" : {
+        "revision" : "6cd571cd2e07dc6c597cfb9e1281cc0335ecb797",
+        "version" : "26.5.26"
+      }
+    },
+    {
+      "identity" : "mapbox-common-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/mapbox/mapbox-common-ios.git",
+      "state" : {
+        "revision" : "0903177afad61e293d420de4f0032a0d09a73f26",
+        "version" : "24.24.3"
+      }
+    },
+    {
+      "identity" : "mapbox-core-maps-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/mapbox/mapbox-core-maps-ios.git",
+      "state" : {
+        "revision" : "62e6c66055e66f34e0e80b75e9b8cd18a6bba7ec",
+        "version" : "11.24.3"
+      }
+    },
+    {
+      "identity" : "mapbox-maps-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/mapbox/mapbox-maps-ios.git",
+      "state" : {
+        "revision" : "90c6b2e36a8e8118c67236974d57d96cfbdc44c0",
+        "version" : "11.24.3"
+      }
+    },
+    {
+      "identity" : "satellitekit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/gavineadie/SatelliteKit",
+      "state" : {
+        "revision" : "9a87cdb80344f26e81bc5fc82fdf9a3350478603",
         "version" : "2.1.2"
       }
     },
@@ -62,6 +107,24 @@
       "state" : {
         "revision" : "45eb0224913ea070ec4fba17291b9e7ecf4749ca",
         "version" : "1.5.1"
+      }
+    },
+    {
+      "identity" : "turf-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/mapbox/turf-swift.git",
+      "state" : {
+        "revision" : "bf840e6b9529d105687840fe2c9dcd74197d46d1",
+        "version" : "4.0.0"
+      }
+    },
+    {
+      "identity" : "variableblur",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nikstar/VariableBlur",
+      "state" : {
+        "branch" : "main",
+        "revision" : "5073a0d9080e488a2d317e04859c001a57fbb3e8"
       }
     },
     {
