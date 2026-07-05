@@ -26,14 +26,14 @@ class HomeViewMapController: UIViewController {
     /// Identifier of the model currently registered with Mapbox.
     private var registeredModelId: String?
     
-    /// URL of the model currently registered with Mapbox.
-    private var registeredModelURL: URL?
+    /// URI of the model currently registered with Mapbox.
+    private var registeredModelUri: String?
     
     /// Identifier of the selected satellite model.
     var selectedModelId: String?
     
-    /// On-device asset URL for the selected satellite model.
-    var selectedModelURL: URL?
+    /// On-device asset URI for the selected satellite model.
+    var selectedModelUri: String?
     
     /// Upcoming route for the selected satellite.
     var route: Model3DRoute?
@@ -119,10 +119,10 @@ class HomeViewMapController: UIViewController {
         )
     }
     
-    func updateSelectedModel(id: String?, url: URL?) {
-        guard selectedModelId != id || selectedModelURL != url else { return }
+    func updateSelectedModel(id: String?, uri: String?) {
+        guard selectedModelId != id || selectedModelUri != uri else { return }
         selectedModelId = id
-        selectedModelURL = url
+        selectedModelUri = uri
         
         guard isStyleLoaded else { return }
         applySelectedModel()
@@ -146,10 +146,10 @@ class HomeViewMapController: UIViewController {
     }
     
     private func applySelectedModel() {
-        guard let selectedModelId, let selectedModelURL else { return }
+        guard let selectedModelId, let selectedModelUri else { return }
         
         do {
-            if registeredModelId != selectedModelId || registeredModelURL != selectedModelURL {
+            if registeredModelId != selectedModelId || registeredModelUri != selectedModelUri {
                 if let registeredModelId, mapView.mapboxMap.hasStyleModel(modelId: registeredModelId) {
                     try mapView.mapboxMap.removeStyleModel(modelId: registeredModelId)
                 }
@@ -157,12 +157,12 @@ class HomeViewMapController: UIViewController {
                 if !mapView.mapboxMap.hasStyleModel(modelId: selectedModelId) {
                     try mapView.mapboxMap.addStyleModel(
                         modelId: selectedModelId,
-                        modelUri: selectedModelURL.absoluteString
+                        modelUri: selectedModelUri
                     )
                 }
                 
                 registeredModelId = selectedModelId
-                registeredModelURL = selectedModelURL
+                registeredModelUri = selectedModelUri
             }
             
             if let pendingUpdate {

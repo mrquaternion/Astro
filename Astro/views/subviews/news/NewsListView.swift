@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import SwiftData
 
 enum SortOrder: String, Identifiable, CaseIterable {
     case title, titleReverse, date, dateReverse
@@ -30,141 +29,132 @@ enum SortOrder: String, Identifiable, CaseIterable {
 }
 
 struct NewsListView: View {
-    private static let selectedNewsSitesKey = "newsListSelectedNewsSites"
-    private static let sortOrderKey = "newsListSortOrder"
-    
-    /// The SwiftData context used during app bootstrap.
-    @Environment(\.modelContext) private var modelContext
-    
     /// Saves and loads space news articles.
     @EnvironmentObject var viewModel: SpaceNewsViewModel
     
-    /// Cached articles displayed in the list.
-    @Query private var articles: [CachedArticle]
+    /// Subscription store used to decide whether locked assets can be opened.
+    @Environment(SubscriptionManager.self) private var store
     
+    /// Tracks offline article download progress while the news list is visible.
+    @StateObject private var downloadManager = LocalDownloadManager()
+
     /// Text used to filter articles from the search field.
     @State private var filter = ""
     
-    /// Option to sort the articles.
-    @AppStorage(Self.sortOrderKey) private var storedSortOrder = SortOrder.dateReverse.rawValue
+    /// Controls presentation of the paywall for locked news sources.
+    @State private var showPaywall = false
     
-    /// Multi-selection of news sites.
-    @AppStorage(Self.selectedNewsSitesKey) private var storedSelectedNewsSites = ""
+    /// Controls the presentation of the downloaded articles.
+    @State private var showDownloadedArticles = false
+    
+    /// Articles currently displayed in the news section.
+    let articles: [CachedArticle]
     
     /// Destination of the article to show in WebView.
     @Binding var selectedDestination: ArticleDestination?
     
     var newsSites: Set<String> {
-        Set(articles.map { $0.websiteName })
+        Set(articles.map(\.websiteName))
     }
     
     var sortOrder: SortOrder {
-        SortOrder(rawValue: storedSortOrder) ?? .dateReverse
+        SortOrder(rawValue: viewModel.storedSortOrder) ?? .dateReverse
     }
     
     var selectedNewsSites: Set<String> {
-        decodeSelectedNewsSites()
+        viewModel.decodeSelectedNewsSites()
     }
     
     var body: some View {
         NavigationStack {
             ScrollView {
-                ArticleList(
+                NewsList(
+                    articles: articles,
                     filter: filter,
                     sortOrder: sortOrder,
                     selectedNewsSites: selectedNewsSites,
+                    showDownloadedOnly: showDownloadedArticles,
                     selectedDestination: $selectedDestination
                 )
+                .environmentObject(downloadManager)
             }
             .refreshable {
-                await viewModel.loadArticles(modelContext: modelContext)
+                await viewModel.loadArticles()
             }
             .navigationBarTitleDisplayMode(.inline)
             .navigationTitle("News")
             .navigationSubtitle("Recent space-related news across the globe")
             .toolbar {
-                Menu {
-                    ForEach(Array(newsSites).sorted(), id: \.self) { site in
-                        Toggle(isOn: Binding(
-                            get: { isSelected(site) },
-                            set: { isOn in
-                                setNewsSite(site, isSelected: isOn)
+                ToolbarItem(placement: .topBarTrailing) {
+                    HStack(spacing: 12) {
+                        Button {
+                            showDownloadedArticles.toggle()
+                        } label: {
+                            Image(systemName: showDownloadedArticles ? "arrow.down.circle.fill" : "arrow.down.circle")
+                                .font(.footnote)
+                        }
+                        
+                        Menu {
+                            ForEach(Array(newsSites).sorted(), id: \.self) { site in
+                                Toggle(isOn: Binding(
+                                    get: { isSelected(site) },
+                                    set: { isOn in
+                                        let didUpdate = viewModel.setNewsSite(
+                                            site,
+                                            isSelected: isOn,
+                                            selectedNewsSites: selectedNewsSites,
+                                            store: store
+                                        )
+                                        
+                                        if !didUpdate {
+                                            showPaywall = true
+                                        }
+                                    }
+                                )) {
+                                    Text(site)
+                                }
+                                .menuActionDismissBehavior(.disabled)
                             }
-                        )) {
-                            Text(site)
+                        } label: {
+                            Image(systemName: "line.3.horizontal.decrease")
+                                .font(.footnote)
                         }
-                        .menuActionDismissBehavior(.disabled)
-                    }
-                } label: {
-                    Image(systemName: "line.3.horizontal.decrease.circle")
-                        .font(.footnote)
-                }
-                
-                Menu {
-                    Picker("Sort", selection: Binding(
-                        get: { sortOrder },
-                        set: { storedSortOrder = $0.rawValue }
-                    )) {
-                        ForEach(SortOrder.allCases) { sortOrder in
-                            Text(sortOrder.displayName)
-                                .tag(sortOrder)
+                        
+                        Menu {
+                            Picker("Sort", selection: Binding(
+                                get: { sortOrder },
+                                set: { viewModel.storedSortOrder = $0.rawValue }
+                            )) {
+                                ForEach(SortOrder.allCases) { sortOrder in
+                                    Text(sortOrder.displayName)
+                                        .tag(sortOrder)
+                                }
+                            }
+                        } label: {
+                            Image(systemName: "arrow.up.arrow.down")
+                                .font(.footnote)
                         }
                     }
-                } label: {
-                    Image(systemName: "arrow.up.arrow.down")
-                        .font(.footnote)
+                    .padding(.horizontal, 6)
                 }
             }
         }
         .searchable(text: $filter, placement: .navigationBarDrawer, prompt: Text("Filter on title or summary"))
-    }
-    
-    private func decodeSelectedNewsSites() -> Set<String> {
-        guard
-            let data = storedSelectedNewsSites.data(using: .utf8),
-            let sites = try? JSONDecoder().decode([String].self, from: data)
-        else {
-            return ["NASA"]
-        }
-        
-        let selectedSites = Set(sites)
-        return selectedSites.isEmpty ? ["NASA"] : selectedSites
-    }
-    
-    private func storeSelectedNewsSites(_ sites: Set<String>) {
-        let sortedSites = Array(sites).sorted()
-        
-        guard !sortedSites.isEmpty else { return }
-        
-        guard
-            let data = try? JSONEncoder().encode(sortedSites),
-            let json = String(data: data, encoding: .utf8)
-        else {
-            return
-        }
-        
-        storedSelectedNewsSites = json
-    }
-    
-    private func setNewsSite(_ site: String, isSelected: Bool) {
-        var updatedSites = selectedNewsSites
-        
-        if isSelected {
-            updatedSites.insert(site)
-        } else {
-            updatedSites.remove(site)
-        }
-        
-        if !updatedSites.isEmpty {
-            storeSelectedNewsSites(updatedSites)
+        .fullScreenCover(isPresented: Binding(
+            get: { showPaywall || viewModel.showPaywall },
+            set: {
+                if !$0 {
+                    showPaywall = false
+                    viewModel.showPaywall = false
+                }
+            }
+        )) {
+            Paywall()
+                .environment(store)
         }
     }
     
     private func isSelected(_ site: String) -> Bool {
         selectedNewsSites.contains(site)
     }
-}
-
-#Preview {
-    NewsListView(selectedDestination: .constant(.none))
 }

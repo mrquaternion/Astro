@@ -13,7 +13,7 @@ struct HomeViewMapControllerRepresentable: UIViewControllerRepresentable {
     let modelId: String?
     
     /// The selected model's on-device asset URL.
-    let modelURL: URL?
+    let modelUri: String?
     
     /// The object's model containing it's current position.
     @Binding var model: Model3D
@@ -30,7 +30,7 @@ struct HomeViewMapControllerRepresentable: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> HomeViewMapController {
         let viewController = HomeViewMapController()
         viewController.selectedModelId = modelId
-        viewController.selectedModelURL = modelURL
+        viewController.selectedModelUri = modelUri
         viewController.route = route
         viewController.onUserInteraction = {
             isTrackingModel = false
@@ -43,7 +43,7 @@ struct HomeViewMapControllerRepresentable: UIViewControllerRepresentable {
             isTrackingModel = false
         }
         
-        uiViewController.updateSelectedModel(id: modelId, url: modelURL)
+        uiViewController.updateSelectedModel(id: modelId, uri: modelUri)
         uiViewController.updateRoute(route)
         uiViewController.updateModel(
             longitude: model.position[0],

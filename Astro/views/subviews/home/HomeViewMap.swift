@@ -20,7 +20,7 @@ struct HomeViewMap: View {
     var body: some View {
         HomeViewMapControllerRepresentable(
             modelId: viewViewModel.selectedSatellite?.id,
-            modelURL: viewViewModel.selectedSatellite?.modelURL,
+            modelUri: viewViewModel.selectedSatellite?.modelUri,
             model: $trackerViewModel.model,
             route: viewViewModel.selectedSatellite?.route,
             camera: $trackerViewModel.camera,

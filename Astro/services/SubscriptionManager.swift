@@ -73,24 +73,26 @@ class SubscriptionManager {
     }
     
     @discardableResult
-    func purchase(_ product: Product) async throws -> StoreKit.Transaction? {
+    func purchase(_ product: Product) async throws -> PurchaseOutcome {
         let result = try await product.purchase()
         
         switch result {
         case .success(let verificationResult):
-            let transaction = try checkVerified(verificationResult)
+            let (outcome, transaction) = try checkVerified(verificationResult)
+            guard let transaction else { return .failed(NSError(domain: "Purchase", code: -1)) }
+            
             await updatePurchasedProducts()
             await transaction.finish()
-            return transaction
+            return outcome
             
         case .userCancelled:
-            return nil
+            return .userCancelled
             
         case .pending:
-            return nil
+            return .pending
             
         @unknown default:
-            return nil
+            return .failed(NSError(domain: "Purchase", code: -1))
         }
     }
     
@@ -105,7 +107,8 @@ class SubscriptionManager {
     
     func updatePurchasedProducts() async {
         for await result in Transaction.currentEntitlements {
-            guard let transaction = try? checkVerified(result) else { continue }
+            guard let (_, transaction) = try? checkVerified(result) else { continue }
+            guard let transaction else { continue }
             
             if transaction.revocationDate == nil {
                 purchasedProductIds.insert(transaction.productID)
@@ -115,22 +118,31 @@ class SubscriptionManager {
         }
     }
     
-    private func checkVerified<T>(_ result: VerificationResult<T>) throws -> T {
+    private func checkVerified<T>(_ result: VerificationResult<T>) throws -> (PurchaseOutcome, T?) {
         switch result {
-        case .unverified(_, _):
-            throw StoreError.failedVerification
+        case .unverified(_, let error):
+            return (.unverified(error.localizedDescription), nil)
         case .verified(let signedType):
-            return signedType
+            return (.success, signedType)
         }
     }
     
     private func listenForTransaction() -> Task<Void, Error> {
         Task {
             for await result in Transaction.updates {
-                guard let transaction = try? self.checkVerified(result) else { continue }
+                guard let (_, transaction) = try? self.checkVerified(result) else { continue }
+                guard let transaction else { continue }
                 await self.updatePurchasedProducts()
                 await transaction.finish()
             }
         }
     }
+}
+
+enum PurchaseOutcome {
+    case success
+    case pending
+    case userCancelled
+    case unverified(String)
+    case failed(Error)
 }

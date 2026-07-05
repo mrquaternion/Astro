@@ -47,6 +47,9 @@ class CachedAsset {
     /// The time at which the asset was lastly accessed locally.
     var lastAccessedAt: Date
     
+    /// The state of the download status of the asset.
+    var isDownloadedLocally: Bool
+    
     /// Creates a new model from the specified values.
     init(
         id: String,
@@ -71,5 +74,6 @@ class CachedAsset {
         self.snapStoragePath = snapStoragePath
         self.updatedAt = updatedAt
         self.lastAccessedAt = .now
+        self.isDownloadedLocally = false
     }
 }

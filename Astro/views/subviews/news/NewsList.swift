@@ -1,19 +1,18 @@
 //
-//  ArticleList.swift
+//  NewsList.swift
 //  Astro
 //
 //  Created by Mathias La Rochelle on 2026-06-22.
 //
 
 import SwiftUI
-import SwiftData
 
-struct ArticleList: View {
+struct NewsList: View {
     /// Whether the current device is an iPad.
     @Environment(\.isPad) private var isPad
-    
+
     /// Cached articles displayed in the list.
-    @Query private var articles: [CachedArticle]
+    let articles: [CachedArticle]
     
     /// Article identifiers whose summaries are expanded on iPhone.
     @State private var expandedArticleIds = Set<String>()
@@ -22,41 +21,54 @@ struct ArticleList: View {
     @Binding var selectedDestination: ArticleDestination?
     
     let selectedNewsSites: Set<String>
-    
+
     init(
+        articles: [CachedArticle],
         filter: String,
         sortOrder: SortOrder,
         selectedNewsSites: Set<String>,
+        showDownloadedOnly: Bool,
         selectedDestination: Binding<ArticleDestination?>
     ) {
+        self.articles = articles
         self.selectedNewsSites = selectedNewsSites
         _selectedDestination = selectedDestination
-        
-        let sortDescriptors: [SortDescriptor<CachedArticle>] = switch sortOrder {
-        case .title:
-            [SortDescriptor(\CachedArticle.title)]
-        case .titleReverse:
-            [SortDescriptor(\CachedArticle.title, order: .reverse)]
-        case .date:
-            [SortDescriptor(\CachedArticle.publishedAt)]
-        case .dateReverse:
-            [SortDescriptor(\CachedArticle.publishedAt, order: .reverse)]
-        }
-        
-        let predicate = #Predicate<CachedArticle> { article in
+        self.filter = filter
+        self.sortOrder = sortOrder
+        self.showDownloadedOnly = showDownloadedOnly
+    }
+    
+    private let filter: String
+    private let sortOrder: SortOrder
+    private let showDownloadedOnly: Bool
+    
+    var filtered: [CachedArticle] {
+        let matchingArticles = articles.filter { article in
+            let matchesFilter =
             filter.isEmpty ||
             article.title.localizedStandardContains(filter) ||
             article.summary.localizedStandardContains(filter)
+            
+            let matchesSite = selectedNewsSites
+                .map({ $0.lowercased() })
+                .contains(article.websiteName.lowercased())
+            
+            let matchesDownloadState = !showDownloadedOnly || article.isDownloadedLocally
+            
+            return matchesFilter && matchesSite && matchesDownloadState
         }
         
-        _articles = Query(filter: predicate, sort: sortDescriptors)
-    }
-    
-    var filtered: [CachedArticle] {
-        articles.filter {
-            selectedNewsSites
-                .map({ $0.lowercased() })
-                .contains($0.websiteName.lowercased())
+        return matchingArticles.sorted {
+            switch sortOrder {
+            case .title:
+                $0.title.localizedStandardCompare($1.title) == .orderedAscending
+            case .titleReverse:
+                $0.title.localizedStandardCompare($1.title) == .orderedDescending
+            case .date:
+                $0.publishedAt < $1.publishedAt
+            case .dateReverse:
+                $0.publishedAt > $1.publishedAt
+            }
         }
     }
     
@@ -95,10 +107,21 @@ struct ArticleList: View {
     
     private func openArticle(_ article: CachedArticle) {
         guard let url = article.url else { return }
-        selectedDestination = ArticleDestination(url: url)
+        selectedDestination = ArticleDestination(
+            id: article.id,
+            url: url,
+            isDownloadedLocally: article.isDownloadedLocally
+        )
     }
 }
 
 #Preview {
-    ArticleList(filter: "", sortOrder: .date, selectedNewsSites: Set(), selectedDestination: .constant(.none))
+    NewsList(
+        articles: [],
+        filter: "",
+        sortOrder: .date,
+        selectedNewsSites: Set(),
+        showDownloadedOnly: false,
+        selectedDestination: .constant(.none)
+    )
 }

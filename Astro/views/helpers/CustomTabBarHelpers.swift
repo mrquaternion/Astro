@@ -14,8 +14,8 @@ enum CustomMode: String, CaseIterable {
     /// The SF Symbol used for this mode's control.
     var symbol: String {
         switch self {
-        case .exploration: "binoculars"
-        case .photography: "camera"
+        case .exploration: "moon"
+        case .photography: "camera.aperture"
         }
     }
     

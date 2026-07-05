@@ -25,8 +25,14 @@ struct Paywall: View {
     /// Whether a purchase request is currently in progress.
     @State private var isPurchasing = false
     
-    /// Controls the presentation of the payment error UI.
-    @State private var isShowingError = false
+    /// Controls the presentation of the payment message UI.
+    @State private var isShowingAlert = false
+    
+    /// Holds the title of the presentation coming from the payment.
+    @State private var alertTitle = ""
+    
+    /// Holds the description of the presentation coming from the payment.
+    @State private var alertDescription = ""
     
     /// Size of the fixed bottom payment area used to pad scroll content.
     @State private var botPaymentMarginsSize: CGSize?
@@ -99,10 +105,10 @@ struct Paywall: View {
             .onAppear {
                 selectedProduct = store.products.first
             }
-            .alert("Purchase Failed", isPresented: $isShowingError) {
+            .alert(alertTitle, isPresented: $isShowingAlert) {
                 Button("OK", role: .cancel) { }
             } message: {
-                Text(store.error?.description ?? "Something went wrong.")
+                Text(alertDescription)
             }
         }
     }
@@ -165,11 +171,45 @@ struct Paywall: View {
         defer { isPurchasing = false }
         
         do {
-            try await store.purchase(product)
-            dismiss()
+            let outcome = try await store.purchase(product)
+            
+            switch outcome {
+            case .success:
+                dismiss()
+                
+            case .pending:
+                showPurchaseAlert(
+                    title: "Purchase Pending",
+                    description: "Your purchase is awaiting approval or payment confirmation."
+                )
+                
+            case .userCancelled:
+                break
+                
+            case .unverified(let message):
+                showPurchaseAlert(
+                    title: "Purchase Unverified",
+                    description: message
+                )
+                
+            case .failed(let error):
+                showPurchaseAlert(
+                    title: "Purchase Failed",
+                    description: error.localizedDescription
+                )
+            }
         } catch {
-            isShowingError = true
+            showPurchaseAlert(
+                title: "Purchase Failed",
+                description: error.localizedDescription
+            )
         }
+    }
+    
+    private func showPurchaseAlert(title: String, description: String) {
+        alertTitle = title
+        alertDescription = description
+        isShowingAlert = true
     }
 }
 
@@ -332,6 +372,11 @@ fileprivate struct PaywallContentView: View {
                                 ProFeatureCard(feature: feature)
                             }
                         }
+                        
+                        Text("and much more...")
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(.white.opacity(0.7))
+                            .padding(.top, 4)
                     }
                     .padding()
                     .frame(width: contentWidth)
@@ -353,113 +398,5 @@ fileprivate struct PaywallContentView: View {
         NSDecimalRound(&truncated, &monthlyPrice, 2, .down)
         
         return truncated
-    }
-}
-
-struct ProFeature: Identifiable {
-    /// Stable identity for rendering the feature in a grid.
-    let id = UUID()
-    
-    /// Image asset or SF Symbol used for the feature icon.
-    let icon: String
-    
-    /// Short feature title shown on the card.
-    let title: String
-    
-    /// Supporting description shown below the title.
-    let description: String
-    
-    /// Accent color applied to the feature icon.
-    let tint: Color
-    
-    /// Whether the icon should be loaded from the asset catalog.
-    var isCustom: Bool = false
-    
-    /// Whether the custom icon needs handmade sizing.
-    var isHandmade: Bool = false
-
-    /// Features advertised in the paywall grid.
-    static let all: [ProFeature] = [
-        .init(
-            icon: "satellite",
-            title: "More satellites",
-            description: "Track tens of additional orbits in real time.",
-            tint: .blue,
-            isCustom: true,
-            isHandmade: true
-        ),
-        .init(
-            icon: "rocket",
-            title: "Live missions",
-            description: "Stay updated on upcoming launches.",
-            tint: .teal,
-            isCustom: true,
-            isHandmade: true
-        ),
-        .init(
-            icon: "books.vertical.fill",
-            title: "Deep history",
-            description: "Explore the origins of rockets, satellites, and spaceships.",
-            tint: .red
-        ),
-        .init(
-            icon: "moon.stars.fill",
-            title: "Night sky planner",
-            description: "Find the best times to photograph the Milky Way and planets.",
-            tint: .purple
-        ),
-        .init(
-            icon: "custom.megaphone.slash.fill",
-            title: "No ads",
-            description: "Read the news without interruptions.",
-            tint: .orange,
-            isCustom: true
-        )
-    ]
-}
-
-fileprivate struct ProFeatureCard: View {
-    /// Feature data rendered by this card.
-    let feature: ProFeature
-
-    /// The feature card content.
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                VStack(alignment: .leading, spacing: 8) {
-                    Group {
-                        if feature.isCustom {
-                            Image(feature.icon)
-                                .font(feature.isHandmade ? .title3 : .body)
-                                .fontWeight(.regular)
-                        } else {
-                            Image(systemName: feature.icon)
-                        }
-                    }
-                    .font(.system(size: 16, weight: .medium))
-                    .foregroundStyle(feature.tint)
-                    .frame(width: 32, height: 32)
-                    .background(feature.tint.opacity(0.1), in: RoundedRectangle(cornerRadius: 8))
-
-                    Text(feature.title)
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.white)
-                }
-                Spacer()
-            }
-
-            Text(feature.description)
-                .font(.caption)
-                .foregroundStyle(.white.opacity(0.65))
-                .multilineTextAlignment(.leading)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .padding(12)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 12))
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(.white.opacity(0.1), lineWidth: 0.5)
-        )
     }
 }

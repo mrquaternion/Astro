@@ -28,7 +28,7 @@ struct HomeViewMapOverlay: View {
     @Binding var mode: CustomMode
     
     /// Network monitor used to display connection status.
-    @StateObject private var network = NetworkMonitor()
+    @EnvironmentObject var network: NetworkMonitor
     
     /// Check if current device is in landscape mode.
     private var isInLandscape: Bool {
@@ -60,7 +60,7 @@ struct HomeViewMapOverlay: View {
                     Spacer()
                     GlassEffectContainer(spacing: 12) {
                         VStack(spacing: 12) {
-                            // modeButton()
+                            modeButton()
                             // only if user moved from camera's centerpoint
                             recenterISSButton()
                         }
@@ -87,9 +87,10 @@ struct HomeViewMapOverlay: View {
                 }
             } label: {
                 Image(systemName: mode.symbol)
-                    .font(.system(size: (isPad ? 22 : 20), weight: .medium))
+                    .font(.title2)
                     .foregroundStyle(.glassBackgroundContent(colorScheme))
                     .symbolVariant(.fill)
+                    .contentTransition(.symbolEffect(.replace))
             }
             .buttonStyle(.plain)
         }
@@ -165,6 +166,21 @@ struct HomeViewMapOverlay: View {
 }
 
 #Preview {
-    HomeViewMapOverlay(tracker: SatelliteTrackingViewModel(), mode: .constant(CustomMode.exploration))
-        .environmentObject(HomeViewModel())
+    @Previewable @State var mode: CustomMode = .photography
+    
+    HomeViewMapOverlay(tracker: SatelliteTrackingViewModel(), mode: $mode)
+        .environmentObject(HomeViewModel(dataController: SwiftDataController(modelContext: previewContainer.mainContext), subscriptionManager: SubscriptionManager()))
+        .environmentObject(NetworkMonitor())
 }
+
+import SwiftData
+
+@MainActor
+let previewContainer: ModelContainer = {
+    let schema = Schema([
+        CachedAsset.self,
+        CachedArticle.self
+    ])
+    let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+    return try! ModelContainer(for: schema, configurations: [config])
+}()

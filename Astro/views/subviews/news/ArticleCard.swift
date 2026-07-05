@@ -6,17 +6,25 @@
 //
 
 import SwiftUI
-import WebKit
 
 struct ArticleCard: View {
     /// Color scheme of the app, based on system appearance.
     @Environment(\.colorScheme) private var colorScheme
+    
+    /// Saves and loads space news articles.
+    @EnvironmentObject private var viewModel: SpaceNewsViewModel
+    
+    /// Tracks the article web archive download progress.
+    @EnvironmentObject private var downloadManager: LocalDownloadManager
     
     /// Whether the current device is an iPhone.
     @Environment(\.isPhone) private var isPhone
     
     /// Whether the current device is an iPad.
     @Environment(\.isPad) private var isPad
+    
+    /// Whether the download animation is currently active.
+    @State private var isDownloadToggled = false
     
     /// Article rendered by this card.
     let article: CachedArticle
@@ -33,51 +41,8 @@ struct ArticleCard: View {
     /// The tappable news article card.
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Button {
-                onOpen()
-            } label: {
-                VStack(alignment: .leading, spacing: 0) {
-                    articleImage
-                        .frame(height: imageHeight)
-                    
-                    VStack(alignment: .leading, spacing: 12) {
-                        articleMetadata
-                        articleText
-                    }
-                    .padding(16)
-                }
-                .contentShape(.rect)
-            }
-            .buttonStyle(.plain)
-            
-            if isPhone {
-                Divider()
-                    .padding(.horizontal, 16)
-                
-                Button {
-                    var transaction = Transaction()
-                    transaction.disablesAnimations = true
-                    
-                    // opt-out of the parent subtree animation (caused by the
-                    // animation on satelliteTracker.isTrackingModel)
-                    withTransaction(transaction) {
-                        onToggleSummary()
-                    }
-                } label: {
-                    Text(isExpanded ? "See less" : "See more")
-                        .font(.footnote.weight(.semibold))
-                        .foregroundStyle(.blue)
-                        .contentTransition(.identity)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 12)
-                }
-                .buttonStyle(.plain)
-                .transaction { transaction in
-                    transaction.animation = nil
-                    transaction.disablesAnimations = true
-                }
-            }
+            cardContentAsButton()
+            expandLayout()
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(.regularMaterial)
@@ -85,6 +50,96 @@ struct ArticleCard: View {
         .overlay {
             RoundedRectangle(cornerRadius: Constants.cornerRadius, style: .continuous)
                 .stroke(.white.opacity(colorScheme == .dark ? 0.14 : 0.2), lineWidth: 0.5)
+        }
+        // pop-up menu for diverse tappable actions
+        .contextMenu {
+            Button {
+                UIPasteboard.general.string = article.url?.absoluteString
+            } label: {
+                Label("Copy link", systemImage: "doc.on.doc")
+            }
+            
+            Button {
+                isDownloadToggled = true
+            } label: {
+                Label(
+                    article.isDownloadedLocally ? "Already downloaded" : "Download",
+                    systemImage: article.isDownloadedLocally ? "arrow.down.circle.fill" : "arrow.down.circle"
+                )
+            }
+            .disabled(article.isDownloadedLocally)
+        }
+        .onChange(of: isDownloadToggled) { _, newValue in
+            if newValue {
+                Task {
+                    do {
+                        try await viewModel.saveOffline(
+                            for: article,
+                            downloadManager: downloadManager
+                        )
+                    } catch is CancellationError {
+                        return
+                    } catch {
+                        print("Offline article download failed:", error)
+                    }
+                    
+                    withAnimation {
+                        isDownloadToggled = false
+                    }
+                }
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private func cardContentAsButton() -> some View {
+        Button {
+            onOpen()
+        } label: {
+            VStack(alignment: .leading, spacing: 0) {
+                articleImage
+                    .frame(height: imageHeight)
+                
+                VStack(alignment: .leading, spacing: 12) {
+                    articleMetadata
+                    articleText
+                }
+                .padding(16)
+            }
+            .contentShape(.rect)
+        }
+        .buttonStyle(.plain)
+    }
+    
+    @ViewBuilder
+    private func expandLayout() -> some View {
+        if isPhone {
+            Divider()
+                .padding(.horizontal, 16)
+            
+            Button {
+                var transaction = Transaction()
+                transaction.disablesAnimations = true
+                
+                // opt-out of the parent subtree animation (caused by the
+                // animation on satelliteTracker.isTrackingModel)
+                withTransaction(transaction) {
+                    onToggleSummary()
+                }
+            } label: {
+                Text(isExpanded ? "See less" : "See more")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.blue)
+                    .contentTransition(.identity)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 12)
+            }
+            .buttonStyle(.plain)
+            .transaction { transaction in
+                transaction.animation = nil
+                transaction.disablesAnimations = true
+            }
         }
     }
     
@@ -106,10 +161,20 @@ struct ArticleCard: View {
     
     @ViewBuilder
     private var articleText: some View {
-        Text(article.title)
-            .font(isPad ? .title3.weight(.semibold) : .headline.weight(.semibold))
-            .foregroundStyle(.primary)
-            .multilineTextAlignment(.leading)
+        HStack {
+            Text(article.title)
+                .font(isPad ? .title3.weight(.semibold) : .headline.weight(.semibold))
+                .foregroundStyle(.primary)
+                .multilineTextAlignment(.leading)
+            
+            Spacer()
+            
+            DownloadSFSymbolAnimation(
+                isDownloadToggled: $isDownloadToggled,
+                id: article.id
+            )
+            .environmentObject(downloadManager)
+        }
         
         Text(article.summary.trimmingCharacters(in: .whitespacesAndNewlines))
             .font(.subheadline)
@@ -125,27 +190,29 @@ struct ArticleCard: View {
     @ViewBuilder
     private var articleImage: some View {
         GeometryReader { proxy in
-            AsyncImage(url: article.imageUrl) { phase in
-                switch phase {
-                case .empty:
-                    Rectangle()
-                        .fill(.secondary.opacity(0.16))
-                        .shimmer(.default(for: colorScheme))
-                case .success(let image):
-                    image
+            Group {
+                if let imageData = article.imageData,
+                   let image = UIImage(data: imageData) {
+                    Image(uiImage: image)
                         .resizable()
                         .scaledToFill()
-                case .failure:
-                    ZStack {
-                        Rectangle()
-                            .fill(.secondary.opacity(0.16))
-                        
-                        Image(systemName: "newspaper")
-                            .font(.title)
-                            .foregroundStyle(.secondary)
+                } else {
+                    AsyncImage(url: article.imageUrl) { phase in
+                        switch phase {
+                        case .empty:
+                            Rectangle()
+                                .fill(.secondary.opacity(0.16))
+                                .shimmer(.default(for: colorScheme))
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .scaledToFill()
+                        case .failure:
+                            imageFallback
+                        @unknown default:
+                            EmptyView()
+                        }
                     }
-                @unknown default:
-                    EmptyView()
                 }
             }
             .frame(width: proxy.size.width, height: proxy.size.height)
@@ -165,6 +232,18 @@ struct ArticleCard: View {
         )
     }
     
+    @ViewBuilder
+    private var imageFallback: some View {
+        ZStack {
+            Rectangle()
+                .fill(.secondary.opacity(0.16))
+            
+            Image(systemName: "newspaper")
+                .font(.title)
+                .foregroundStyle(.secondary)
+        }
+    }
+    
     private var imageHeight: CGFloat {
         isPad ? 260 : 180
     }
@@ -172,32 +251,6 @@ struct ArticleCard: View {
     private var summaryLineLimit: Int? {
         guard isPhone else { return nil }
         return isExpanded ? nil : 3
-    }
-}
-
-struct ArticleDestination: Identifiable {
-    /// Stable identity for the selected article URL.
-    let id: String
-    
-    /// Article URL displayed by the web view.
-    let url: URL
-    
-    init(url: URL) {
-        self.id = url.absoluteString
-        self.url = url
-    }
-}
-
-struct ArticleWebView: UIViewRepresentable {
-    /// Article URL loaded in the web view.
-    let url: URL
-    
-    func makeUIView(context: Context) -> WKWebView {
-        WKWebView()
-    }
-    
-    func updateUIView(_ webView: WKWebView, context: Context) {
-        webView.load(URLRequest(url: url))
     }
 }
 

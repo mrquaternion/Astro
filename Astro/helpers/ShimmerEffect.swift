@@ -67,7 +67,7 @@ struct ShimmerConfig {
 extension ShimmerConfig {
     static func `default`(for colorScheme: ColorScheme, speed: CGFloat = 1) -> ShimmerConfig {
         .init(
-            tint: colorScheme == .light ? .gray.opacity(0.1) : .accent,
+            tint: colorScheme == .light ? .gray.opacity(0.3) : .black.opacity(0.3),
             highlight: colorScheme == .light ? .white.opacity(0.7) : .gray.opacity(0.3),
             blur: 2,
             speed: speed

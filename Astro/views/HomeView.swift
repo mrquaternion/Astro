@@ -47,7 +47,7 @@ struct HomeView: View {
 
 #Preview {
     HomeView(activeMode: .constant(CustomMode.exploration))
-        .environmentObject(HomeViewModel())
+        //.environmentObject(HomeViewModel())
 }
 
 extension ShapeStyle where Self == Color {

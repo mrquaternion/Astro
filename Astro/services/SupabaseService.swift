@@ -23,49 +23,95 @@ final class SupabaseService {
         )
     }
     
-    func downloadTLE(fileName: String, in bucket: String, at filePath: String) async throws -> Elements {
-        let response = try await client.storage.from(bucket).download(path: filePath)
+    func fetchDataWithProgress(_ filepath: String, in bucket: String, onProgress: @escaping (Double) -> Void) async throws -> Data {
+        let signedURL = try await client.storage
+            .from(bucket)
+            .createSignedURL(path: filepath, expiresIn: 3600)
         
-        // save in the user's device beforehand
-        guard let path = getPathOfAsset(assetFileName: fileName) else { throw URLError(.badURL) }
-        try response.write(to: path)
-        
-        let element = try decodeTLE(data: response)
+        return try await downloadWithProgress(from: signedURL, onProgress: onProgress)
+    }
+    
+    func fetchAssetData(_ filepath: String, in bucket: String) async throws -> Data {
+        try await client.storage.from(bucket).download(path: filepath)
+    }
+    
+    func fetchTLEJson(_ filepath: String, in bucket: String) async throws -> Elements {
+        let data = try await client.storage.from(bucket).download(path: filepath)
+        let element = try AssetLoadingHelpers.decodeTLE(data: data)
         return element
     }
     
-    func downloadAsset(fileName: String, in bucket: String, at filePath: String) async throws -> URL? {
-        let response = try await downloadAssetData(fileName: fileName, in: bucket, at: filePath)
-        guard let path = getPathOfAsset(assetFileName: fileName) else { throw URLError(.badURL) }
-        
-        try response.write(to: path)
-        
-        return path
-    }
+    // MARK: - Private helpers
     
-    func downloadAssetData(fileName: String, in bucket: String, at filePath: String) async throws -> Data {
-        try await client.storage.from(bucket).download(path: filePath)
-    }
-    
-    func decodeTLE(data: Data) throws -> Elements {
-        let jsonDecoder = JSONDecoder()
-        jsonDecoder.dateDecodingStrategy = .formatted(DateFormatter.iso8601Micros)
-        
-        let elements = try jsonDecoder.decode([Elements].self, from: data)
-        return elements[0]
-    }
-    
-    func getPathOfAsset(assetFileName: String) -> URL? {
-        guard
-            let path = FileManager
-                .default
-                .urls(for: .cachesDirectory, in: .userDomainMask)
-                .first?
-                .appendingPathComponent("\(assetFileName)")
-        else {
-            print("Error saving path after asset download.")
-            return nil
+    private func downloadWithProgress(from url: URL, onProgress: @escaping (Double) -> Void) async throws -> Data {
+        try await withCheckedThrowingContinuation { continuation in
+            let delegate = ProgressDelegate(onProgress: onProgress, continuation: continuation)
+            
+            let session = URLSession(
+                configuration: .default,
+                delegate: delegate,
+                delegateQueue: nil
+            )
+            
+            delegate.session = session
+            
+            session.dataTask(with: url).resume()
         }
-        return path
+    }
+}
+
+private final class ProgressDelegate: NSObject, URLSessionDataDelegate {
+    private let onProgress: (Double) -> Void
+    private var continuation: CheckedContinuation<Data, Error>?
+    private var receivedData = Data()
+    private var expectedBytes: Int64 = 0
+    
+    var session: URLSession?
+    
+    init(onProgress: @escaping (Double) -> Void, continuation: CheckedContinuation<Data, Error>) {
+        self.onProgress = onProgress
+        self.continuation = continuation
+    }
+    
+    func urlSession(
+        _ session: URLSession,
+        dataTask: URLSessionDataTask,
+        didReceive response: URLResponse,
+        completionHandler: @escaping (URLSession.ResponseDisposition) -> Void
+    ) {
+        expectedBytes = response.expectedContentLength
+        completionHandler(.allow)
+    }
+    
+    func urlSession(
+        _ session: URLSession,
+        dataTask: URLSessionDataTask,
+        didReceive data: Data
+    ) {
+        receivedData.append(data)
+        print("Received:", receivedData.count, "Expected:", expectedBytes)
+        guard expectedBytes > 0 else { return }
+        
+        let progress = Double(receivedData.count) / Double(expectedBytes)
+        onProgress(min(max(progress, 0), 1))
+    }
+    
+    func urlSession(
+        _ session: URLSession,
+        task: URLSessionTask,
+        didCompleteWithError error: Error?
+    ) {
+        defer {
+            continuation = nil
+            session.finishTasksAndInvalidate()
+            self.session = nil
+        }
+        
+        if let error {
+            continuation?.resume(throwing: error)
+        } else {
+            onProgress(1)
+            continuation?.resume(returning: receivedData)
+        }
     }
 }

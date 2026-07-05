@@ -52,6 +52,7 @@ enum DeviceIdiom {
 }
 
 extension View {
+    /// Full screen cover instead of a sheet.
     @ViewBuilder
     func conditionalPresentation<Item: Identifiable>(
         item: Binding<Item?>,
@@ -62,6 +63,20 @@ extension View {
             self.fullScreenCover(item: item, content: content)
         } else {
             self.sheet(item: item, content: content)
+        }
+    }
+    
+    /// Inspector instead of a sheet.
+    @ViewBuilder
+    func conditionalPresentationAlt(
+        isPresented: Binding<Bool>,
+        isPad: Bool,
+        @ViewBuilder content: @escaping () -> some View
+    ) -> some View {
+        if isPad {
+            self.inspector(isPresented: isPresented, content: content)
+        } else {
+            self.sheet(isPresented: isPresented, content: content)
         }
     }
 }

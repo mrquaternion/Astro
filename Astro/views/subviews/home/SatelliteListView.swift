@@ -15,29 +15,26 @@ struct SatelliteListView: View {
     /// Subscription store used to decide whether locked assets can be opened.
     @Environment(SubscriptionManager.self) private var store
     
-    /// Cached satellite assets displayed in the list.
-    @Query(sort: \CachedAsset.name) private var assets: [CachedAsset]
+    @StateObject private var downloadManager = LocalDownloadManager()
     
     /// Binding that controls presentation of the satellite list.
     @Binding var isPresented: Bool
-    
-    /// Controls presentation of the paywall for locked satellites.
-    @State private var showPaywall = false
     
     /// The selectable list of cached satellite assets.
     var body: some View {
         NavigationStack {
             ScrollView {
-                LazyVStack(spacing: 12) {
-                    ForEach(assets) { asset in
+                LazyVStack(spacing: 16) {
+                    ForEach(homeViewModel.assets, id: \.id) { asset in
                         Button {
                             select(asset)
                         } label: {
-                            SatelliteListItemView(
+                            SatelliteCard(
                                 asset: asset,
                                 isSelected: asset.id == homeViewModel.selectedSatellite?.id,
-                                isLocked: !store.hasActivateSubscription
+                                isLocked: !canAccess(asset)
                             )
+                            .environmentObject(downloadManager)
                         }
                         .buttonStyle(.plain)
                         .disabled(homeViewModel.isAssetLoading)
@@ -46,7 +43,7 @@ struct SatelliteListView: View {
                 .padding()
             }
             .overlay {
-                if assets.isEmpty {
+                if homeViewModel.assets.isEmpty {
                     ContentUnavailableView(
                         "No Satellites",
                         systemImage: "antenna.radiowaves.left.and.right"
@@ -61,30 +58,37 @@ struct SatelliteListView: View {
                 }
             }
         }
-        .fullScreenCover(isPresented: $showPaywall) {
+        .fullScreenCover(isPresented: $homeViewModel.showPaywall) {
             Paywall()
                 .environment(store)
         }
     }
-    
+
     private func select(_ asset: CachedAsset) {
         if asset.id == homeViewModel.selectedSatellite?.id {
             isPresented = false
-        } else if !store.hasActivateSubscription {
-            showPaywall = true
+        } else if !canAccess(asset) {
+            homeViewModel.showPaywall = true
         } else {
             isPresented = false
             
             Task {
                 asset.lastAccessedAt = .now
-                await homeViewModel.downloadAsset(for: asset)
+                await homeViewModel.loadAsset(for: asset)
             }
         }
+    }
+    
+    private func canAccess(_ asset: CachedAsset) -> Bool {
+        SubscriptionHelper.isEligibleTo(
+            .satellite(fileName: asset.modelFileName),
+            with: store
+        )
     }
 }
 
 #Preview {
     SatelliteListView(isPresented: .constant(true))
-        .environmentObject(HomeViewModel())
+        //.environmentObject(HomeViewModel())
         .environment(SubscriptionManager())
 }

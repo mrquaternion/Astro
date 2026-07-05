@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 import SwiftData
+import SatelliteKit
 
 @MainActor
 final class BootstrapViewModel: ObservableObject {
@@ -16,97 +17,92 @@ final class BootstrapViewModel: ObservableObject {
     
     init() { }
     
-    /// Downloads and loads proper data before app launch.
-    /// P.S.: should be revisited to avoid stalling.
-    func bootstrap(modelContext: ModelContext, homeViewModel: HomeViewModel) async {
-        defer { isLoading = false }
+    /// Satlls the `AppRouteView` to be sure that the the default satellite is fetched and ready to display in the `MainView`.
+    func bootstrap(homeViewModel: HomeViewModel) async {
         
         do {
-            try await fetchAndCacheAssetsMetadata(context: modelContext)
-            let assets = try modelContext.fetch(FetchDescriptor<CachedAsset>())
-            guard let initialAsset = assets.first(where: Self.isInitialAsset) else {
+            let collection = try await AssetFeatureCollection.fetchAssets()
+            
+            var assets: [CachedAsset] = []
+            for feature in collection.features {
+                let asset = CachedAsset(
+                    id: feature.properties.id,
+                    name: feature.properties.name,
+                    summary: feature.properties.summary,
+                    modelFileName: feature.properties.modelFileName,
+                    tleFileName: feature.properties.tleFileName,
+                    snapFileName: feature.properties.snapFileName,
+                    modelStoragePath: feature.properties.modelStoragePath,
+                    tleStoragePath: feature.properties.tleStoragePath,
+                    snapStoragePath: feature.properties.snapStoragePath,
+                    updatedAt: .now
+                )
+
+                assets.append(asset)
+            }
+            
+            // get the default asset (ISS)
+            guard let defaultSelectedSatellite = assets.first(where: { Self.isInitialAsset($0) }) else {
                 throw BootstrapError.initialAssetNotFound
             }
-            await homeViewModel.downloadAsset(for: initialAsset)
+            
+            try await loadDefaultSatellite(defaultSelectedSatellite, homeViewModel: homeViewModel)
+            
         } catch {
-            print("Unable to bootstrap assets: \(error)")
+            print(error)
         }
-    }
-
-    private static func isInitialAsset(_ asset: CachedAsset) -> Bool {
-        asset.modelFileName.localizedCaseInsensitiveCompare("iss_lowpoly.glb") == .orderedSame
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+            self.isLoading = false
+        }
     }
     
-    /// Fetch upstream and local assets metadata, download upstream asset snapshot images only if new or
-    /// updated, upsert the local copy, and delete any local assets no longer present up.
-    private func fetchAndCacheAssetsMetadata(context: ModelContext) async throws {
-        let collection = try await AssetFeatureCollection.fetchAssets()
-        let cachedAssets = try context.fetch(FetchDescriptor<CachedAsset>())
-        let cachedAssetsById = Dictionary(uniqueKeysWithValues: cachedAssets.map { ($0.id, $0) })
-        let remoteIds = Set(collection.features.map(\.properties.id))
+    /// Loads the default satellite (available in free-tier, ISS) and makes it available for the Mapbox map controller.
+    private func loadDefaultSatellite(_ satellite: CachedAsset, homeViewModel: HomeViewModel) async throws {
+        var modelData: Data?
+        var tleElements: Elements?
         
-        for feature in collection.features {
-            let p = feature.properties
-            let existing = cachedAssetsById[p.id]
-            
-            var data: Data? = existing?.snapImageData
-            let needsDownload = existing == nil || existing?.updatedAt != p.updatedAt
-            if
-                needsDownload,
-                let bucket = p.snapStoragePath?.split(separator: "%").map(String.init),
-                let fileName = p.snapFileName
-            {
-                data = try await SupabaseService.shared.downloadAssetData(
-                    fileName: fileName,
-                    in: bucket[0],
-                    at: bucket[1]
-                )
-            }
-            
-            let asset = existing ?? {
-                let a = CachedAsset(
-                    id: p.id,
-                    name: p.name,
-                    summary: p.summary,
-                    modelFileName: p.modelFileName,
-                    tleFileName: p.tleFileName,
-                    snapFileName: p.snapFileName,
-                    modelStoragePath: p.modelStoragePath,
-                    tleStoragePath: p.tleStoragePath,
-                    snapStoragePath: p.snapStoragePath,
-                    updatedAt: p.updatedAt
-                )
-                context.insert(a)
-                return a
-            }()
-            
-            asset.name = p.name
-            asset.summary = p.summary
-            asset.modelFileName = p.modelFileName
-            asset.tleFileName = p.tleFileName
-            asset.snapFileName = p.snapFileName
-            asset.modelStoragePath = p.modelStoragePath
-            asset.tleStoragePath = p.tleStoragePath
-            asset.snapStoragePath = p.snapStoragePath
-            asset.snapImageData = data
-            asset.updatedAt = p.updatedAt
+        // 3D Model
+        if let (filepath, bucket) = AssetLoadingHelpers.parseStoragePath(satellite.modelStoragePath) {
+            modelData = try await SupabaseService.shared.fetchAssetData(filepath, in: bucket)
         }
         
-        for asset in cachedAssets where !remoteIds.contains(asset.id) {
-            context.delete(asset)
+        // TLE JSON
+        if let (filepath, bucket) = AssetLoadingHelpers.parseStoragePath(satellite.tleStoragePath) {
+            tleElements = try await SupabaseService.shared.fetchTLEJson(filepath, in: bucket)
         }
         
-        try context.save()
+        guard let modelData, let tleElements else {
+            throw BootstrapError.missingRequiredData
+        }
+        
+        homeViewModel.selectedSatellite = SelectedSatellite(
+            id: satellite.id,
+            name: satellite.name,
+            modelUri: try AssetLoadingHelpers.computeDataUri(
+                data: modelData,
+                id: satellite.id
+            ),
+            elements: tleElements,
+            route: try AssetLoadingHelpers.computeRoute(elements: tleElements)
+        )
+    }
+    
+    private static func isInitialAsset(_ asset: CachedAsset) -> Bool {
+        SubscriptionHelper.isFree(.satellite(fileName: asset.modelFileName))
     }
 }
 
 enum BootstrapError: LocalizedError {
     case initialAssetNotFound
-
+    case missingRequiredData
+    
     var errorDescription: String? {
         switch self {
         case .initialAssetNotFound:
             "The initial ISS asset was not found in the asset metadata."
+        case .missingRequiredData:
+            "Missing data for loading default satellite."
         }
     }
 }

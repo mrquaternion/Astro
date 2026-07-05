@@ -31,11 +31,17 @@ class CachedArticle {
     /// The URL of the article's frontpage image.
     var imageUrl: URL?
     
+    /// The article's frontpage image data saved for offline display.
+    var imageData: Data?
+    
     /// The list of launches identifiers associated to the article's content (can be empty).
     var launches: [ArticleLaunch]
     
     /// The list of events identifiers associated to the article's content (can be empty).
     var events: [ArticleEvent]
+    
+    /// Whether the article web archive is available locally.
+    var isDownloadedLocally: Bool = false
     
     @Model class ArticleLaunch {
         @Attribute(.unique) var launchId: String
@@ -70,8 +76,9 @@ class CachedArticle {
         self.publishedAt = publishedAt
         self.websiteName = websiteName
         self.imageUrl = URL(string: imageUrlString)
+        self.imageData = nil
         self.launches = launches
         self.events = events
+        self.isDownloadedLocally = false
     }
 }
-

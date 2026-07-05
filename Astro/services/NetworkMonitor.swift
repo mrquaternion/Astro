@@ -7,6 +7,7 @@
 
 import Network
 import Combine
+import SwiftData
 
 /// Monitors network connectivity and publishes changes to observers.
 /// Works with both SwiftUI (via @StateObject / @ObservedObject) and UIKit (via Combine or closure).
