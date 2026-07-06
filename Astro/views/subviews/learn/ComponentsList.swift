@@ -14,15 +14,15 @@ struct ComponentsList: View {
                 ForEach(0..<10) { i in
                     HStack {
                         Text("Item \(i+1)")
+                            .foregroundStyle(.black)
                         Spacer()
                     }
                     .padding()
-                    .glassEffect(.clear)
+                    .background(.white, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
                 }
             }
             .padding()
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .padding(.bottom, CustomTabBarLayout.height + CustomTabBarLayout.yOffset)
         }
     }
 }

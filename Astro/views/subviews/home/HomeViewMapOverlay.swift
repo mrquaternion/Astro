@@ -31,13 +31,21 @@ struct HomeViewMapOverlay: View {
     @EnvironmentObject var network: NetworkMonitor
     
     /// Check if current device is in landscape mode.
-    private var isInLandscape: Bool {
-        UIDevice.current.orientation.isLandscape
-    }
+    private var isHorizontal: Bool
     
     /// Check if current device is iPhone and in landscape mode.
-    private var isPhoneAndLandscape: Bool {
-        isPhone && isInLandscape
+    private var isPhoneAndLandscape: Bool
+    
+    init(
+        isHorizontal: Bool,
+        isPhone: Bool,
+        tracker: SatelliteTrackingViewModel,
+        mode: Binding<CustomMode>
+    ) {
+        self.isHorizontal = isHorizontal
+        self.isPhoneAndLandscape = isPhone && isHorizontal
+        _tracker = ObservedObject(wrappedValue: tracker)
+        _mode = mode
     }
     
     /// The map overlay with status, stats, and recenter controls.
@@ -168,7 +176,7 @@ struct HomeViewMapOverlay: View {
 #Preview {
     @Previewable @State var mode: CustomMode = .photography
     
-    HomeViewMapOverlay(tracker: SatelliteTrackingViewModel(), mode: $mode)
+    HomeViewMapOverlay(isHorizontal: false, isPhone: true, tracker: SatelliteTrackingViewModel(), mode: .constant(.exploration))
         .environmentObject(HomeViewModel(dataController: SwiftDataController(modelContext: previewContainer.mainContext), subscriptionManager: SubscriptionManager()))
         .environmentObject(NetworkMonitor())
 }

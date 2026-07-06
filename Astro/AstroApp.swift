@@ -46,6 +46,9 @@ struct AppRootView: View {
     /// Shared subscription store injected into views that need purchase state.
     @State private var store = SubscriptionManager()
     
+    /// App manager that holds variables available across the app
+    @State private var appState = AppState()
+    
     /// Manages the state and data for the home view, including selected satellite and route information.
     @State private var homeViewModel: HomeViewModel?
     
@@ -64,6 +67,7 @@ struct AppRootView: View {
         .environmentObject(bootstrapper)
         .environmentObject(networkMonitor)
         .environment(store)
+        .environment(appState)
         .environment(\.isPhone, DeviceIdiom.isPhone)
         .environment(\.isPad, DeviceIdiom.isPad)
         .task {

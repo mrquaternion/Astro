@@ -32,6 +32,9 @@ struct MainView: View {
     /// Subscription store that loads products and performs purchases.
     @Environment(SubscriptionManager.self) private var store
     
+    /// App manager that holds variables available across the app
+    @Environment(AppState.self) private var appState
+    
     /// Network monitor used to display connection status.
     @EnvironmentObject var network: NetworkMonitor
     
@@ -81,13 +84,18 @@ struct MainView: View {
                     // pushes the content down
                     Spacer()
                     
-                    GlassEffectContainer(spacing: 6) {
-                        HStack(spacing: 12) {
-                            homeButton()
-                            tabBar()
-                            actionButton()
+                    Group {
+                        if appState.showBottomBar {
+                            GlassEffectContainer(spacing: 6) {
+                                HStack(spacing: 12) {
+                                    homeButton()
+                                    tabBar()
+                                    actionButton()
+                                }
+                            }
                         }
                     }
+                    .transition(.move(edge: .bottom))
                 }
                 .padding(.horizontal)
             }

@@ -12,6 +12,9 @@ struct HomeView: View {
     /// Color scheme of the app, based on system appearance.
     @Environment(\.colorScheme) var colorScheme
     
+    /// Whether the current device is an iPhone.
+    @Environment(\.isPhone) private var isPhone
+    
     /// Shared home state that provides the selected satellite.
     @EnvironmentObject var viewViewModel: HomeViewModel
     
@@ -26,11 +29,13 @@ struct HomeView: View {
 
     /// The home map with its satellite tracking overlay.
     var body: some View {
-        ZStack {
+        GeometryReader { proxy in
+            let isHorizontal = proxy.size.width > proxy.size.height
+            
             HomeViewMap()
                 .environmentObject(satelliteTracker)
                 // redraw the map when switching orientation on iPad devices
-                .id(orientation.isLandscape)
+                .id(isHorizontal)
                 .onReceive(
                     NotificationCenter.default.publisher(
                         for: UIDevice.orientationDidChangeNotification
@@ -39,7 +44,12 @@ struct HomeView: View {
                     orientation = UIDevice.current.orientation
                 }
             
-            HomeViewMapOverlay(tracker: satelliteTracker, mode: $activeMode)
+            HomeViewMapOverlay(
+                isHorizontal: isHorizontal,
+                isPhone: isPhone,
+                tracker: satelliteTracker,
+                mode: $activeMode
+            )
         }
         .animation(.default, value: satelliteTracker.isTrackingModel)
     }
