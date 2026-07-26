@@ -9,20 +9,31 @@ import Foundation
 import Apollo
 
 struct ArticleFeatureCollection: Decodable {
+    /// Articles decoded from the remote collection.
     let features: [Feature]
     
     struct Feature: Decodable {
+        /// Metadata associated with this article.
         let properties: Properties
         
         struct Properties: Decodable {
+            /// Stable article identifier.
             let id: String
+            /// Article headline.
             let title: String
+            /// Short article summary.
             let summary: String
+            /// Raw URL string for the article.
             let urlString: String
+            /// Article publication date.
             let publishedAt: Date
+            /// Name of the publishing website.
             let websiteName: String
+            /// Raw URL string for the article image.
             let imageUrlString: String
+            /// Optional launch identifiers referenced by the article.
             let launches: [String?]
+            /// Optional event identifiers referenced by the article.
             let events: [String?]
         }
     }

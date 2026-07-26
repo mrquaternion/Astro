@@ -21,11 +21,11 @@ final class BootstrapViewModel: ObservableObject {
     func bootstrap(homeViewModel: HomeViewModel) async {
         
         do {
-            let collection = try await AssetFeatureCollection.fetchAssets()
+            let collection = try await TrackedAssetFeatureCollection.fetchAssets()
             
-            var assets: [CachedAsset] = []
+            var assets: [CachedTrackedAsset] = []
             for feature in collection.features {
-                let asset = CachedAsset(
+                let asset = CachedTrackedAsset(
                     id: feature.properties.id,
                     name: feature.properties.name,
                     summary: feature.properties.summary,
@@ -58,7 +58,7 @@ final class BootstrapViewModel: ObservableObject {
     }
     
     /// Loads the default satellite (available in free-tier, ISS) and makes it available for the Mapbox map controller.
-    private func loadDefaultSatellite(_ satellite: CachedAsset, homeViewModel: HomeViewModel) async throws {
+    private func loadDefaultSatellite(_ satellite: CachedTrackedAsset, homeViewModel: HomeViewModel) async throws {
         var modelData: Data?
         var tleElements: Elements?
         
@@ -78,7 +78,7 @@ final class BootstrapViewModel: ObservableObject {
         
         homeViewModel.selectedSatellite = SelectedSatellite(
             id: satellite.id,
-            name: satellite.name,
+            name: satellite.displayName,
             modelUri: try AssetLoadingHelpers.computeDataUri(
                 data: modelData,
                 id: satellite.id
@@ -88,8 +88,8 @@ final class BootstrapViewModel: ObservableObject {
         )
     }
     
-    private static func isInitialAsset(_ asset: CachedAsset) -> Bool {
-        SubscriptionHelper.isFree(.satellite(fileName: asset.modelFileName))
+    private static func isInitialAsset(_ asset: CachedTrackedAsset) -> Bool {
+        SubscriptionHelper.isFree(.satellite(fileName: asset.modelFilename))
     }
 }
 
@@ -97,6 +97,7 @@ enum BootstrapError: LocalizedError {
     case initialAssetNotFound
     case missingRequiredData
     
+    /// Value used for errorDescription.
     var errorDescription: String? {
         switch self {
         case .initialAssetNotFound:

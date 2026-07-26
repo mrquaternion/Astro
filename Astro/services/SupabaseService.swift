@@ -61,11 +61,16 @@ final class SupabaseService {
 }
 
 private final class ProgressDelegate: NSObject, URLSessionDataDelegate {
+    /// Callback receiving normalized download progress.
     private let onProgress: (Double) -> Void
+    /// Continuation completed when the request finishes.
     private var continuation: CheckedContinuation<Data, Error>?
+    /// Bytes received by the current request.
     private var receivedData = Data()
+    /// Total number of bytes expected from the response.
     private var expectedBytes: Int64 = 0
     
+    /// Session retained for the lifetime of the delegated request.
     var session: URLSession?
     
     init(onProgress: @escaping (Double) -> Void, continuation: CheckedContinuation<Data, Error>) {

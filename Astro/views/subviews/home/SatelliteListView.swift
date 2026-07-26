@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import VariableBlur
 
 struct SatelliteListView: View {
     /// Shared home state used to read and change the selected satellite.
@@ -15,6 +16,7 @@ struct SatelliteListView: View {
     /// Subscription store used to decide whether locked assets can be opened.
     @Environment(SubscriptionManager.self) private var store
     
+    /// Mutable view state tracking downloadManager.
     @StateObject private var downloadManager = LocalDownloadManager()
     
     /// Binding that controls presentation of the satellite list.
@@ -22,52 +24,74 @@ struct SatelliteListView: View {
     
     /// The selectable list of cached satellite assets.
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                LazyVStack(spacing: 16) {
-                    ForEach(homeViewModel.assets, id: \.id) { asset in
-                        Button {
-                            select(asset)
-                        } label: {
-                            SatelliteCard(
-                                asset: asset,
-                                isSelected: asset.id == homeViewModel.selectedSatellite?.id,
-                                isLocked: !canAccess(asset)
+        ScrollView {
+            VStack(spacing: 16) {
+                ForEach(homeViewModel.assets, id: \.id) { asset in
+                    Button {
+                        select(asset)
+                    } label: {
+                        SatelliteCard(
+                            asset: asset,
+                            isSelected: asset.id == homeViewModel.selectedSatellite?.id,
+                            isLocked: !SubscriptionHelper.isEligibleTo(
+                                .satellite(fileName: asset.modelFilename),
+                                with: store
                             )
-                            .environmentObject(downloadManager)
-                        }
-                        .buttonStyle(.plain)
-                        .disabled(homeViewModel.isAssetLoading)
+                        )
+                        .environmentObject(downloadManager)
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(homeViewModel.isAssetLoading)
+                }
+            }
+            .padding()
+        }
+        .overlay {
+            if homeViewModel.assets.isEmpty {
+                ContentUnavailableView(
+                    "No Satellites",
+                    systemImage: "antenna.radiowaves.left.and.right"
+                )
+            }
+        }
+        .safeAreaInset(edge: .top) {
+            ZStack {
+                Text("Satellites")
+                    .font(.headline)
+                
+                HStack {
+                    Spacer()
+                    
+                    Button {
+                        isPresented = false
+                    } label: {
+                        Image(systemName: "xmark")
+                            .tint(.primary)
+                            .font(.system(size: 14, weight: .semibold))
+                            .frame(width: 32, height: 32)
+                            .contentShape(Rectangle())
                     }
                 }
-                .padding()
             }
-            .overlay {
-                if homeViewModel.assets.isEmpty {
-                    ContentUnavailableView(
-                        "No Satellites",
-                        systemImage: "antenna.radiowaves.left.and.right"
-                    )
-                }
-            }
-            .navigationTitle("Satellites")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                Button("Close", systemImage: "xmark") {
-                    isPresented = false
-                }
-            }
+            .padding(.horizontal, 12)
+            .padding(.top, 24)
+            .padding(.bottom, 8)
+            .background(.ultraThinMaterial)
         }
         .fullScreenCover(isPresented: $homeViewModel.showPaywall) {
             Paywall()
                 .environment(store)
         }
     }
-
-    private func select(_ asset: CachedAsset) {
+    
+    private func select(_ asset: CachedTrackedAsset) {
+        print("Has active subscription: \(store.hasActivateSubscription)")
         if asset.id == homeViewModel.selectedSatellite?.id {
             isPresented = false
-        } else if !canAccess(asset) {
+        } else if !SubscriptionHelper.isEligibleTo(
+            .satellite(fileName: asset.modelFilename),
+            with: store
+        ) {
             homeViewModel.showPaywall = true
         } else {
             isPresented = false
@@ -78,17 +102,10 @@ struct SatelliteListView: View {
             }
         }
     }
-    
-    private func canAccess(_ asset: CachedAsset) -> Bool {
-        SubscriptionHelper.isEligibleTo(
-            .satellite(fileName: asset.modelFileName),
-            with: store
-        )
-    }
 }
 
 #Preview {
     SatelliteListView(isPresented: .constant(true))
-        //.environmentObject(HomeViewModel())
+        .environmentObject(HomeViewModel(dataController: SwiftDataController(modelContext: previewContainer.mainContext), subscriptionManager: SubscriptionManager()))
         .environment(SubscriptionManager())
 }

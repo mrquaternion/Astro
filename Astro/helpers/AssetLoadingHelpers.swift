@@ -70,5 +70,6 @@ class AssetLoadingHelpers {
 }
 
 private enum Constants {
+    /// Shared value used for avgOrbitCompletionTime.
     static let avgOrbitCompletionTime = 90
 }

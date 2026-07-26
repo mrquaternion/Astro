@@ -26,7 +26,9 @@ final class NetworkMonitor: ObservableObject {
 
     // MARK: - Private
 
+    /// Value used for monitor.
     private let monitor: NWPathMonitor
+    /// Value used for queue.
     private let queue = DispatchQueue(label: "com.app.NetworkMonitor")
 
     // MARK: - Init / Deinit

@@ -7,70 +7,67 @@
 
 import SwiftUI
 import MapboxMaps
+import SwiftData
 
 struct HomeView: View {
-    /// Color scheme of the app, based on system appearance.
-    @Environment(\.colorScheme) var colorScheme
+    /// Whether the current interface space is wider than it is tall.
+    @Environment(\.isLandscape) private var isLandscape
     
-    /// Whether the current device is an iPhone.
-    @Environment(\.isPhone) private var isPhone
-    
-    /// Shared home state that provides the selected satellite.
-    @EnvironmentObject var viewViewModel: HomeViewModel
+    /// Environment value supplying horizontalSizeClass.
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     
     /// Tracks the selected satellite's live position and camera state.
     @StateObject private var satelliteTracker = SatelliteTrackingViewModel()
     
-    /// To help redraw the map.
-    @State private var orientation = UIDevice.current.orientation
-    
-    /// Current selected mode.
+    /// Current selected mode controlled by the overlay.
     @Binding var activeMode: CustomMode
-
+    
+    /// Whether the modal sheet for the types of layers shows up or not.
+    @Binding var openLayerMenu: Bool
+    
+    ///  Map layers configuration.
+    @Binding var config: MapConfiguration
+    
     /// The home map with its satellite tracking overlay.
     var body: some View {
-        GeometryReader { proxy in
-            let isHorizontal = proxy.size.width > proxy.size.height
-            
-            HomeViewMap()
+        ZStack {
+            HomeViewMapContainer(config: $config)
                 .environmentObject(satelliteTracker)
                 // redraw the map when switching orientation on iPad devices
-                .id(isHorizontal)
-                .onReceive(
-                    NotificationCenter.default.publisher(
-                        for: UIDevice.orientationDidChangeNotification
-                    )
-                ) { _ in
-                    orientation = UIDevice.current.orientation
-                }
+                .id(isLandscape)
             
             HomeViewMapOverlay(
-                isHorizontal: isHorizontal,
-                isPhone: isPhone,
                 tracker: satelliteTracker,
-                mode: $activeMode
+                mode: $activeMode,
+                openLayerMenu: $openLayerMenu
             )
         }
         .animation(.default, value: satelliteTracker.isTrackingModel)
+        .sheet(isPresented: $openLayerMenu) {
+            HomeViewLayerMenu(config: $config)
+                .presentationDetents(horizontalSizeClass == .compact ? [.medium] : [])
+        }
     }
 }
 
 #Preview {
-    HomeView(activeMode: .constant(CustomMode.exploration))
-        //.environmentObject(HomeViewModel())
+    HomeView(
+        activeMode: .constant(CustomMode.exploration),
+        openLayerMenu: .constant(true),
+        config: .constant(MapConfiguration())
+    )
+    .environmentObject(HomeViewModel(dataController: SwiftDataController(modelContext: previewContainer.mainContext), subscriptionManager: SubscriptionManager()))
+    .environmentObject(NetworkMonitor())
 }
 
 extension ShapeStyle where Self == Color {
-    static func glassBackgroundContent(_ scheme: ColorScheme) -> Color {
-        return scheme == .dark ? .white : .black
+    static func mapGlassBackgroundContent() -> Color {
+        Color.white
     }
     
-    static func glassBackground(_ scheme: ColorScheme) -> Color {
-        return scheme == .dark ? .black.mix(with: .white, by: 0.4) : .white.mix(with: .black, by: 0.2)
+    static func mapGlassBackground() -> Color {
+        Color(.black)
+            .mix(with: .gray, by: 0.4)
+            .opacity(0.5)
     }
-}
-
-extension UIDeviceOrientation {
-    /// The device orientation reported by UIKit.
-    static var current: UIDeviceOrientation { UIDevice.current.orientation }
 }

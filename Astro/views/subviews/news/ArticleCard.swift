@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ArticleCard: View {
     /// Color scheme of the app, based on system appearance.
@@ -91,6 +92,7 @@ struct ArticleCard: View {
         }
     }
     
+    /// View content rendered for articleMetadata.
     @ViewBuilder
     private func cardContentAsButton() -> some View {
         Button {
@@ -111,6 +113,7 @@ struct ArticleCard: View {
         .buttonStyle(.plain)
     }
     
+    /// View content rendered for articleText.
     @ViewBuilder
     private func expandLayout() -> some View {
         if isPhone {
@@ -143,6 +146,7 @@ struct ArticleCard: View {
         }
     }
     
+    /// View content rendered for articleImage.
     @ViewBuilder
     private var articleMetadata: some View {
         HStack(alignment: .firstTextBaseline) {
@@ -159,6 +163,7 @@ struct ArticleCard: View {
         }
     }
     
+    /// View content rendered for imageFallback.
     @ViewBuilder
     private var articleText: some View {
         HStack {
@@ -188,6 +193,7 @@ struct ArticleCard: View {
     }
     
     @ViewBuilder
+    /// Image displayed alongside the article content.
     private var articleImage: some View {
         GeometryReader { proxy in
             Group {
@@ -216,9 +222,7 @@ struct ArticleCard: View {
                 }
             }
             .frame(width: proxy.size.width, height: proxy.size.height)
-            .clipped()
         }
-        .clipped()
         .clipShape(
             UnevenRoundedRectangle(
                 cornerRadii: .init(
@@ -233,6 +237,7 @@ struct ArticleCard: View {
     }
     
     @ViewBuilder
+    /// Placeholder displayed when the article image is unavailable.
     private var imageFallback: some View {
         ZStack {
             Rectangle()
@@ -244,10 +249,12 @@ struct ArticleCard: View {
         }
     }
     
+    /// Value used for imageHeight.
     private var imageHeight: CGFloat {
         isPad ? 260 : 180
     }
     
+    /// Value used for summaryLineLimit.
     private var summaryLineLimit: Int? {
         guard isPhone else { return nil }
         return isExpanded ? nil : 3
@@ -255,5 +262,22 @@ struct ArticleCard: View {
 }
 
 fileprivate enum Constants {
+    /// Shared value used for cornerRadius.
     static let cornerRadius: CGFloat = 16
+}
+
+#Preview {
+    ArticleCard(
+        article: CachedArticle.mock,
+        isExpanded: false,
+        onToggleSummary: { },
+        onOpen: { }
+    )
+    .environmentObject(
+        SpaceNewsViewModel(
+            dataController: SwiftDataController(modelContext: previewContainer.mainContext),
+            subscriptionManager: SubscriptionManager()
+        )
+    )
+    .environmentObject(LocalDownloadManager())
 }

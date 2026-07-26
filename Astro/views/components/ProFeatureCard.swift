@@ -74,6 +74,9 @@ struct ProFeature: Identifiable {
     
     /// Whether the custom icon needs handmade sizing.
     var isHandmade: Bool = false
+    
+    /// Whether the feature is also available without a subscription.
+    var isIncludedInFree: Bool = false
 
     /// Features advertised in the paywall grid.
     static let all: [ProFeature] = [
@@ -86,12 +89,10 @@ struct ProFeature: Identifiable {
             isHandmade: true
         ),
         .init(
-            icon: "rocket",
-            title: "Live missions",
-            description: "Stay updated on upcoming launches.",
-            tint: .teal,
-            isCustom: true,
-            isHandmade: true
+            icon: "wifi.slash",
+            title: "Offline access",
+            description: "Download satellites, articles and more.",
+            tint: .secondary
         ),
         .init(
             icon: "books.vertical.fill",
@@ -100,27 +101,56 @@ struct ProFeature: Identifiable {
             tint: .red
         ),
         .init(
-            icon: "moon.stars.fill",
-            title: "Night sky planner",
-            description: "Find the best times to photograph the Milky Way and planets.",
+            icon: "rocket",
+            title: "Live 3D launches",
+            description: "Follow launches in real time with an interactive 3D flight simulation.",
+            tint: .teal,
+            isCustom: true,
+            isHandmade: true
+        ),
+        .init(
+            icon: "bell.badge.fill",
+            title: "App notifications",
+            description: "Be ready and get timely alerts for launches, missions, and important space events.",
+            tint: .orange
+        ),
+        .init(
+            icon: "iphone.radiowaves.left.and.right",
+            title: "Live Activities",
+            description: "Follow launch progress at a glance from your Lock Screen and Dynamic Island.",
             tint: .purple
-        ),
-        .init(
-            icon: "custom.megaphone.slash.fill",
-            title: "No ads",
-            description: "Read the news without interruptions.",
-            tint: .orange,
-            isCustom: true
-        ),
-        .init(
-            icon: "wifi.slash",
-            title: "Offline access",
-            description: "Download satellites, articles and more.",
-            tint: .secondary
         )
     ]
+    
+    /// Core features available to every Astro user.
+    static let freeTierFeatures: [ProFeature] = [
+        .init(
+            icon: "globe.americas.fill",
+            title: "Live ISS tracking",
+            description: "Follow the International Space Station around Earth in real time.",
+            tint: .blue,
+            isIncludedInFree: true
+        ),
+        .init(
+            icon: "newspaper.fill",
+            title: "NASA Space news",
+            description: "Read the latest stories and discoveries from NASA.",
+            tint: .orange,
+            isIncludedInFree: true
+        ),
+        .init(
+            icon: "calendar.badge.clock",
+            title: "Launch schedules",
+            description: "Browse upcoming launches and mission details.",
+            tint: .teal,
+            isIncludedInFree: true
+        )
+    ]
+    
+    /// Complete feature set used by the Free and Pro comparison.
+    static let subscriptionComparison = freeTierFeatures + all
 }
 
 #Preview {
-    ProFeatureCard(feature: ProFeature.all.first!)
+    ProFeatureCard(feature: ProFeature.all.last!)
 }

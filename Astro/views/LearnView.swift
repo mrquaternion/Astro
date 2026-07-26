@@ -6,154 +6,89 @@
 //
 
 import SwiftUI
-import VariableBlur
-
-struct LearnItemView: View {
-    /// App manager that holds variables available across the app
-    @Environment(AppState.self) private var appState
-    
-    @Environment(\.dismiss) var dismiss
-    
-    @Environment(\.isPad) var isPad
-    
-    @State private var showComponentsList = false
-    @State private var gesturesMenuOn = false
-    
-    var isHorizontal: Bool
-    var modelFilename: String
-    
-    /// Check if current device is iPhone and in landscape mode.
-    private var isPhoneAndLandscape: Bool
-    
-    init(isHorizontal: Bool, modelFilename: String, isPhone: Bool) {
-        self.isHorizontal = isHorizontal
-        self.modelFilename = modelFilename
-        self.isPhoneAndLandscape = isPhone && isHorizontal
-    }
-    
-    var body: some View {
-        AdaptiveStack(isHorizontal: isHorizontal) {
-            VirtualEnvironment(gesturesMenuOn: $gesturesMenuOn, modelFilename: modelFilename)
-                .ignoresSafeArea()
-                .overlay(alignment: .topTrailing) {
-                    Button {
-                        gesturesMenuOn = true
-                    } label: {
-                        Image(systemName: "info")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 16, height: 16)
-                            .font(.title3)
-                            .foregroundStyle(.white)
-                            .padding()
-                            .glassEffect()
-                    }
-                    .popover(isPresented: $gesturesMenuOn, arrowEdge: isPad ? .trailing : .top) {
-                        Grid(alignment: .leading, horizontalSpacing: 24, verticalSpacing: 10) {
-                            ForEach(gestures) { gesture in
-                                GridRow {
-                                    HStack {
-                                        Image(systemName: gesture.icon)
-                                        Text("\(gesture.action) :")
-                                    }
-                                    Text(gesture.iconCount == 2 ? "2-Finger \(gesture.gestureName)" : gesture.gestureName)
-                                }
-                            }
-                        }
-                        .padding()
-                        .presentationCompactAdaptation(.popover)
-                    }
-                    .padding(.trailing)
-                    .padding(.top, ((isPad || isPhoneAndLandscape) ? 16 : 0))
-                }
-                .overlay(alignment: .bottomTrailing) {
-                    Button {
-                        showComponentsList = true
-                    } label: {
-                        Image(systemName: "cube.transparent")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 20, height: 20)
-                            .font(.title3)
-                            .foregroundStyle(.white)
-                            .padding()
-                            .glassEffect()
-                    }
-                    .padding(.trailing)
-                    .padding(.top, ((isPad || isPhoneAndLandscape) ? 16 : 0))
-                }
-                .overlay(alignment: .topLeading) {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Image(systemName: "chevron.left")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 16, height: 16)
-                            .font(.title3)
-                            .foregroundStyle(.white)
-                            .padding()
-                            .glassEffect()
-                    }
-                    .padding(.leading)
-                }
-        }
-        .sheet(isPresented: $showComponentsList) {
-            ComponentsList()
-                .safeAreaPadding([.top, .horizontal])
-                .presentationDetents([.fraction(0.33), .fraction(0.66)])
-                .presentationDragIndicator(.visible)
-        }
-        .onAppear {
-            appState.toggleBottomBar()
-        }
-        .onDisappear {
-            appState.toggleBottomBar()
-        }
-    }
-}
+import SwiftUIIntrospect
 
 struct LearnView: View {
     
-    @Environment(\.isPhone) var isPhone
-
-    var items = ["acims"]
+    /// Environment value supplying learnViewModel.
+    @EnvironmentObject private var learnViewModel: LearnViewModel
+    
+    /// Reports the UIKit scroll view that backs the learn list.
+    var onScrollViewResolved: (UIScrollView) -> Void = { _ in }
     
     var body: some View {
-        NavigationStack {
-            GeometryReader { geometry in
-                let isHorizontal = geometry.size.width > geometry.size.height
-                
-                List {
-                    ForEach(items, id: \.self) { modelFilename in
-                        NavigationLink {
-                            LearnItemView(isHorizontal: isHorizontal, modelFilename: modelFilename, isPhone: isPhone)
-                                .navigationBarBackButtonHidden()
-                        } label: {
-                            Text(modelFilename)
-                        }
-                    }
+        Group {
+            // fetching assets
+            if learnViewModel.areLearnAssetsLoading && learnViewModel.assets.isEmpty {
+                LearnLoadingTemplateView()
+            } else { // fetched
+                if learnViewModel.assets.isEmpty {
+                    ContentUnavailableView("No assets available", systemImage: "book")
+                        .foregroundStyle(.white)
+                } else {
+                    LearnListView(onScrollViewResolved: onScrollViewResolved)
                 }
             }
         }
     }
 }
 
-fileprivate struct AdaptiveStack<Content: View>: View {
-    var isHorizontal: Bool
-    var spacing: CGFloat? = 0
-    @ViewBuilder var content: () -> Content
+struct LearnListView: View {
+    /// Subscription store used to decide whether locked assets can be opened.
+    @Environment(SubscriptionManager.self) private var store
+    
+    /// App manager that holds variables available across the app.
+    @Environment(AppState.self) private var appState
+    
+    /// Environment value supplying learnViewModel.
+    @EnvironmentObject private var learnViewModel: LearnViewModel
+   
+    /// Reports the UIKit scroll view that backs the learn list.
+    var onScrollViewResolved: (UIScrollView) -> Void = { _ in }
+    
+    /// Asset identifiers currently pushed onto the learn navigation stack.
+    @State private var navigationPath: [String] = []
+    
+    /// Mutable view state tracking downloadManager.
+    @StateObject private var downloadManager = LocalDownloadManager()
     
     var body: some View {
-        let layout = isHorizontal ? AnyLayout(HStackLayout(spacing: spacing)) : AnyLayout(VStackLayout(spacing: spacing))
-        
-        layout {
-            content()
+        NavigationStack(path: $navigationPath) {
+            ScrollView {
+                VStack(alignment: .leading) {
+                    ForEach(learnViewModel.assets, id: \.id) { asset in
+                        NavigationLink(value: asset.id) {
+                            LearnItemLinkLabelView(asset: asset)
+                                .environmentObject(downloadManager)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding()
+                .padding(.bottom, CustomTabBarLayout.height + CustomTabBarLayout.yOffset)
+            }
+            .introspect(.scrollView, on: .iOS(.v26), customize: onScrollViewResolved)
+            .scrollBounceBehavior(.basedOnSize)
+            .navigationTitle("Learn")
+            .fullScreenCover(isPresented: $learnViewModel.showPaywall) {
+                Paywall()
+                    .environment(store)
+            }
+            .navigationDestination(for: String.self, destination: destination)
+        }
+        .onChange(of: navigationPath.isEmpty, initial: true) { _, isAtRoot in
+            appState.setBottomBarVisible(isAtRoot, animated: false)
         }
     }
-}
-
-#Preview {
-    LearnView()
-        .environment(AppState())
+    
+    @ViewBuilder
+    private func destination(for assetID: String) -> some View {
+        if let asset = learnViewModel.assets.first(where: { $0.id == assetID }) {
+            LearnItemView(asset: asset)
+                .navigationBarBackButtonHidden()
+                .toolbarColorScheme(.dark, for: .navigationBar)
+        } else {
+            ContentUnavailableView("Asset unavailable", systemImage: "cube.transparent")
+        }
+    }
 }

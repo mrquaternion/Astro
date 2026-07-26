@@ -27,6 +27,7 @@ enum OnboardingSteps: CaseIterable {
         return cases[index - 1]
     }
     
+    /// Value used for targetTime.
     var targetTime: Double {
         switch self {
         case .`init`:  return 0.0
@@ -40,10 +41,13 @@ enum OnboardingSteps: CaseIterable {
 
 struct OnboardingScreenView: View {
     
+    /// Mutable view state tracking currentStep.
     @State private var currentStep: OnboardingSteps = .`init`
     
+    /// Mutable view state tracking timeObserver.
     @State private var timeObserver: Any?
     
+    /// Mutable view state tracking player.
     @State private var player: AVPlayer = {
         guard let url = Bundle.main.url(forResource: "onboarding_astro_anim", withExtension: "mp4") else {
             fatalError("Video file not found")

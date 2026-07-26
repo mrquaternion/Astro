@@ -22,8 +22,14 @@ struct AstroApp: App {
 }
 
 enum AppConstants {
+    /// SwiftData model types included in the app container.
     static let modelTypes: [any PersistentModel.Type] = [
-        CachedAsset.self,
+        BaseAsset.self,
+        CachedTrackedAsset.self,
+        CachedLearnAsset.self,
+        CachedLearnAsset.LearnComponent.self,
+        CachedLearnAsset.LearnComponentTimelineEvent.self,
+        CachedLearnAsset.LearnComponentDetail.self,
         CachedArticle.self,
         CachedArticle.ArticleLaunch.self,
         CachedArticle.ArticleEvent.self
@@ -52,36 +58,73 @@ struct AppRootView: View {
     /// Manages the state and data for the home view, including selected satellite and route information.
     @State private var homeViewModel: HomeViewModel?
     
+    /// Mutable view state tracking learnViewModel.
+    @State private var learnViewModel: LearnViewModel?
+
+    /// Mission state retained for the lifetime of the main interface.
+    @State private var missionsViewModel: MissionsViewModel?
+
+    /// News state retained for the lifetime of the main interface.
+    @State private var newsViewModel: SpaceNewsViewModel?
+    
     /// The root view content shown after bootstrap completes.
     var body: some View {
-        Group {
-            if !bootstrapper.isLoading,
-                let homeViewModel,
-                let dataController
-            {
-                MainView(homeViewModel: homeViewModel, dataController: dataController)
-            } else {
-                SplashScreenView()
+        GeometryReader { proxy in
+            let isLandscape = proxy.size.isLandscape
+            
+            Group {
+                if
+                    !bootstrapper.isLoading,
+                    let dataController,
+                    let homeViewModel,
+                    let learnViewModel,
+                    let missionsViewModel,
+                    let newsViewModel
+                {
+                    MainView(
+                        homeViewModel: homeViewModel,
+                        learnViewModel: learnViewModel,
+                        missionsViewModel: missionsViewModel,
+                        newsViewModel: newsViewModel,
+                        dataController: dataController
+                    )
+                } else {
+                    SplashScreenView()
+                }
             }
-        }
-        .environmentObject(bootstrapper)
-        .environmentObject(networkMonitor)
-        .environment(store)
-        .environment(appState)
-        .environment(\.isPhone, DeviceIdiom.isPhone)
-        .environment(\.isPad, DeviceIdiom.isPad)
-        .task {
-            guard dataController == nil else { return }
-            
-            let controller = SwiftDataController(modelContext: modelContext)
-            dataController = controller
-            
-            homeViewModel = HomeViewModel(
-                dataController: controller,
-                subscriptionManager: store
-            )
-            
-            await bootstrapper.bootstrap(homeViewModel: homeViewModel!)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .environmentObject(bootstrapper)
+            .environmentObject(networkMonitor)
+            .environment(store)
+            .environment(appState)
+            .environment(\.isPhone, DeviceIdiom.isPhone)
+            .environment(\.isPad, DeviceIdiom.isPad)
+            .environment(\.isLandscape, isLandscape)
+            .task {
+                guard dataController == nil else { return }
+                
+                let controller = SwiftDataController(modelContext: modelContext)
+                dataController = controller
+                
+                homeViewModel = HomeViewModel(
+                    dataController: controller,
+                    subscriptionManager: store
+                )
+                
+                learnViewModel = LearnViewModel(
+                    dataController: controller,
+                    subscriptionManager: store
+                )
+
+                missionsViewModel = MissionsViewModel()
+
+                newsViewModel = SpaceNewsViewModel(
+                    dataController: controller,
+                    subscriptionManager: store
+                )
+                
+                await bootstrapper.bootstrap(homeViewModel: homeViewModel!)
+            }
         }
     }
 }
@@ -98,6 +141,7 @@ protocol DataController {
 @MainActor
 final class SwiftDataController: DataController {
 
+    /// Model context backing all persistence operations.
     private let modelContext: ModelContext
 
     init(modelContext: ModelContext) {

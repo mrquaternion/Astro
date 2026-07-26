@@ -20,6 +20,7 @@ struct NewsList: View {
     /// Destination of the article to show in WebView.
     @Binding var selectedDestination: ArticleDestination?
     
+    /// Value used for selectedNewsSites.
     let selectedNewsSites: Set<String>
 
     init(
@@ -38,10 +39,14 @@ struct NewsList: View {
         self.showDownloadedOnly = showDownloadedOnly
     }
     
+    /// Value used for filter.
     private let filter: String
+    /// Value used for sortOrder.
     private let sortOrder: SortOrder
+    /// Value used for showDownloadedOnly.
     private let showDownloadedOnly: Bool
     
+    /// Value used for filtered.
     var filtered: [CachedArticle] {
         let matchingArticles = articles.filter { article in
             let matchesFilter =
@@ -117,11 +122,29 @@ struct NewsList: View {
 
 #Preview {
     NewsList(
-        articles: [],
+        articles: [CachedArticle.mock],
         filter: "",
         sortOrder: .date,
-        selectedNewsSites: Set(),
+        selectedNewsSites: ["NASA"],
         showDownloadedOnly: false,
         selectedDestination: .constant(.none)
     )
+    .environmentObject(LocalDownloadManager())
+}
+
+extension CachedArticle {
+    /// Shared value used for mock.
+    static var mock: CachedArticle {
+        CachedArticle(
+            id: "1",
+            title: "NASA Scientists Take to Air and Space to Study Arctic Sea ice",
+            summary: "This month, engineers at NASA’s Jet Propulsion Laboratory in Southern California are testing a spacecraft sensor that will help measure how quickly Arctic sea ice is disappearing. And while that instrument won’t launch for another year, scientists started preparing for its use during a recent field campaign in the Canadian wilderness. Researchers spent two weeks […]",
+            urlString: "https://www.nasa.gov/missions/airborne-science/nasa-scientists-take-to-air-and-space-to-study-arctic-sea-ice/",
+            publishedAt: .now,
+            websiteName: "NASA",
+            imageUrlString: "https://www.nasa.gov/wp-content/uploads/2026/07/1-sea-ice-quadriptych.jpg",
+            launches: [],
+            events: []
+        )
+    }
 }

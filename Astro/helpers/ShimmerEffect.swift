@@ -16,7 +16,9 @@ extension View {
 }
 
 fileprivate struct ShimmerEffectHelper: ViewModifier {
+    /// Value used for config.
     var config: ShimmerConfig
+    /// Mutable view state tracking moveTo.
     @State private var moveTo: CGFloat = -0.7
     
     func body(content: Content) -> some View {
@@ -57,10 +59,15 @@ fileprivate struct ShimmerEffectHelper: ViewModifier {
 }
 
 struct ShimmerConfig {
+    /// Value used for tint.
     var tint: Color
+    /// Value used for highlight.
     var highlight: Color
+    /// Value used for blur.
     var blur: CGFloat = 0
+    /// Value used for highlightOpacity.
     var highlightOpacity: CGFloat = 1
+    /// Value used for speed.
     var speed: CGFloat = 2
 }
 

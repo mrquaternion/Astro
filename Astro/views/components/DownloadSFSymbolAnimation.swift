@@ -13,6 +13,7 @@ enum DownloadState {
     case downloading
     case complete
     
+    /// Value used for symbol.
     var symbol: String {
         switch self {
         case .cloud:
@@ -26,28 +27,37 @@ enum DownloadState {
 }
 
 struct DownloadSFSymbolAnimation: View {
+    /// Environment value supplying downloadManager.
     @EnvironmentObject var downloadManager: LocalDownloadManager
     
+    /// Binding supplying isDownloadToggled.
     @Binding var isDownloadToggled: Bool
     
+    /// Value used for id.
     let id: String
     
+    /// Value used for symbolAlreadyInUse.
     var symbolAlreadyInUse: String?
     
+    /// Value used for symbolColorAlreadyInUse.
     var symbolColorAlreadyInUse: Color?
     
+    /// Value used for symbolInUse.
     var symbolInUse: String? {
         isDownloadToggled ? downloadState.symbol : symbolAlreadyInUse
     }
     
+    /// Value used for symbolColorInUse.
     var symbolColorInUse: Color? {
         isDownloadToggled ? .secondary : symbolColorAlreadyInUse
     }
     
+    /// Value used for progress.
     private var progress: CGFloat {
         downloadManager.progress(for: id)
     }
     
+    /// Value used for downloadState.
     private var downloadState: DownloadState {
         switch progress {
         case ...0:
@@ -78,8 +88,11 @@ struct DownloadSFSymbolAnimation: View {
 }
 
 struct ProgressRing: View {
+    /// Value used for progress.
     let progress: CGFloat
+    /// Value used for strokeColor.
     let strokeColor: Color = .blue
+    /// Value used for backgroundColor.
     let backgroundColor: Color = .gray.opacity(0.3)
     
     var body: some View {
@@ -112,7 +125,7 @@ struct ProgressRing: View {
         
         DownloadSFSymbolAnimation(
             isDownloadToggled: $isDownloadToggled,
-            id: CachedAsset.mock.id,
+            id: CachedTrackedAsset.mock.id,
             symbolAlreadyInUse: "checkmark.circle.fill",
             symbolColorAlreadyInUse: .green
         )
@@ -140,15 +153,16 @@ struct ProgressRing: View {
         
         DownloadSFSymbolAnimation(
             isDownloadToggled: $isDownloadToggled,
-            id: CachedAsset.mock.id
+            id: CachedTrackedAsset.mock.id
         )
     }
     .padding(.horizontal)
     .environmentObject(LocalDownloadManager())
 }
 
-extension CachedAsset {
-    static var mock: CachedAsset {
+extension CachedTrackedAsset {
+    /// Shared value used for mock.
+    static var mock: CachedTrackedAsset {
         .init(
             id: "1",
             name: "ISS",

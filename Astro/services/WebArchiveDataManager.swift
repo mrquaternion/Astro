@@ -11,6 +11,7 @@ import WebKit
 // source: https://blog.devgenius.io/storing-wkwebview-content-for-offline-access-in-your-ios-app-b61daf528df2
 @MainActor
 class WebArchiveDataManager {
+    /// Directory containing downloaded web archives.
     let webArchiveDirectoryURL: URL
     
     init() {
@@ -81,14 +82,17 @@ class WebArchiveDataManager {
         FileManager.default.fileExists(atPath: webArchiveURL(named: name).path())
     }
     
-    private func webArchiveURL(named name: String) -> URL {
+    func webArchiveURL(named name: String) -> URL {
         webArchiveDirectoryURL.appendingPathComponent("\(name).webarchive")
     }
 }
 
 private final class WebArchiveNavigationDelegate: NSObject, WKNavigationDelegate {
+    /// Callback receiving normalized archive-download progress.
     private let onProgress: (Double) -> Void
+    /// Continuation completed when the archive finishes loading.
     private var continuation: CheckedContinuation<Void, Error>?
+    /// Observation used to report WebKit loading progress.
     private var progressObservation: NSKeyValueObservation?
     
     init(onProgress: @escaping (Double) -> Void) {

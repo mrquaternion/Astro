@@ -10,6 +10,7 @@ import Combine
 import SwiftData
 
 final class LocalDownloadManager: ObservableObject {
+    /// Value used for progresses.
     @Published private(set) var progresses: [String: CGFloat] = [:]
     
     func setProgress(_ progress: CGFloat, for id: String) {

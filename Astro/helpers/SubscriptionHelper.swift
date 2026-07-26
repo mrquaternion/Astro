@@ -14,14 +14,17 @@ enum SubscriptionContent {
 }
 
 enum SubscriptionHelper {
+    /// Shared value used for freeSatelliteFileNames.
     static let freeSatelliteFileNames: Set<String> = [
         "iss_lowpoly.glb"
     ]
     
+    /// Shared value used for freeNewsSourceNames.
     static let freeNewsSourceNames: Set<String> = [
         "NASA"
     ]
     
+    /// Shared value used for canDownloadOfflineWithoutSubscription.
     static let canDownloadOfflineWithoutSubscription = false
     
     static func isEligibleTo(

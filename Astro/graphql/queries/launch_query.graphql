@@ -1,0 +1,88 @@
+query Launch {
+    launchCollection {
+        edges {
+            node {
+                id
+                launch_id
+                name
+                status_id
+                launch_service_provider_id
+                mission_id
+                rocket_id
+                pad_id
+                net
+                window_start
+                window_end
+                image_url_string
+                thumbnail_url_string
+                last_updated
+            }
+        }
+    }
+    launch_statusCollection {
+        edges {
+            node {
+                id
+                status_id
+                name
+                abbrev
+            }
+        }
+    }
+    launch_service_providerCollection {
+        edges {
+            node {
+                id
+                launch_service_provider_id
+                name
+            }
+        }
+    }
+    launch_missionCollection {
+        edges {
+            node {
+                id
+                mission_id
+                name
+                type
+                description
+                orbit_id
+                orbit_name
+                orbit_abbrev
+            }
+        }
+    }
+    launch_rocketCollection {
+        edges {
+            node {
+                id
+                rocket_id
+                full_name
+                manufacturer
+            }
+        }
+    }
+    launch_padCollection {
+        edges {
+            node {
+                id
+                pad_id
+                name
+                latitude
+                longitude
+                location
+                country
+                alpha_3_code
+            }
+        }
+    }
+    launch_video_urlCollection {
+        edges {
+            node {
+                id
+                launch_id
+                video_url
+            }
+        }
+    }
+}

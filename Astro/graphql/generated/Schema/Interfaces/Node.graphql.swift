@@ -9,10 +9,16 @@ extension AstroAPI.Interfaces {
     keyFields: nil,
     implementingObjects: [
       "Article",
-      "Asset",
-      "Asset_shortname",
-      "Event",
-      "Launch"
+      "Launch",
+      "Launch_mission",
+      "Launch_pad",
+      "Launch_rocket",
+      "Launch_service_provider",
+      "Launch_status",
+      "Launch_video_url",
+      "Learn_asset",
+      "Learn_component",
+      "Tracked_asset"
     ]
   )
 }

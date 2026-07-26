@@ -11,11 +11,15 @@ import Foundation
 public enum AppEnv {
     /// The public keys to get through the app's environment.
     enum Keys {
+        /// Info.plist key containing the Supabase base URL.
         static let supabaseURL = "SUPABASE_URL"
+        /// Info.plist key containing the Supabase public key.
         static let supabaseKey = "SUPABASE_KEY"
+        /// Info.plist key containing the GraphQL endpoint.
         static let endpoint = "GRAPHQL_ENDPOINT"
     }
     
+    /// Application configuration values loaded from Info.plist.
     private static let infoDictionary: [String: Any] = {
         guard let dict = Bundle.main.infoDictionary else {
             fatalError("plist file not found")

@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct TwoFingerDoubleTapGesture: UIGestureRecognizerRepresentable {
+    /// Value used for onToggledAction.
     private var onToggledAction: (() -> Void)?
     
     func onToggled(_ action: @escaping () -> Void) -> Self {

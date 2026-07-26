@@ -10,9 +10,13 @@ import Combine
 
 @MainActor
 final class SpaceNewsViewModel: ObservableObject {
+    /// Persistent storage used for cached articles.
     private let dataController: DataController
+    /// Subscription state used to gate premium news features.
     private let subscriptionManager: SubscriptionManager
+    /// UserDefaults key for selected news sources.
     private static let selectedNewsSitesKey = "newsListSelectedNewsSites"
+    /// UserDefaults key for the selected article sort order.
     private static let sortOrderKey = "newsListSortOrder"
     
     /// The array of ready-to-use `CachedArticle` in the views.
@@ -47,6 +51,12 @@ final class SpaceNewsViewModel: ObservableObject {
         
         self.storedSortOrder = UserDefaults.standard.string(forKey: Self.sortOrderKey) ?? SortOrder.dateReverse.rawValue
         self.storedSelectedNewsSites = UserDefaults.standard.string(forKey: Self.selectedNewsSitesKey) ?? ""
+    }
+
+    /// Loads articles only when this retained view model has no collection yet.
+    func loadArticlesIfNeeded() async {
+        guard articles.isEmpty, !areArticlesLoading else { return }
+        await loadArticles()
     }
     
     /// Saves the article metadata and its web archive to the model context on-disk (available when user is an active subscriber).

@@ -34,8 +34,10 @@ struct ArticleWebView: UIViewRepresentable {
 }
 
 struct ArticlePresentation: View {
+    /// Environment value supplying dismiss.
     @Environment(\.dismiss) var dismiss
     
+    /// Value used for destination.
     let destination: ArticleDestination
     
     var body: some View {
@@ -44,16 +46,16 @@ struct ArticlePresentation: View {
                 url: destination.url,
                 webArchiveName: destination.isDownloadedLocally ? destination.id : nil
             )
-                .ignoresSafeArea(edges: .bottom)
-                .navigationTitle(destination.url.host() ?? "Article")
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button(action: { dismiss() }) {
-                            Image(systemName: "xmark")
-                        }
+            .ignoresSafeArea(edges: .bottom)
+            .navigationTitle(destination.url.host() ?? "Article")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(action: { dismiss() }) {
+                        Image(systemName: "xmark")
                     }
                 }
+            }
         }
     }
 }

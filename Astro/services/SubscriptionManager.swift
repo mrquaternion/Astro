@@ -8,42 +8,28 @@
 import StoreKit
 import SwiftUI
 
-enum StoreProduct: String, CaseIterable {
-    case monthly
-    case yearly
-
-    init?(productId: String) {
-        guard let product = Self.allCases.first(where: { $0.productId == productId }) else {
-            return nil
-        }
-        self = product
-    }
-    
-    var productId: String {
-        switch self {
-        case .monthly: "com.mlr.astro.monthly"
-        case .yearly: "com.mlr.astro.yearly"
-        }
-    }
-
-    var displayName: String {
-        rawValue.capitalized
-    }
-}
-
 @Observable
 class SubscriptionManager {
+    /// Store products available for purchase.
     var products: [Product] = []
-    var purchasedProductIds: Set<String> = []
+    /// Product identifiers currently owned by the user.
+    private(set) var purchasedProductIds: Set<String> = []
+    /// Known expiration dates keyed by subscription product identifier.
+    private(set) var subscriptionExpiryDates: [String : Date] = [:]
+    /// Whether StoreKit data is currently loading.
     var isLoading = false
+    /// Latest subscription-related error.
     var error: AstroError?
     
+    /// Whether the user currently has an active subscription.
     var hasActivateSubscription: Bool {
         !purchasedProductIds.isEmpty
     }
     
+    /// Product identifiers requested from StoreKit.
     private let productIds: [String] = StoreProduct.allCases.map(\.productId)
     
+    /// Long-lived task observing StoreKit transaction updates.
     private var transactionListener: Task<Void, Error>?
     
     init() {
@@ -112,7 +98,10 @@ class SubscriptionManager {
             
             if transaction.revocationDate == nil {
                 purchasedProductIds.insert(transaction.productID)
+                subscriptionExpiryDates[transaction.productID] = transaction.expirationDate
+                print("User has paid products")
             } else {
+                print("User has no paid products")
                 purchasedProductIds.remove(transaction.productID)
             }
         }
@@ -145,4 +134,29 @@ enum PurchaseOutcome {
     case userCancelled
     case unverified(String)
     case failed(Error)
+}
+
+enum StoreProduct: String, CaseIterable {
+    case monthly
+    case yearly
+
+    init?(productId: String) {
+        guard let product = Self.allCases.first(where: { $0.productId == productId }) else {
+            return nil
+        }
+        self = product
+    }
+    
+    /// Value used for productId.
+    var productId: String {
+        switch self {
+        case .monthly: "com.mlr.astro.monthly"
+        case .yearly: "com.mlr.astro.yearly"
+        }
+    }
+
+    /// Value used for displayName.
+    var displayName: String {
+        rawValue.capitalized
+    }
 }

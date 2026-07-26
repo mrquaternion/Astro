@@ -9,15 +9,18 @@ import Foundation
 import Combine
 import SatelliteKit
 import SwiftData
-import SystemConfiguration
+import CoreLocation
+import simd
 
 @MainActor
 final class HomeViewModel: ObservableObject {
+    /// Persistent storage used for tracked-asset metadata.
     private let dataController: DataController
+    /// Subscription state used to gate premium assets.
     private let subscriptionManager: SubscriptionManager
     
-    /// The array of ready-to-use `CachedAsset` in the views.
-    @Published var assets: [CachedAsset] = []
+    /// The array of ready-to-use `CachedTrackedAsset` in the views.
+    @Published var assets: [CachedTrackedAsset] = []
     
     /// The satellite currently displayed on the map.
     @Published var selectedSatellite: SelectedSatellite?
@@ -40,7 +43,7 @@ final class HomeViewModel: ObservableObject {
     }
     
     /// Saves the asset metadata and its data to the model context on-disk (available when user is an active subscriber).
-    func saveOffline(for asset: CachedAsset, downloadManager: LocalDownloadManager) async throws {
+    func saveOffline(for asset: CachedTrackedAsset, downloadManager: LocalDownloadManager) async throws {
         guard SubscriptionHelper.isEligibleTo(.offlineDownload, with: subscriptionManager) else {
             error = AstroError.noActiveSubscription
             showPaywall = true
@@ -55,9 +58,9 @@ final class HomeViewModel: ObservableObject {
         
         
         // save its model
-        let (modelData, modelPath) = try await getAssetModelDataAndPathWithProgress(
+        let (modelData, modelPath) = try await AssetFileLoader.dataAndCacheURLWithProgress(
             storagePath: asset.modelStoragePath,
-            filename: asset.modelFileName,
+            filename: asset.modelFilename,
             onProgress: { modelProgress in
                 Task { @MainActor in
                     downloadManager.setProgress(0.05 + (0.45 * modelProgress), for: asset.id)
@@ -67,9 +70,9 @@ final class HomeViewModel: ObservableObject {
         try dataController.saveFile(data: modelData, at: modelPath) // instantaneous
         
         // save its most recent tle
-        let (tleData, tlePath) = try await getAssetModelDataAndPathWithProgress(
+        let (tleData, tlePath) = try await AssetFileLoader.dataAndCacheURLWithProgress(
             storagePath: asset.tleStoragePath,
-            filename: asset.tleFileName,
+            filename: asset.tleFilename,
             onProgress: { tleProgress in
                 Task { @MainActor in
                     downloadManager.setProgress(0.5 + (0.45 * tleProgress), for: asset.id)
@@ -84,26 +87,9 @@ final class HomeViewModel: ObservableObject {
         try await Task.sleep(for: .seconds(1.5))
     }
     
-    /// Fetches the files relative to an asset as data while updating the progress of the "download".
-    private func getAssetModelDataAndPathWithProgress(storagePath: String, filename: String, onProgress: @escaping (Double) -> Void) async throws -> (Data, URL) {
-        guard let (filepath, bucket) = AssetLoadingHelpers.parseStoragePath(storagePath) else {
-            throw URLError(.cannotCreateFile)
-        }
-        
-        let data = try await SupabaseService.shared.fetchDataWithProgress(
-            filepath,
-            in: bucket,
-            onProgress: onProgress
-        )
-        
-        guard let path = AssetLoadingHelpers.getPathOfAssetAsURL(filename: filename) else { throw URLError(.badURL) }
-        
-        return (data, path)
-    }
-    
     /// Fetches all assets metadata to display in the view.
     func fetchAssetsMetadata(networkMonitor: NetworkMonitor) async throws {
-        let localAssets = try dataController.fetchSaved(CachedAsset.self)
+        let localAssets = try dataController.fetchSaved(CachedTrackedAsset.self)
         let localById = Dictionary(uniqueKeysWithValues: localAssets.map({ ($0.id, $0) }))
         
         // no connection? take only local assets
@@ -114,9 +100,9 @@ final class HomeViewModel: ObservableObject {
         }
         
         do {
-            let collection = try await AssetFeatureCollection.fetchAssets()
+            let collection = try await TrackedAssetFeatureCollection.fetchAssets()
             
-            var remoteAssets: [CachedAsset] = []
+            var remoteAssets: [CachedTrackedAsset] = []
             var didUpdateLocalAssets = false
             
             for feature in collection.features {
@@ -125,11 +111,11 @@ final class HomeViewModel: ObservableObject {
                 if let local = localById[properties.id] {
                     // in case paths or filenames changes
                     let hasChanges =
-                    local.name != properties.name ||
+                    local.displayName != properties.name ||
                     local.summary != properties.summary ||
-                    local.modelFileName != properties.modelFileName ||
-                    local.tleFileName != properties.tleFileName ||
-                    local.snapFileName != properties.snapFileName ||
+                    local.modelFilename != properties.modelFileName ||
+                    local.tleFilename != properties.tleFileName ||
+                    local.snapFilename != properties.snapFileName ||
                     local.modelStoragePath != properties.modelStoragePath ||
                     local.tleStoragePath != properties.tleStoragePath ||
                     local.snapStoragePath != properties.snapStoragePath
@@ -145,11 +131,11 @@ final class HomeViewModel: ObservableObject {
                     }
                     
                     if hasChanges {
-                        local.name = properties.name
+                        local.displayName = properties.name
                         local.summary = properties.summary
-                        local.modelFileName = properties.modelFileName
-                        local.tleFileName = properties.tleFileName
-                        local.snapFileName = properties.snapFileName
+                        local.modelFilename = properties.modelFileName
+                        local.tleFilename = properties.tleFileName
+                        local.snapFilename = properties.snapFileName
                         local.modelStoragePath = properties.modelStoragePath
                         local.tleStoragePath = properties.tleStoragePath
                         local.snapStoragePath = properties.snapStoragePath
@@ -162,23 +148,8 @@ final class HomeViewModel: ObservableObject {
                     continue
                 }
                 
-                let asset = CachedAsset(
-                    id: properties.id,
-                    name: properties.name,
-                    summary: properties.summary,
-                    modelFileName: properties.modelFileName,
-                    tleFileName: properties.tleFileName,
-                    snapFileName: properties.snapFileName,
-                    modelStoragePath: properties.modelStoragePath,
-                    tleStoragePath: properties.tleStoragePath,
-                    snapStoragePath: properties.snapStoragePath,
-                    updatedAt: properties.updatedAt
-                )
-                
-                // Snapshot image
-                if let (filepath, bucket) = AssetLoadingHelpers.parseStoragePath(asset.snapStoragePath) {
-                    asset.snapImageData = try await SupabaseService.shared.fetchAssetData(filepath, in: bucket)
-                }
+                let asset = makeAsset(from: properties)
+                asset.snapImageData = try await AssetFileLoader.data(storagePath: asset.snapStoragePath)
                 
                 remoteAssets.append(asset)
             }
@@ -204,11 +175,11 @@ final class HomeViewModel: ObservableObject {
         tleStoragePath: String,
         tleFileName: String
     ) async throws {
-        let (modelData, modelPath) = try await getAssetModelDataAndPath(
+        let (modelData, modelPath) = try await AssetFileLoader.dataAndCacheURL(
             storagePath: modelStoragePath,
             filename: modelFileName
         )
-        let (tleData, tlePath) = try await getAssetModelDataAndPath(
+        let (tleData, tlePath) = try await AssetFileLoader.dataAndCacheURL(
             storagePath: tleStoragePath,
             filename: tleFileName
         )
@@ -217,22 +188,8 @@ final class HomeViewModel: ObservableObject {
         try dataController.saveFile(data: tleData, at: tlePath)
     }
     
-    private func getAssetModelDataAndPath(storagePath: String, filename: String) async throws -> (Data, URL) {
-        guard let (filepath, bucket) = AssetLoadingHelpers.parseStoragePath(storagePath) else {
-            throw URLError(.cannotCreateFile)
-        }
-        
-        let data = try await SupabaseService.shared.fetchAssetData(filepath, in: bucket)
-        
-        guard let path = AssetLoadingHelpers.getPathOfAssetAsURL(filename: filename) else {
-            throw URLError(.badURL)
-        }
-        
-        return (data, path)
-    }
-    
-    /// Loads the `CachedAsset` and assign it with its data to the `@Published` selected satellite.
-    func loadAsset(for asset: CachedAsset) async {
+    /// Loads the `CachedTrackedAsset` and assign it with its data to the `@Published` selected satellite.
+    func loadAsset(for asset: CachedTrackedAsset) async {
         isAssetLoading = true
         defer { isAssetLoading = false }
         
@@ -241,11 +198,13 @@ final class HomeViewModel: ObservableObject {
             var tleElements: Elements
             
             // load asset and its data if downloaded
-            if asset.isDownloadedLocally,
-               let modelURL = AssetLoadingHelpers.getPathOfAssetAsURL(filename: asset.modelFileName),
-               let tleURL = AssetLoadingHelpers.getPathOfAssetAsURL(filename: asset.tleFileName),
-               FileManager.default.fileExists(atPath: modelURL.path),
-               FileManager.default.fileExists(atPath: tleURL.path) {
+            if
+                asset.isDownloadedLocally,
+                let modelURL = AssetLoadingHelpers.getPathOfAssetAsURL(filename: asset.modelFilename),
+                let tleURL = AssetLoadingHelpers.getPathOfAssetAsURL(filename: asset.tleFilename),
+                FileManager.default.fileExists(atPath: modelURL.path),
+                FileManager.default.fileExists(atPath: tleURL.path)
+            {
                 modelData = try Data(contentsOf: modelURL)
                 let tleData = try Data(contentsOf: tleURL)
                 tleElements = try AssetLoadingHelpers.decodeTLE(data: tleData)
@@ -265,7 +224,7 @@ final class HomeViewModel: ObservableObject {
             // update the selected satellite
             selectedSatellite = SelectedSatellite(
                 id: asset.id,
-                name: asset.name,
+                name: asset.displayName,
                 modelUri: try AssetLoadingHelpers.computeDataUri(
                     data: modelData,
                     id: asset.id
@@ -277,17 +236,38 @@ final class HomeViewModel: ObservableObject {
             print(error)
         }
     }
+    
+    private func makeAsset(from properties: TrackedAssetFeatureCollection.Feature.Properties) -> CachedTrackedAsset {
+        CachedTrackedAsset(
+            id: properties.id,
+            name: properties.name,
+            summary: properties.summary,
+            modelFileName: properties.modelFileName,
+            tleFileName: properties.tleFileName,
+            snapFileName: properties.snapFileName,
+            modelStoragePath: properties.modelStoragePath,
+            tleStoragePath: properties.tleStoragePath,
+            snapStoragePath: properties.snapStoragePath,
+            updatedAt: properties.updatedAt
+        )
+    }
 }
 
 /// Structure defining the user's selected satellite and its relative information useful for
 /// displaying it in the Mapbox map.
 struct SelectedSatellite {
+    /// Stable identifier of the selected satellite.
     let id: String
+    /// User-facing satellite name.
     let name: String
+    /// Data URI used to load the satellite model.
     let modelUri: String
+    /// Orbital elements used to propagate the satellite position.
     let elements: Elements
+    /// Precomputed route displayed on the map.
     let route: Model3DRoute
     
+    /// Abbreviated name used in compact interfaces.
     var shortName: String {
         guard
             let openingParenthesis = name.firstIndex(of: "("),
@@ -303,27 +283,91 @@ struct SelectedSatellite {
     }
 }
 
-enum AstroError: LocalizedError {
-    case noWifiConnection
-    case noActiveSubscription
-    case unableToFetchProducts(message: String)
-    case unableToRestorePurchases(message: String)
-    
-    var description: String {
-        switch self {
-        case .noWifiConnection: "No internet connection available."
-        case .noActiveSubscription : "Can't perform this action, no subscription active."
-        case .unableToFetchProducts(let message): "Unable to fetch products: \(message)"
-        case .unableToRestorePurchases(let message): "Unable to restore purchases: \(message)"
+extension HomeViewModel {
+    func routeFromUser(from model: Model3D) -> ProximityRoute? {
+        guard let currentUserLocation = LocalizationManager.shared.location else { return nil }
+        
+        var points: [[Double]] = []
+        points.append([model.position[0], model.position[1]])
+        
+        // step 1
+        let p0 = GeoMaths.geodeticToUnitSphere(
+            p: CLLocationCoordinate2D(latitude: model.position[1], longitude: model.position[0]),
+            h: model.altitude
+        )
+        let p1 = GeoMaths.geodeticToUnitSphere(p: currentUserLocation.coordinate, h: 0)
+        
+        // step 2
+        /*
+         let pathDirection = GeoMaths.bearing(
+             lat1: model.position[1], lon1: model.position[0],
+             lat2: currentUserLocation.coordinate.latitude, lon2: currentUserLocation.coordinate.longitude
+         )
+         var diff = abs(pathDirection - model.bearing).truncatingRemainder(dividingBy: 360)
+         if diff > 180 { diff = 360 - diff }
+         */
+        
+        // step 3
+        let s = 0.0
+        let f = 1.0
+        var midpoint: [Double]?
+        var pathDirection: Double?
+        var shouldCaptureNext = false
+        for t in stride(from: s, to: f, by: 0.01) {
+            let slerp = GeoMaths.slerp(p0: p0, p1: p1, t: t)
+            let out = GeoMaths.unitSphereToGeodetic(p: slerp)
+            
+            if shouldCaptureNext, let midpoint {
+                pathDirection = GeoMaths.bearing(
+                    lat1: midpoint[1], lon1: midpoint[0],
+                    lat2: out.y, lon2: out.x
+                )
+                shouldCaptureNext = false
+            }
+            
+            if abs(t - (s + f) / 2) < 0.005 {
+                midpoint = [out.x, out.y]
+                shouldCaptureNext = true
+            }
+            points.append([out.x, out.y])
         }
+        
+        points.append([currentUserLocation.coordinate.longitude, currentUserLocation.coordinate.latitude])
+        
+        return ProximityRoute(
+            coordinates: points,
+            midpoint: midpoint,
+            midpointBearing: pathDirection,
+            label: distanceFromUser(from: points)
+        )
     }
     
-    var symbol: String {
-        switch self {
-        case .noWifiConnection: "wifi.slash"
-        case .noActiveSubscription: "arrow.down.circle.badge.xmark"
-        case .unableToFetchProducts(_): "cart.badge.questionmark"
-        case .unableToRestorePurchases(_): "storefront"
+    private func distanceFromUser(from points: [[Double]]?) -> String? {
+        guard let points else { return nil }
+        
+        var totalDistance: Double = 0
+        for i in 0..<(points.count - 1) {
+            let distance = GeoMaths.haversine(
+                p1: CLLocationCoordinate2D(latitude: points[i][1], longitude: points[i][0]),
+                p2: CLLocationCoordinate2D(latitude: points[i+1][1], longitude: points[i+1][0])
+            )
+            
+            totalDistance += distance
         }
+        
+        totalDistance /= 1000
+    
+        return String(format: "%.1f km", totalDistance)
     }
+}
+
+struct ProximityRoute {
+    /// Coordinates forming the visible proximity route.
+    var coordinates: [[Double]]?
+    /// Coordinate at the middle of the route.
+    var midpoint: [Double]?
+    /// Bearing of the route at its midpoint.
+    var midpointBearing: Double?
+    /// Optional label displayed for the route.
+    var label: String?
 }

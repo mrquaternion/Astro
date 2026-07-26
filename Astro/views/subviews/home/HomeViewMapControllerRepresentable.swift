@@ -21,30 +21,41 @@ struct HomeViewMapControllerRepresentable: UIViewControllerRepresentable {
     /// The object's model upcoming route (~90 min).
     let route: Model3DRoute?
     
+    /// The object's model region of visibility (should stay fix).
+    let visibleRegionCoordinates: [[Double]]?
+    
+    /// The route separating the selected satellite and the user, if allowed.
+    let proximityRoute: ProximityRoute?
+    
     /// The camera's state tracking (or not) the model's asset.
     @Binding var camera: CameraState
     
     /// The state whether the user has moved away from its centerpoint or not.
     @Binding var isTrackingModel: Bool
     
+    /// Value used for config.
+    let config: MapConfiguration
+    
     func makeUIViewController(context: Context) -> HomeViewMapController {
         let viewController = HomeViewMapController()
         viewController.selectedModelId = modelId
         viewController.selectedModelUri = modelUri
         viewController.route = route
-        viewController.onUserInteraction = {
-            isTrackingModel = false
-        }
+        viewController.visibleRegionCoordinates = visibleRegionCoordinates
+        viewController.proximityRoute = proximityRoute
+        viewController.config = config
+        viewController.onUserInteraction = { isTrackingModel = false }
         return viewController
     }
     
     func updateUIViewController(_ uiViewController: HomeViewMapController, context: Context) {
-        uiViewController.onUserInteraction = {
-            isTrackingModel = false
-        }
+        uiViewController.onUserInteraction = { isTrackingModel = false }
         
         uiViewController.updateSelectedModel(id: modelId, uri: modelUri)
         uiViewController.updateRoute(route)
+        uiViewController.updateVisibleRegion(visibleRegionCoordinates)
+        uiViewController.updateProximityRoute(proximityRoute)
+        uiViewController.updateMapConfig(config)
         uiViewController.updateModel(
             longitude: model.position[0],
             latitude: model.position[1],
@@ -52,8 +63,6 @@ struct HomeViewMapControllerRepresentable: UIViewControllerRepresentable {
             bearing: model.bearing
         )
         
-        if isTrackingModel {
-            uiViewController.updateCamera(camera)
-        }
+        if isTrackingModel { uiViewController.updateCamera(camera) }
     }
 }

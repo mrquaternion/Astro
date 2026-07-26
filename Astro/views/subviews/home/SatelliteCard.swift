@@ -15,12 +15,14 @@ struct SatelliteCard: View {
     /// Shared home state used to read and change the selected satellite.
     @EnvironmentObject private var homeViewModel: HomeViewModel
     
+    /// Environment value supplying downloadManager.
     @EnvironmentObject private var downloadManager: LocalDownloadManager
     
+    /// Mutable view state tracking isDownloadToggled.
     @State private var isDownloadToggled = false
     
     /// Satellite asset represented by this row.
-    let asset: CachedAsset
+    let asset: CachedTrackedAsset
     
     /// Whether this asset is currently selected.
     let isSelected: Bool
@@ -79,6 +81,7 @@ struct SatelliteCard: View {
         }
     }
     
+    /// View content rendered for satelliteImage.
     @ViewBuilder
     private var satelliteImage: some View {
         Group {
@@ -98,12 +101,12 @@ struct SatelliteCard: View {
         .clipped()
     }
     
-    
+    /// View content rendered for satelliteText.
     @ViewBuilder
     private var satelliteText: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack {
-                Text(asset.name)
+                Text(asset.displayName)
                     .font(.headline)
                 
                 Spacer()

@@ -9,14 +9,13 @@ import SwiftUI
 import SplineRuntime
 
 struct SplashScreenView: View {
+    /// Whether the current device is an iPad.
     @Environment(\.isPad) var isPad
     
+    /// Whether the loading indicator is visible.
     @State private var isLoading = false
     
-    var isLandscape: Bool {
-        UIDevice.current.orientation.isLandscape
-    }
-    
+    /// The animated splash screen shown during app bootstrap.
     var body: some View {
         let sourceSuffixe = isPad ? "ipad" : "iphone"
         let url = Bundle.main.url(forResource: "astro_loading_screen-\(sourceSuffixe)", withExtension: "splineswift")!

@@ -84,10 +84,7 @@ struct Paywall: View {
                     .overlay(alignment: .bottom) {
                         bottomPaymentMargins()
                     }
-                    .overlay(alignment: .top) {
-                        VariableBlurView(maxBlurRadius: 5, direction: .blurredTopClearBottom)
-                            .frame(height: PaywallLayout.topBlurHeight)
-                    }
+                    .blurOverlay(height: PaywallLayout.topBlurHeight, maxBlurRadius: 5, edge: .top)
                 }
                 .ignoresSafeArea()
                 .toolbar {
@@ -389,6 +386,7 @@ fileprivate struct PaywallContentView: View {
             .frame(maxWidth: .infinity)
             .padding(.top, topPadding)
         }
+        .scrollIndicators(.hidden)
     }
     
     private func yearlyPriceMonthly(_ fullPrice: Decimal, numMonths: Int = 12) -> Decimal {

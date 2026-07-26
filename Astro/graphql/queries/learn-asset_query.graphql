@@ -1,0 +1,37 @@
+query LearnAsset {
+    learn_assetCollection {
+        edges {
+            node {
+                id
+                learn_asset_id
+                default_component
+                components
+                updated_at
+            }
+        }
+    }
+    learn_componentCollection {
+        edges {
+            node {
+                id
+                component_id
+                short_name
+                display_name
+                category
+                group
+                agencies
+                manufacturers
+                materials
+                summary
+                source_ids
+                timeline
+                model_storage_path
+                model_file_name
+                snapshot_storage_path
+                snapshot_file_name
+                is_default_selection
+                details
+            }
+        }
+    }
+}

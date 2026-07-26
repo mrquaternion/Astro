@@ -6,14 +6,17 @@
 //
 
 import SwiftUI
+import SwiftUIIntrospect
 
 enum SortOrder: String, Identifiable, CaseIterable {
     case title, titleReverse, date, dateReverse
     
+    /// Value used for id.
     var id: Self {
         self
     }
     
+    /// Value used for displayName.
     var displayName: String {
         switch self {
         case .title:
@@ -52,15 +55,21 @@ struct NewsListView: View {
     
     /// Destination of the article to show in WebView.
     @Binding var selectedDestination: ArticleDestination?
+
+    /// Reports the UIKit scroll view that backs the news list.
+    var onScrollViewResolved: (UIScrollView) -> Void = { _ in }
     
+    /// Value used for newsSites.
     var newsSites: Set<String> {
         Set(articles.map(\.websiteName))
     }
     
+    /// Value used for sortOrder.
     var sortOrder: SortOrder {
         SortOrder(rawValue: viewModel.storedSortOrder) ?? .dateReverse
     }
     
+    /// Value used for selectedNewsSites.
     var selectedNewsSites: Set<String> {
         viewModel.decodeSelectedNewsSites()
     }
@@ -78,6 +87,7 @@ struct NewsListView: View {
                 )
                 .environmentObject(downloadManager)
             }
+            .introspect(.scrollView, on: .iOS(.v26), customize: onScrollViewResolved)
             .refreshable {
                 await viewModel.loadArticles()
             }

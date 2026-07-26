@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct NewsLoadingTemplateView: View {
+    /// Environment value supplying colorScheme.
     @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
@@ -103,7 +104,7 @@ struct NewsLoadingTemplateView: View {
             }
             .padding()
         }
-        .frame(width: proxy.size.width * 0.9)
+        .frame(width: proxy.size.width * 0.95)
         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
 }

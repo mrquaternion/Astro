@@ -9,9 +9,26 @@ import Foundation
 import SwiftData
 
 @Model
-class CachedArticle {
+class CachedArticle: LocalDataProviding, Downloadable {
     /// A unique identifier associated with each article.
     @Attribute(.unique) var id: String
+    
+    /// The model type for easy identification.
+    static var modelKind: LocalDataKind { .webArchive }
+
+    /// Stable identity used by download settings.
+    var localDataID: String { id }
+
+    /// Website name used for the individual download row.
+    var localDataName: String { websiteName }
+
+    /// Article title shown below the website name.
+    var localDataDetail: String? { title }
+    
+    var localFiles: [LocalFileReference] {
+        guard isDownloadedLocally else { return [] }
+        return [.webArchive(name: id)]
+    }
     
     /// The title of the article.
     var title: String
@@ -44,18 +61,22 @@ class CachedArticle {
     var isDownloadedLocally: Bool = false
     
     @Model class ArticleLaunch {
+        /// Stable identifier of the launch referenced by an article.
         @Attribute(.unique) var launchId: String
-
+        
         init(launchId: String) { self.launchId = launchId }
     }
     
     @Model class ArticleEvent {
+        /// Stable identifier of the event referenced by an article.
         @Attribute(.unique) var eventId: String
         
         init(eventId: String) { self.eventId = eventId }
     }
     
+    /// Whether the article references at least one launch.
     var hasLaunches: Bool { !launches.isEmpty }
+    /// Whether the article references at least one event.
     var hasEvents: Bool { !events.isEmpty }
     
     init(

@@ -8,6 +8,7 @@
 import SwiftUI
 import Combine
 import VariableBlur
+import UIKit
 
 struct ArticleDestination: Identifiable {
     /// Stable identity for the selected article.
@@ -27,25 +28,27 @@ struct ArticleDestination: Identifiable {
 }
 
 struct NewsView: View {
+    /// News state supplied by the app root so it survives tab switches.
+    @ObservedObject var viewModel: SpaceNewsViewModel
+
+    /// Reports the UIKit scroll view that backs the news list.
+    var onScrollViewResolved: (UIScrollView) -> Void
+
     /// Color scheme of the app, based on system appearance.
     @Environment(\.colorScheme) var colorScheme
 
     /// Whether the current device is an iPad.
     @Environment(\.isPad) private var isPad
 
-    /// View model of the current view.
-    @StateObject private var viewModel: SpaceNewsViewModel
-    
     /// Article URL selected for in-app reading.
     @State private var selectedDestination: ArticleDestination?
     
-    init(dataController: DataController, subscriptionManager: SubscriptionManager) {
-        _viewModel = StateObject(
-            wrappedValue: SpaceNewsViewModel(
-                dataController: dataController,
-                subscriptionManager: subscriptionManager
-            )
-        )
+    init(
+        viewModel: SpaceNewsViewModel,
+        onScrollViewResolved: @escaping (UIScrollView) -> Void = { _ in }
+    ) {
+        self.viewModel = viewModel
+        self.onScrollViewResolved = onScrollViewResolved
     }
     
     /// The news feed content.
@@ -61,19 +64,15 @@ struct NewsView: View {
                 } else {
                     NewsListView(
                         articles: viewModel.articles,
-                        selectedDestination: $selectedDestination
+                        selectedDestination: $selectedDestination,
+                        onScrollViewResolved: onScrollViewResolved
                     )
                     .environmentObject(viewModel)
                 }
             }
         }
-        .overlay(alignment: .bottom) {
-            VariableBlurView(maxBlurRadius: 5, direction: .blurredBottomClearTop)
-                .frame(height: 100)
-        }
-        .ignoresSafeArea()
         .task {
-            await viewModel.loadArticles()
+            await viewModel.loadArticlesIfNeeded()
         }
         .conditionalPresentation(item: $selectedDestination, isPad: isPad) { destination in
             ArticlePresentation(destination: destination)

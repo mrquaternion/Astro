@@ -9,12 +9,17 @@ import SwiftUI
 
 struct TwoFingerPanGesture: UIGestureRecognizerRepresentable {
     struct Value {
+        /// Translation accumulated by the two-finger pan.
         var translation: CGSize
+        /// Current gesture location in the attached view.
         var location: CGPoint
+        /// Current pan velocity.
         var velocity: CGSize
     }
     
+    /// Value used for onChangedAction.
     private var onChangedAction: ((Value) -> Void)?
+    /// Value used for onEndedAction.
     private var onEndedAction: ((Value) -> Void)?
     
     func onChanged(_ action: @escaping (Value) -> Void) -> Self {

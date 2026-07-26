@@ -17,6 +17,11 @@ private struct IsPadEnvironmentKey: EnvironmentKey {
     static let defaultValue: Bool = DeviceIdiom.isPad
 }
 
+private struct IsLandscapeEnvironmentKey: EnvironmentKey {
+    /// Whether the current interface space is wider than it is tall.
+    static let defaultValue: Bool = false
+}
+
 extension EnvironmentValues {
     /// Whether the current device is an iPhone.
     var isPhone: Bool {
@@ -28,6 +33,12 @@ extension EnvironmentValues {
     var isPad: Bool {
         get { self[IsPadEnvironmentKey.self] }
         set { self[IsPadEnvironmentKey.self] = newValue }
+    }
+    
+    /// Whether the current interface space is wider than it is tall.
+    var isLandscape: Bool {
+        get { self[IsLandscapeEnvironmentKey.self] }
+        set { self[IsLandscapeEnvironmentKey.self] = newValue }
     }
 }
 
@@ -48,6 +59,13 @@ enum DeviceIdiom {
         #else
         false
         #endif
+    }
+}
+
+extension CGSize {
+    /// Whether this size represents a landscape interface.
+    var isLandscape: Bool {
+        width > height
     }
 }
 
