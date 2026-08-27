@@ -180,7 +180,7 @@ extension LaunchFeatureCollection {
                 name: launchNode.name,
                 shortName: {
                     let parts = launchNode.name.split(separator: "|", maxSplits: 1)
-                    guard parts.count == 2 else { return "Unknown" }
+                    guard parts.count == 2 else { return "common_unknown".localizedFirstCapitalized }
                     return String(parts[0]).trimmingCharacters(in: .whitespacesAndNewlines)
                 }(),
                 status: status,

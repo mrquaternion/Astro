@@ -59,7 +59,7 @@ struct NewsView: View {
                 NewsLoadingTemplateView()
             } else { // finished
                 if viewModel.articles.isEmpty {
-                    ContentUnavailableView("No articles available", systemImage: "newspaper")
+                    ContentUnavailableView("news_no_articles".localizedFirstCapitalized, systemImage: "newspaper")
                         .foregroundStyle(.white)
                 } else {
                     NewsListView(

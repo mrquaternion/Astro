@@ -1,5 +1,6 @@
 import SwiftUI
 import Charts
+import SwiftUIIntrospect
 
 enum HomeViewLayerDestination: Hashable {
     case basemaps
@@ -9,9 +10,9 @@ enum HomeViewLayerDestination: Hashable {
     /// Value used for title.
     var title: String {
         switch self {
-        case .basemaps: "Basemaps"
-        case .overlays: "Overlays"
-        case .indicators: "Indicators"
+        case .basemaps: "map_basemaps".localizedFirstCapitalized
+        case .overlays: "map_overlays".localizedFirstCapitalized
+        case .indicators: "map_indicators".localizedFirstCapitalized
         }
     }
 }
@@ -40,7 +41,7 @@ struct HomeViewLayerMenu: View {
     private var layerMenu: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 28) {
-                layerSection("Basemaps") {
+                layerSection("map_basemaps".localizedFirstCapitalized) {
                     ForEach(MapConfiguration.MapBasemap.allCases, id: \.self) { basemap in
                         Button {
                             config.selectBasemap(basemap)
@@ -55,7 +56,7 @@ struct HomeViewLayerMenu: View {
                     }
                 }
                 
-                layerSection("Overlays", destination: .overlays) {
+                layerSection("map_overlays".localizedFirstCapitalized, destination: .overlays) {
                     ForEach(MapConfiguration.MapOverlay.allCases, id: \.self) { overlay in
                         Button {
                             config.selectOverlay(overlay)
@@ -70,7 +71,7 @@ struct HomeViewLayerMenu: View {
                     }
                 }
                 
-                layerSection("Indicators", destination: .indicators) {
+                layerSection("map_indicators".localizedFirstCapitalized, destination: .indicators) {
                     ForEach(MapConfiguration.MapIndicator.allCases, id: \.self) { indicator in
                         Button {
                             config.selectIndicator(indicator)
@@ -179,15 +180,21 @@ struct HomeViewLayerDetails: View {
     /// Value used for destination.
     let destination: HomeViewLayerDestination
     
+    /// Mutable view state tracking selectedOverlay.
+    @State private var selectedOverlay: MapConfiguration.MapOverlay = .clouds
+    
+    /// Mutable view state tracking selectedIndicator.
+    @State private var selectedIndicator: MapConfiguration.MapIndicator = .angularRadius
+    
     var body: some View {
         Group {
             switch destination {
             case .basemaps:
                 EmptyView()
             case .overlays:
-                HomeViewLayerOverlayDetail(destination: destination)
+                HomeViewLayerOverlayDetail(selectedOverlay: $selectedOverlay, destination: destination)
             case .indicators:
-                HomeViewLayerIndicatorDetail(destination: destination)
+                HomeViewLayerIndicatorDetail(selectedIndicator: $selectedIndicator, destination: destination)
             }
         }
     }
@@ -196,13 +203,16 @@ struct HomeViewLayerDetails: View {
 private struct HomeViewLayerOverlayDetail: View {
     
     /// Mutable view state tracking selectedOverlay.
-    @State private var selectedOverlay: MapConfiguration.MapOverlay = .clouds
+    @Binding var selectedOverlay: MapConfiguration.MapOverlay
+    
+    /// Edge interaction for the scroll view and the picker bar.
+    @State private var edgeInteraction = UIScrollEdgeElementContainerInteraction()
     
     /// Value used for destination.
     let destination: HomeViewLayerDestination
     
     struct ColorScaleLevel: Identifiable {
-        let id = UUID()
+        let id: String
         let zone: String
         let zoneColor: Color
         let lpi: (Double, Double)
@@ -211,81 +221,94 @@ private struct HomeViewLayerOverlayDetail: View {
     
     /// Value used for colorScaleLevels.
     let colorScaleLevels: [ColorScaleLevel] = [
-        ColorScaleLevel(zone: "0",  zoneColor: .init(red: 0 / 255, green: 0 / 255, blue: 0 / 255),
+        ColorScaleLevel(id: "0", zone: "0",  zoneColor: .init(red: 0 / 255, green: 0 / 255, blue: 0 / 255),
                         lpi: (0.00, 0.01),    mparc: (21.99, 22.00)),
-        ColorScaleLevel(zone: "1a", zoneColor: .init(red: 34 / 255, green: 34 / 255, blue: 34 / 255),
+        ColorScaleLevel(id: "1a", zone: "1a", zoneColor: .init(red: 34 / 255, green: 34 / 255, blue: 34 / 255),
                         lpi: (0.01, 0.06),    mparc: (21.93, 21.99)),
-        ColorScaleLevel(zone: "1b", zoneColor: .init(red: 66 / 255, green: 66 / 255, blue: 66 / 255),
+        ColorScaleLevel(id: "1b", zone: "1b", zoneColor: .init(red: 66 / 255, green: 66 / 255, blue: 66 / 255),
                         lpi: (0.06, 0.11),    mparc: (21.89, 21.93)),
-        ColorScaleLevel(zone: "2a", zoneColor: .init(red: 21 / 255, green: 47 / 255, blue: 114 / 255),
+        ColorScaleLevel(id: "2a", zone: "2a", zoneColor: .init(red: 21 / 255, green: 47 / 255, blue: 114 / 255),
                         lpi: (0.11, 0.19),    mparc: (21.81, 21.89)),
-        ColorScaleLevel(zone: "2b", zoneColor: .init(red: 33 / 255, green: 84 / 255, blue: 216 / 255),
+        ColorScaleLevel(id: "2b", zone: "2b", zoneColor: .init(red: 33 / 255, green: 84 / 255, blue: 216 / 255),
                         lpi: (0.19, 0.33),    mparc: (21.69, 21.81)),
-        ColorScaleLevel(zone: "3a", zoneColor: .init(red: 16 / 255, green: 87 / 255, blue: 19 / 255),
+        ColorScaleLevel(id: "3a", zone: "3a", zoneColor: .init(red: 16 / 255, green: 87 / 255, blue: 19 / 255),
                         lpi: (0.33, 0.58),    mparc: (21.51, 21.69)),
-        ColorScaleLevel(zone: "3b", zoneColor: .init(red: 30 / 255, green: 161 / 255, blue: 41 / 255),
+        ColorScaleLevel(id: "3b", zone: "3b", zoneColor: .init(red: 30 / 255, green: 161 / 255, blue: 41 / 255),
                         lpi: (0.58, 1.00),    mparc: (21.25, 21.51)),
-        ColorScaleLevel(zone: "4a", zoneColor: .init(red: 110 / 255, green: 100 / 255, blue: 31 / 255),
+        ColorScaleLevel(id: "4a", zone: "4a", zoneColor: .init(red: 110 / 255, green: 100 / 255, blue: 31 / 255),
                         lpi: (1.00, 1.73),    mparc: (20.91, 21.25)),
-        ColorScaleLevel(zone: "4b", zoneColor: .init(red: 184 / 255, green: 165 / 255, blue: 38 / 255),
+        ColorScaleLevel(id: "4b", zone: "4b", zoneColor: .init(red: 184 / 255, green: 165 / 255, blue: 38 / 255),
                         lpi: (1.73, 3.00),    mparc: (20.49, 20.91)),
-        ColorScaleLevel(zone: "5a", zoneColor: .init(red: 191 / 255, green: 100 / 255, blue: 29 / 255),
+        ColorScaleLevel(id: "5a", zone: "5a", zoneColor: .init(red: 191 / 255, green: 100 / 255, blue: 29 / 255),
                         lpi: (3.00, 5.20),    mparc: (20.02, 20.49)),
-        ColorScaleLevel(zone: "5b", zoneColor: .init(red: 253 / 255, green: 150 / 255, blue: 80 / 255),
+        ColorScaleLevel(id: "5b", zone: "5b", zoneColor: .init(red: 253 / 255, green: 150 / 255, blue: 80 / 255),
                         lpi: (5.20, 9.00),    mparc: (19.50, 20.02)),
-        ColorScaleLevel(zone: "6a", zoneColor: .init(red: 250 / 255, green: 90 / 255, blue: 73 / 255),
+        ColorScaleLevel(id: "6a", zone: "6a", zoneColor: .init(red: 250 / 255, green: 90 / 255, blue: 73 / 255),
                         lpi: (9.00, 15.59),   mparc: (18.95, 19.50)),
-        ColorScaleLevel(zone: "6b", zoneColor: .init(red: 250 / 255, green: 153 / 255, blue: 138 / 255),
+        ColorScaleLevel(id: "6b", zone: "6b", zoneColor: .init(red: 250 / 255, green: 153 / 255, blue: 138 / 255),
                         lpi: (15.59, 27.00),  mparc: (18.38, 18.95)),
-        ColorScaleLevel(zone: "7a", zoneColor: .init(red: 160 / 255, green: 160 / 255, blue: 160 / 255),
+        ColorScaleLevel(id: "7a", zone: "7a", zoneColor: .init(red: 160 / 255, green: 160 / 255, blue: 160 / 255),
                         lpi: (27.00, 46.77),  mparc: (17.80, 18.38)),
-        ColorScaleLevel(zone: "7b", zoneColor: .init(red: 242 / 255, green: 242 / 255, blue: 242 / 255),
+        ColorScaleLevel(id: "7b", zone: "7b", zoneColor: .init(red: 242 / 255, green: 242 / 255, blue: 242 / 255),
                         lpi: (46.77, .infinity), mparc: (17, 17.80))
     ]
     
     var body: some View {
-        VStack(alignment: .leading, spacing: .zero) {
+        ScrollView {
+            Group {
+                switch selectedOverlay {
+                case .clouds:
+                    cloudsDetail
+                case .lightPollution:
+                    lightPollutionDetail
+                }
+            }
+            .padding(.vertical, 24)
+        }
+        .scrollBounceBehavior(.basedOnSize)
+        .scrollIndicators(.hidden)
+        .introspect(.scrollView, on: .iOS(.v26)) { scrollView in
+            edgeInteraction.scrollView = scrollView
+        }
+        .safeAreaBar(edge: .top) {
             Picker(destination.title, selection: $selectedOverlay) {
                 ForEach(MapConfiguration.MapOverlay.allCases, id: \.self) { overlay in
                     Text(overlay.name)
                 }
             }
             .pickerStyle(.segmented)
-            
-            ScrollView {
-                Group {
-                    switch selectedOverlay {
-                    case .clouds:
-                        cloudsDetail
-                    case .lightPollution:
-                        lightPollutionDetail
-                    }
+            .introspect(.picker(style: .segmented), on: .iOS(.v26)) { control in
+                edgeInteraction.edge = .top
+                
+                if !control.interactions.contains(where: { $0 === edgeInteraction }) {
+                    control.addInteraction(edgeInteraction)
                 }
-                .padding(.bottom, 24)
-                .padding(.top, 32)
             }
-            .scrollBounceBehavior(.basedOnSize)
-            .scrollIndicators(.hidden)
         }
+        .mask(UnevenRoundedRectangle(topLeadingRadius: 16, topTrailingRadius: 16))
+        .ignoresSafeArea()
     }
     
     /// View content rendered for cloudsDetail.
     @ViewBuilder
     private var cloudsDetail: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Text("Cloud Map")
+            Text("map_cloud_map_title".localizedFirstCapitalized)
                 .font(.title2.weight(.semibold))
             
-            Text("Plan your observing sessions with near real-time cloud coverage. The overlay highlights where skies are clear and where clouds may obstruct visibility, allowing you to quickly find the best locations and times for stargazing or astrophotography. Cloud imagery is updated every 3 hours to reflect changing weather conditions.")
+            Text("map_cloud_map_description".localizedFirstCapitalized)
                 .foregroundStyle(.secondary)
                 .lineSpacing(4)
             
             HStack(spacing: .zero) {
-                Text("Attribution: ")
+                Text("map_attribution".localizedFirstCapitalized + ": ")
                     .foregroundStyle(.secondary)
-                Link("Live Cloud Maps", destination: URL(string: "https://github.com/matteason/live-cloud-maps")!)
-                    .foregroundStyle(.blue)
-                    .underline()
+                Link(
+                    "map_live_cloud_maps".localizedFirstCapitalized,
+                    destination: URL(string: "https://github.com/matteason/live-cloud-maps")!
+                )
+                .foregroundStyle(.blue)
+                .underline()
             }
             .font(.footnote)
         }
@@ -295,10 +318,10 @@ private struct HomeViewLayerOverlayDetail: View {
     @ViewBuilder
     private var lightPollutionDetail: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Text("Light Pollution")
+            Text("map_light_pollution".localizedFirstCapitalized)
                 .font(.title2.weight(.semibold))
             
-            Text("Visualize the brightness of the night sky to quickly identify dark-sky locations for stargazing and astrophotography.")
+            Text("map_light_pollution_description".localizedFirstCapitalized)
                 .foregroundStyle(.secondary)
                 .lineSpacing(4)
                 .fixedSize(horizontal: false, vertical: true)
@@ -323,9 +346,9 @@ private struct HomeViewLayerOverlayDetail: View {
             Chart(colorScaleLevels) { level in
                 Plot {
                     BarMark(
-                        x: .value("Zone", level.zone),
-                        yStart: .value("Surface Brightness Min", level.mparc.0),
-                        yEnd: .value("Surface Brightness Max", level.mparc.1),
+                        x: .value("map_zone".localizedFirstCapitalized, level.zone),
+                        yStart: .value("map_surface_brightness_min".localizedFirstCapitalized, level.mparc.0),
+                        yEnd: .value("map_surface_brightness_max".localizedFirstCapitalized, level.mparc.1),
                         width: 10
                     )
                     .clipShape(Capsule())
@@ -340,8 +363,8 @@ private struct HomeViewLayerOverlayDetail: View {
                     AxisValueLabel()
                 }
             }
-            .chartXAxisLabel("Zone")
-            .chartYAxisLabel("Surface Brightness (mag/arcsec²)")
+            .chartXAxisLabel("map_zone".localizedFirstCapitalized)
+            .chartYAxisLabel("map_surface_brightness_unit".localizedFirstCapitalized)
             .chartYScale(domain: 17...22)
             .padding()
             .background(Color(.tertiarySystemBackground))
@@ -349,11 +372,14 @@ private struct HomeViewLayerOverlayDetail: View {
             .clipShape(.rect(cornerRadius: 8))
             
             HStack(spacing: .zero) {
-                Text("For more info, visit the ")
+                Text("map_more_info_prefix".localizedFirstCapitalized + " ")
                     .foregroundStyle(.secondary)
-                Link("Light Pollution Atlas", destination: URL(string: "https://djlorenz.github.io/astronomy/lp/colors.html")!)
-                    .foregroundStyle(.blue)
-                    .underline()
+                Link(
+                    "map_light_pollution_atlas".localizedFirstCapitalized,
+                    destination: URL(string: "https://djlorenz.github.io/astronomy/lp/colors.html")!
+                )
+                .foregroundStyle(.blue)
+                .underline()
             }
             .font(.footnote)
         }
@@ -363,45 +389,55 @@ private struct HomeViewLayerOverlayDetail: View {
 struct HomeViewLayerIndicatorDetail: View {
     
     /// Mutable view state tracking selectedIndicator.
-    @State private var selectedIndicator: MapConfiguration.MapIndicator = .angularRadius
+    @Binding var selectedIndicator: MapConfiguration.MapIndicator
+    
+    /// Edge interaction for the scroll view and the picker bar.
+    @State private var edgeInteraction = UIScrollEdgeElementContainerInteraction()
     
     /// Value used for destination.
     let destination: HomeViewLayerDestination
     
     var body: some View {
-        VStack(alignment: .leading, spacing: .zero) {
+        ScrollView {
+            Group {
+                switch selectedIndicator {
+                case .angularRadius:
+                    angularRadiusDetail
+                case .proximityRoute:
+                    proximityRouteDetail
+                }
+            }
+            .padding(.vertical, 24)
+        }
+        .scrollBounceBehavior(.basedOnSize)
+        .scrollIndicators(.hidden)
+        .safeAreaBar(edge: .top) {
             Picker(destination.title, selection: $selectedIndicator) {
                 ForEach(MapConfiguration.MapIndicator.allCases, id: \.self) { indicator in
                     Text(indicator.name)
                 }
             }
             .pickerStyle(.segmented)
-            
-            ScrollView {
-                Group {
-                    switch selectedIndicator {
-                    case .angularRadius:
-                        angularRadiusDetail
-                    case .proximityRoute:
-                        proximityRouteDetail
-                    }
+            .introspect(.picker(style: .segmented), on: .iOS(.v26)) { control in
+                edgeInteraction.edge = .top
+                
+                if !control.interactions.contains(where: { $0 === edgeInteraction }) {
+                    control.addInteraction(edgeInteraction)
                 }
-                .padding(.bottom, 24)
-                .padding(.top, 32)
             }
-            .scrollBounceBehavior(.basedOnSize)
-            .scrollIndicators(.hidden)
         }
+        .mask(UnevenRoundedRectangle(topLeadingRadius: 16, topTrailingRadius: 16))
+        .ignoresSafeArea()
     }
     
     /// View content rendered for angularRadiusDetail.
     @ViewBuilder
     private var angularRadiusDetail: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Text("Satellite Visibility Radius")
+            Text("map_satellite_visibility_title".localizedFirstCapitalized)
                 .font(.title2.weight(.semibold))
             
-            Text("Displays the area of Earth's surface where the selected satellite is currently above the horizon. Any location inside the circle can potentially observe the satellite, while locations outside it cannot due to Earth's curvature.")
+            Text("map_satellite_visibility_description".localizedFirstCapitalized)
                 .foregroundStyle(.secondary)
                 .lineSpacing(4)
         }
@@ -411,10 +447,10 @@ struct HomeViewLayerIndicatorDetail: View {
     @ViewBuilder
     private var proximityRouteDetail: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Text("Distance to Satellite")
+            Text("map_distance_to_satellite".localizedFirstCapitalized)
                 .font(.title2.weight(.semibold))
             
-            Text("Draws the shortest path from your selected location to the satellite's current position on Earth. The route updates continuously as the satellite moves, making it easy to visualize its relative location and ground distance.")
+            Text("map_distance_to_satellite_description".localizedFirstCapitalized)
                 .foregroundStyle(.secondary)
                 .lineSpacing(4)
         }
@@ -422,10 +458,17 @@ struct HomeViewLayerIndicatorDetail: View {
 }
 
 #Preview {
+    @Previewable @State var showSheet = false
     @Previewable @State var config: MapConfiguration = .init()
     
-    VStack { }
-        .sheet(isPresented: .constant(true)) {
-            HomeViewLayerMenu(config: $config)
+    VStack {
+        Button("Click") {
+            showSheet.toggle()
         }
+        .buttonStyle(.borderedProminent)
+    }
+    .sheet(isPresented: $showSheet) {
+        HomeViewLayerMenu(config: $config)
+            .presentationDetents([.medium])
+    }
 }

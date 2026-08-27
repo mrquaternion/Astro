@@ -94,7 +94,9 @@ struct LearnItemLinkLabelView: View {
                 isDownloadToggled = true
             } label: {
                 Label(
-                    asset.isDownloadedLocally ? "Already downloaded" : "Download",
+                    asset.isDownloadedLocally
+                        ? "news_already_downloaded".localizedFirstCapitalized
+                        : "common_download".localizedFirstCapitalized,
                     systemImage: asset.isDownloadedLocally ? "arrow.down.circle.fill" : "arrow.down.circle"
                 )
             }

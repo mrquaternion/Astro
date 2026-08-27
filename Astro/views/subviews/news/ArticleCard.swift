@@ -57,14 +57,16 @@ struct ArticleCard: View {
             Button {
                 UIPasteboard.general.string = article.url?.absoluteString
             } label: {
-                Label("Copy link", systemImage: "doc.on.doc")
+                Label("news_copy_link".localizedFirstCapitalized, systemImage: "doc.on.doc")
             }
             
             Button {
                 isDownloadToggled = true
             } label: {
                 Label(
-                    article.isDownloadedLocally ? "Already downloaded" : "Download",
+                    article.isDownloadedLocally
+                        ? "news_already_downloaded".localizedFirstCapitalized
+                        : "common_download".localizedFirstCapitalized,
                     systemImage: article.isDownloadedLocally ? "arrow.down.circle.fill" : "arrow.down.circle"
                 )
             }
@@ -130,7 +132,11 @@ struct ArticleCard: View {
                     onToggleSummary()
                 }
             } label: {
-                Text(isExpanded ? "See less" : "See more")
+                Text(
+                    isExpanded
+                        ? "common_see_less".localizedFirstCapitalized
+                        : "common_see_more".localizedFirstCapitalized
+                )
                     .font(.footnote.weight(.semibold))
                     .foregroundStyle(.blue)
                     .contentTransition(.identity)

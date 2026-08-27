@@ -8,6 +8,45 @@
 import SwiftUI
 import VariableBlur
 import MapboxMaps
+import UserNotifications
+
+class NotificationCenter {
+    static let requestIdFormat = "launch:%@"
+    
+    static func requestAuthorization() async throws {
+        try await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound])
+    }
+    
+    static func sendLaunchLocalNotificationRequest(launchId: String, rocketName: String, at launchTime: Date) async throws {
+        let reminderDate = launchTime.addingTimeInterval(-(10 * 60))
+        guard reminderDate > .now else { return }
+        
+        let center = UNUserNotificationCenter.current()
+        let timeInterval = reminderDate.timeIntervalSinceNow
+
+        let content = UNMutableNotificationContent()
+        content.title = String(format: "launch_notification_title_template".localizedFirstCapitalized, rocketName)
+        content.body = String(format: "launch_notification_body_template".localizedFirstCapitalized, rocketName)
+        content.userInfo = ["url": "astro://launch_id=\(launchId)"]
+        
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: false)
+        let request = UNNotificationRequest(
+            identifier: String(format: requestIdFormat, launchId),
+            content: content,
+            trigger: trigger
+        )
+        
+        try await center.add(request)
+    }
+    
+    static func removeLaunchLocalNotificationRequest(launchId: String) {
+        let center = UNUserNotificationCenter.current()
+        let requestId = String(format: requestIdFormat, launchId)
+        
+        center.removePendingNotificationRequests(withIdentifiers: [requestId])
+        print("Removed local app notification.")
+    }
+}
 
 struct LaunchDetailView: View {
     /// Launch displayed by the detail screen.
@@ -35,11 +74,17 @@ fileprivate struct LaunchDetailContentView: View {
     /// Active interface color scheme.
     @Environment(\.colorScheme) var colorScheme
     
+    /// Subscription store that loads products and performs purchases.
+    @Environment(SubscriptionManager.self) private var subscriptionManager
+    
     /// Whether the current device is an iPad.
     @Environment(\.isPad) var isPad
     
     /// Whether launch notifications are enabled.
-    @State private var turnNotificationsOn = false
+    @State private var turnNotificationsOn: Bool
+    
+    /// Controls presentation of the paywall for notification..
+    @State private var showPaywall = false
     
     /// Safe-area insets used to size the custom header.
     var safeArea: SwiftUI.EdgeInsets
@@ -56,6 +101,13 @@ fileprivate struct LaunchDetailContentView: View {
     private var splitFlapHeight: CGFloat { isPad ? 164 : 110 }
     /// Height of the sticky blur background.
     private var stickyBlurHeight: CGFloat { safeArea.top + splitFlapHeight }
+    
+    init(safeArea: SwiftUI.EdgeInsets, size: CGSize, launch: LaunchFeatureCollection.Feature.Properties) {
+        self.safeArea = safeArea
+        self.size = size
+        self.launch = launch
+        _turnNotificationsOn = State(wrappedValue: UserDefaults.standard.bool(forKey: launch.id))
+    }
     
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -82,6 +134,30 @@ fileprivate struct LaunchDetailContentView: View {
             }
         }
         .coordinateSpace(name: "scroll")
+        .onChange(of: turnNotificationsOn) { _, newValue in
+            UserDefaults.standard.set(newValue, forKey: launch.id)
+            
+            if newValue {
+                Task {
+                    do {
+                        try await NotificationCenter.sendLaunchLocalNotificationRequest(
+                            launchId: launch.id,
+                            rocketName: launch.shortName,
+                            at: launch.net
+                        )
+                        print("Registered local app notification.")
+                    } catch {
+                        print("Failed to register local app notification.")
+                    }
+                }
+            } else {
+                NotificationCenter.removeLaunchLocalNotificationRequest(launchId: launch.id)
+            }
+        }
+        .fullScreenCover(isPresented: $showPaywall) {
+            Paywall()
+                .environment(subscriptionManager)
+        }
     }
     
     @ViewBuilder
@@ -154,6 +230,11 @@ fileprivate struct LaunchDetailContentView: View {
                     size: isPad ? 24 : 18,
                     padding: isPad ? 16 : 12
                 ) {
+                    guard SubscriptionHelper.isEligibleTo(.offlineDownload, with: subscriptionManager) else {
+                        showPaywall = true
+                        return
+                    }
+                    
                     turnNotificationsOn.toggle()
                 }
             }
@@ -302,7 +383,7 @@ fileprivate struct LaunchDetailScrollableContent: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             VStack(alignment: .leading, spacing: 8) {
-                Text("No Earlier Than")
+                Text("launch_no_earlier_than".localizedFirstCapitalized)
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .italic()
@@ -318,7 +399,7 @@ fileprivate struct LaunchDetailScrollableContent: View {
             Divider()
 
             VStack(alignment: .leading, spacing: 8) {
-                Text("Status")
+                Text("launch_status".localizedFirstCapitalized)
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .italic()
@@ -341,14 +422,14 @@ fileprivate struct LaunchDetailScrollableContent: View {
             Divider()
             
             VStack(alignment: .leading, spacing: 8) {
-                Text("Window")
+                Text("launch_window".localizedFirstCapitalized)
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .italic()
                 
                 Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 8) {
                     GridRow {
-                        Text("Start")
+                        Text("launch_start".localizedFirstCapitalized)
                             .fontWeight(.semibold)
                             .frame(maxWidth: .infinity, alignment: .leading)
                         Text(launch.windowStart, format: .dateTime.month(.abbreviated).day().year())
@@ -357,7 +438,7 @@ fileprivate struct LaunchDetailScrollableContent: View {
                     }
                     
                     GridRow {
-                        Text("End")
+                        Text("launch_end".localizedFirstCapitalized)
                             .fontWeight(.semibold)
                             .frame(maxWidth: .infinity, alignment: .leading)
                         Text(launch.windowEnd, format: .dateTime.month(.abbreviated).day().year())
@@ -372,7 +453,7 @@ fileprivate struct LaunchDetailScrollableContent: View {
             VStack(alignment: .leading, spacing: 32) {
                 VStack(alignment: .leading) {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Location")
+                        Text("launch_location".localizedFirstCapitalized)
                             .font(.footnote)
                             .foregroundStyle(.secondary)
                             .italic()
@@ -393,7 +474,7 @@ fileprivate struct LaunchDetailScrollableContent: View {
                     }
                     
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("at")
+                        Text("launch_at".localized)
                             .font(.footnote)
                             .foregroundStyle(.secondary)
                             .italic()
@@ -452,7 +533,7 @@ fileprivate struct LaunchDetailScrollableContent: View {
                 .overlay(alignment: .topLeading) {
                     HStack {
                         Image(systemName: "plus.magnifyingglass")
-                        Text("Locate")
+                        Text("launch_locate".localizedFirstCapitalized)
                     }
                     .font(isPad ? .title2.weight(.medium) : .subheadline.weight(.medium))
                     .foregroundStyle(.white)
@@ -478,7 +559,7 @@ fileprivate struct LaunchDetailScrollableContent: View {
             Divider()
 
             VStack(alignment: .leading, spacing: 8) {
-                Text("Agency")
+                Text("launch_agency".localizedFirstCapitalized)
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .italic()
@@ -492,7 +573,7 @@ fileprivate struct LaunchDetailScrollableContent: View {
                 Divider()
                 
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Rocket Manufacturer")
+                    Text("launch_rocket_manufacturer".localizedFirstCapitalized)
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                         .italic()
@@ -507,7 +588,7 @@ fileprivate struct LaunchDetailScrollableContent: View {
                 Divider()
                 
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Mission")
+                    Text("launch_mission".localizedFirstCapitalized)
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                         .italic()
@@ -523,7 +604,7 @@ fileprivate struct LaunchDetailScrollableContent: View {
                 Divider()
 
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Video Feeds")
+                    Text("launch_video_feeds".localizedFirstCapitalized)
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                         .italic()
@@ -567,10 +648,10 @@ fileprivate struct LaunchDetailScrollableContent: View {
 
     private func videoFeedTitle(for url: URL, index: Int) -> String {
         guard let host = url.host?.replacingOccurrences(of: "www.", with: "") else {
-            return "Video Feed \(index + 1)"
+            return "launch_video_feed_format".localizedFormat(index + 1)
         }
 
-        return "\(host) Feed \(index + 1)"
+        return "launch_host_feed_format".localizedFormat(host, index + 1)
     }
 }
 

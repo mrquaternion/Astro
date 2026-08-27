@@ -27,7 +27,7 @@ struct SplashScreenView: View {
             .onDisappear { isLoading = false }
             .overlay {
                 if isLoading {
-                    ProgressView("Setting up satellites...")
+                    ProgressView("loading_satellites".localizedFirstCapitalized)
                         .padding()
                         .glassEffect(.regular, in: .rect(cornerRadius: 16))
                 }

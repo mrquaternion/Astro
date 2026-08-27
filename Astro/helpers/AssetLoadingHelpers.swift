@@ -35,9 +35,13 @@ class AssetLoadingHelpers {
         let satellite = Satellite(elements: elements)
         var coordinates: [[Double]] = []
         var elevations: [Double] = []
+        let startMinutesAfterEpoch = ScreenshotMode.isEnabled
+            ? ScreenshotMode.satelliteMinutesAfterEpoch
+            : satellite.minsAfterEpoch
         
-        for timeOffset in 0..<(Constants.avgOrbitCompletionTime + 1) {
-            let lla = try satellite.geoPosition(minsAfterEpoch: satellite.minsAfterEpoch + Double(timeOffset))
+        let period = Int(2 * .pi / elements.n₀)
+        for timeOffset in 0..<(period + 1) {
+            let lla = try satellite.geoPosition(minsAfterEpoch: startMinutesAfterEpoch + Double(timeOffset))
             let fixedLng = lla.lon > 180 ? lla.lon - 360 : lla.lon
             coordinates.append([fixedLng, lla.lat])
             elevations.append(lla.alt)
@@ -67,9 +71,4 @@ class AssetLoadingHelpers {
         let elements = try jsonDecoder.decode([Elements].self, from: data)
         return elements[0]
     }
-}
-
-private enum Constants {
-    /// Shared value used for avgOrbitCompletionTime.
-    static let avgOrbitCompletionTime = 90
 }

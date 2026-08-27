@@ -24,8 +24,8 @@ struct NewsLoadingTemplateView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
                 .navigationBarTitleDisplayMode(.inline)
-                .navigationTitle("News")
-                .navigationSubtitle("Recent space-related news across the globe")
+                .navigationTitle("tab_news".localizedFirstCapitalized)
+                .navigationSubtitle("news_navigation_subtitle".localizedFirstCapitalized)
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
                         HStack(spacing: 12) {
@@ -48,7 +48,11 @@ struct NewsLoadingTemplateView: View {
             }
         }
         // placeholder
-        .searchable(text: .constant(""), placement: .navigationBarDrawer, prompt: Text("Filter on title or summary"))
+        .searchable(
+            text: .constant(""),
+            placement: .navigationBarDrawer,
+            prompt: Text("news_filter_prompt".localizedFirstCapitalized)
+        )
     }
     
     @ViewBuilder

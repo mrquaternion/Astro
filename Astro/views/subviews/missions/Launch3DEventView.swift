@@ -104,7 +104,7 @@ struct Launch3DEventView: View {
                     Button {
                         openChart = true
                     } label: {
-                        Text("Trajectory")
+                        Text("trajectory_title".localizedFirstCapitalized)
                             .font(.footnote)
                     }
                     .buttonStyle(.glass)

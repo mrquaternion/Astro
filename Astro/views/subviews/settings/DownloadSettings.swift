@@ -99,11 +99,11 @@ struct DownloadSettings: View {
             VStack(alignment: .leading, spacing: 32) {
                 VStack(alignment: .leading, spacing: 16)  {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Quick summary")
+                        Text("downloads_quick_summary".localizedFirstCapitalized)
                             .font(.title)
                             .bold()
                         
-                        Text("Review everything you’ve downloaded. You can delete downloads individually or by category.")
+                        Text("downloads_review_description".localizedFirstCapitalized)
                             .font(.callout)
                             .foregroundStyle(.secondary)
                     }
@@ -113,7 +113,7 @@ struct DownloadSettings: View {
                             .foregroundStyle(.secondary)
                             .monospacedDigit()
                     } label: {
-                        Text("Total storage used")
+                        Text("downloads_total_storage".localizedFirstCapitalized)
                             .fontWeight(.medium)
                     }
                     .padding()
@@ -123,7 +123,7 @@ struct DownloadSettings: View {
                 
                 if !sortedDataByCategory.isEmpty {
                     VStack(alignment: .leading, spacing: 16) {
-                        Text("Downloads by category")
+                        Text("downloads_by_category".localizedFirstCapitalized)
                             .font(.title)
                             .bold()
                         
@@ -159,7 +159,7 @@ struct DownloadSettings: View {
                                                 print(error)
                                             }
                                         } label: { _ in
-                                            Label("Delete", systemImage: "trash")
+                                            Label("common_delete".localizedFirstCapitalized, systemImage: "trash")
                                                 .font(.footnote)
                                                 .foregroundStyle(.red)
                                         } background: { _ in
@@ -182,7 +182,7 @@ struct DownloadSettings: View {
                 
                 if !sortedDataByCategory.isEmpty {
                     VStack(alignment: .leading, spacing: 16) {
-                        Text("Individual downloads")
+                        Text("downloads_individual".localizedFirstCapitalized)
                             .font(.title)
                             .bold()
                         
@@ -243,7 +243,7 @@ struct DownloadSettings: View {
                                                             print(error)
                                                         }
                                                     } label: { _ in
-                                                        Label("Delete", systemImage: "trash")
+                                                        Label("common_delete".localizedFirstCapitalized, systemImage: "trash")
                                                             .font(.footnote)
                                                             .foregroundStyle(.red)
                                                     } background: { _ in

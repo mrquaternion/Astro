@@ -75,7 +75,7 @@ struct VirtualEnvironment: View {
         HStack {
             ProgressView()
                 .tint(.white)
-            Text("Loading model...")
+            Text("learn_loading_model".localizedFirstCapitalized)
                 .foregroundStyle(.white)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)

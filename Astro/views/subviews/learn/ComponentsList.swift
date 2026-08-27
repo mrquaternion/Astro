@@ -25,7 +25,7 @@ struct ComponentsList: View {
 
                 if !asset.components.isEmpty {
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("Subcomponents")
+                        Text("learn_subcomponents".localizedFirstCapitalized)
                             .font(.subheadline.weight(.semibold))
                             .foregroundStyle(.secondary)
                             .padding(.leading, 28)
@@ -49,7 +49,7 @@ struct ComponentsList: View {
         }
         .safeAreaInset(edge: .top) {
             ZStack {
-                Text("Components")
+                Text("learn_components".localizedFirstCapitalized)
                     .font(.headline)
 
                 HStack {

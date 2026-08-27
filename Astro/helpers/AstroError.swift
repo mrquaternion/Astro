@@ -16,10 +16,12 @@ enum AstroError: LocalizedError {
     /// Value used for description.
     var description: String {
         switch self {
-        case .noWifiConnection: "No internet connection available."
-        case .noActiveSubscription : "Can't perform this action, no subscription active."
-        case .unableToFetchProducts(let message): "Unable to fetch products: \(message)"
-        case .unableToRestorePurchases(let message): "Unable to restore purchases: \(message)"
+        case .noWifiConnection: "error_no_connection".localizedFirstCapitalized
+        case .noActiveSubscription: "error_no_subscription".localizedFirstCapitalized
+        case .unableToFetchProducts(let message):
+            "error_fetch_products_format".localizedFormat(message)
+        case .unableToRestorePurchases(let message):
+            "error_restore_purchases_format".localizedFormat(message)
         }
     }
     

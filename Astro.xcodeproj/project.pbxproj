@@ -23,6 +23,7 @@
 		628A1B272FD1CCF000EA0C88 /* MapboxMaps in Frameworks */ = {isa = PBXBuildFile; productRef = 628A1B262FD1CCF000EA0C88 /* MapboxMaps */; };
 		628A1C5C2FD2D95200EA0C88 /* SatelliteKit in Frameworks */ = {isa = PBXBuildFile; productRef = 628A1C5B2FD2D95200EA0C88 /* SatelliteKit */; };
 		628A1E092FD4920C00EA0C88 /* BezelKit in Frameworks */ = {isa = PBXBuildFile; productRef = 628A1E082FD4920C00EA0C88 /* BezelKit */; };
+		629F9567301C52C600A20B39 /* onboarding_animation_24fps.mov in Resources */ = {isa = PBXBuildFile; fileRef = 629F9566301C52C600A20B39 /* onboarding_animation_24fps.mov */; };
 		62ACD6042FE5E2800027195E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 62ACD6032FE5E2800027195E /* LaunchScreen.storyboard */; };
 		62ACD6082FE5F9450027195E /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 62ACD6072FE5F9450027195E /* StoreKit.framework */; };
 		62B1E2A62FDC3CF4002D5DDA /* VariableBlur in Frameworks */ = {isa = PBXBuildFile; productRef = 62B1E2A52FDC3CF4002D5DDA /* VariableBlur */; };
@@ -53,6 +54,7 @@
 		620B14ED2FCF75290090AFAB /* AstroTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AstroTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		620B14F72FCF75290090AFAB /* AstroUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AstroUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		623EDAAD2FF5322100BFBEBD /* onboarding_astro_anim.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = onboarding_astro_anim.mp4; sourceTree = "<group>"; };
+		629F9566301C52C600A20B39 /* onboarding_animation_24fps.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = onboarding_animation_24fps.mov; sourceTree = "<group>"; };
 		62ACD6032FE5E2800027195E /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		62ACD6072FE5F9450027195E /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		62EDD9642FF7E0FF007B6ED5 /* astro_app.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = astro_app.icon; sourceTree = "<group>"; };
@@ -168,6 +170,7 @@
 				62EDD9642FF7E0FF007B6ED5 /* astro_app.icon */,
 				62EFF8882FF5D8BB00903F28 /* astro_loading_screen-ipad.splineswift */,
 				62EFF87A2FF5AA3500903F28 /* astro_loading_screen-iphone.splineswift */,
+				629F9566301C52C600A20B39 /* onboarding_animation_24fps.mov */,
 				623EDAAD2FF5322100BFBEBD /* onboarding_astro_anim.mp4 */,
 				62ACD6032FE5E2800027195E /* LaunchScreen.storyboard */,
 				620B14E22FCF75280090AFAB /* Astro */,
@@ -311,6 +314,8 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				fr,
+				es,
 				Base,
 			);
 			mainGroup = 620B14D72FCF75280090AFAB;
@@ -347,6 +352,7 @@
 				62EFF8892FF5D8BB00903F28 /* astro_loading_screen-ipad.splineswift in Resources */,
 				62EFF87B2FF5AA3500903F28 /* astro_loading_screen-iphone.splineswift in Resources */,
 				62ACD6042FE5E2800027195E /* LaunchScreen.storyboard in Resources */,
+				629F9567301C52C600A20B39 /* onboarding_animation_24fps.mov in Resources */,
 				623EDAAE2FF5322100BFBEBD /* onboarding_astro_anim.mp4 in Resources */,
 				62EDD9652FF7E0FF007B6ED5 /* astro_app.icon in Resources */,
 			);
@@ -540,7 +546,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_TEAM = LLT44AL679;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -586,7 +592,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_TEAM = LLT44AL679;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;

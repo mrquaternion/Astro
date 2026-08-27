@@ -42,7 +42,7 @@ struct SplitFlapDisplay: View {
                     }
                     
                     if withTimeComponentDescription {
-                        Text(component.unit.rawValue.capitalized)
+                        Text(component.unit.localizedTitle)
                             .font(.footnote)
                             .fontDesign(.monospaced)
                             .foregroundStyle(.primary)
@@ -55,6 +55,7 @@ struct SplitFlapDisplay: View {
                 try await autoUpdatingDate()
             } catch {
                 ntpError = error
+                print(error)
             }
         }
     }
@@ -65,13 +66,19 @@ struct SplitFlapDisplay: View {
             config: config,
             server: "time.apple.com"
         )
-        let response = try await ntp.query(timeout: .seconds(10))
-        let (seconds, attoseconds) = response.offset.components
-        let offsetTimeInterval = TimeInterval(seconds) + TimeInterval(attoseconds) * 1e-18
+        
+        var offsetTimeInterval: TimeInterval
+        do {
+            if ScreenshotMode.isEnabled { throw NSError(domain: "Force timer debug", code: 1) }
+            let response = try await ntp.query(timeout: .seconds(10))
+            let (seconds, attoseconds) = response.offset.components
+            offsetTimeInterval = TimeInterval(seconds) + TimeInterval(attoseconds) * 1e-18
+        } catch {
+            offsetTimeInterval = 0
+        }
         
         while true {
-            let now = Date.now
-            currentDate = now + offsetTimeInterval
+            currentDate = Date.now + offsetTimeInterval
             try await Task.sleep(for: .milliseconds(33))
         }
     }
@@ -291,6 +298,19 @@ struct TimeComponent {
     
     enum TimeUnit: String, Hashable {
         case days, hours, minutes, seconds
+
+        var localizedTitle: String {
+            switch self {
+            case .days:
+                "time_unit_days".localizedFirstCapitalized
+            case .hours:
+                "time_unit_hours".localizedFirstCapitalized
+            case .minutes:
+                "time_unit_minutes".localizedFirstCapitalized
+            case .seconds:
+                "time_unit_seconds".localizedFirstCapitalized
+            }
+        }
     }
     
     /// Value used for digits.

@@ -22,6 +22,9 @@ struct MissionsView: View {
     /// App manager that holds variables available across the app.
     @Environment(AppState.self) private var appState
     
+    /// Subscription store that loads products and performs purchases.
+    @Environment(SubscriptionManager.self) private var store
+    
     /// Environment value supplying isPad.
     @Environment(\.isPad) var isPad
     
@@ -30,6 +33,7 @@ struct MissionsView: View {
     
     /// Value used for launches.
     var launches: [LaunchFeatureCollection.Feature] { viewModel.launches?.features ?? [] }
+    
     /// Value used for layoutMetrics.
     var layoutMetrics: MissionsLayoutMetrics { .init(isPad: isPad) }
     
@@ -41,11 +45,11 @@ struct MissionsView: View {
             } else { // finished
                 if viewModel.error != nil {
                     ContentUnavailableView {
-                        Label("No Internet Connection", systemImage: "wifi.slash")
+                        Label("network_no_connection".localizedFirstCapitalized, systemImage: "wifi.slash")
                     } description: {
-                        Text("Please check your connection and try again.")
+                        Text("network_check_connection".localizedFirstCapitalized)
                     } actions: {
-                        Button("Retry") {
+                        Button("common_retry".localizedFirstCapitalized) {
                             Task {
                                 try? await viewModel.fetchLaunchesMetadata(networkMonitor: network)
                             }
@@ -58,7 +62,16 @@ struct MissionsView: View {
                 }
             }
         }
-        .task { try? await viewModel.loadLaunchesIfNeeded(networkMonitor: network) }
+        .task {
+            try? await viewModel.loadLaunchesIfNeeded(networkMonitor: network)
+            navigateToPendingLaunchIfPossible()
+        }
+        .onChange(of: appState.pendingMissionLaunchID, initial: true) { _, _ in
+            navigateToPendingLaunchIfPossible()
+        }
+        .onChange(of: launches.map(\.id)) { _, _ in
+            navigateToPendingLaunchIfPossible()
+        }
     }
     
     /// View content rendered for missionsList.
@@ -82,13 +95,13 @@ struct MissionsView: View {
                 .padding(.bottom, CustomTabBarLayout.height + CustomTabBarLayout.yOffset)
             }
             .introspect(.scrollView, on: .iOS(.v26), customize: onScrollViewResolved)
-            .navigationTitle("Missions")
-            .navigationSubtitle("Upcoming launches from multiple agencies")
+            .navigationTitle("tab_missions".localizedFirstCapitalized)
+            .navigationSubtitle("missions_navigation_subtitle".localizedFirstCapitalized)
             .scrollBounceBehavior(.basedOnSize)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     HStack(spacing: isPad ? 12 : 8) {
-                        Text("NEXT")
+                        Text("missions_next".localized)
                             .fontDesign(.monospaced)
                             
                         if let net = nextLaunchNET() {
@@ -115,8 +128,9 @@ struct MissionsView: View {
             LaunchDetailView(launch: launch.properties)
                 .navigationBarBackButtonHidden()
                 .toolbarVisibility(.hidden, for: .navigationBar)
+                .environment(store)
         } else {
-            ContentUnavailableView("Launch unavailable", systemImage: "paperplane")
+            ContentUnavailableView("missions_launch_unavailable".localizedFirstCapitalized, systemImage: "paperplane")
         }
     }
     
@@ -125,6 +139,18 @@ struct MissionsView: View {
             .sorted { $0.properties.net < $1.properties.net }
             .first { $0.properties.net > .now }?
             .properties.net
+    }
+
+    private func navigateToPendingLaunchIfPossible() {
+        guard
+            let launchID = appState.pendingMissionLaunchID,
+            launches.contains(where: { $0.id == launchID })
+        else {
+            return
+        }
+
+        navigationPath = [launchID]
+        appState.consumePendingMissionLaunchID()
     }
 }
 

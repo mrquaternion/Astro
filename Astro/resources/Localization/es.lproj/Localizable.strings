@@ -1,0 +1,237 @@
+/*
+  Localizable.strings
+  Astro
+*/
+
+"loading_satellites" = "configurando satélites...";
+
+"onboarding_welcome_title" = "te damos la bienvenida a Astro";
+"onboarding_welcome_description" = "tu ventana personal al espacio.";
+"onboarding_track_title" = "seguimiento";
+"onboarding_track_description" = "sigue la EEI y otros satélites en tiempo real.";
+"onboarding_news_title" = "noticias";
+"onboarding_news_description" = "mantente al día con los últimos descubrimientos y lanzamientos espaciales.";
+"onboarding_missions_title" = "misiones";
+"onboarding_missions_description" = "explora las próximas misiones espaciales y visualiza lanzamientos en 3D.";
+"onboarding_learn_title" = "aprende";
+"onboarding_learn_description" = "descubre satélites, cohetes, planetas y otros objetos espaciales.";
+"onboarding_ready_title" = "¿estás listo para\ndescubrirlo?";
+"onboarding_launch_subtitle" = "despeguemos.";
+"onboarding_enter_button" = "entrar en Astro";
+
+"tab_home" = "inicio";
+"tab_news" = "noticias";
+"tab_missions" = "misiones";
+"tab_learn" = "aprende";
+"tab_lookup" = "buscar";
+"tab_community" = "comunidad";
+
+/* Común */
+"common_delete" = "eliminar";
+"common_download" = "descargar";
+"common_ok" = "OK";
+"common_retry" = "reintentar";
+"common_see_less" = "ver menos";
+"common_see_more" = "ver más";
+"common_sort" = "ordenar";
+"common_unknown" = "desconocido";
+"time_unit_days" = "días";
+"time_unit_hours" = "horas";
+"time_unit_minutes" = "minutos";
+"time_unit_seconds" = "segundos";
+
+/* Pantallas principales */
+"community_placeholder" = "vista de la comunidad";
+"lookup_placeholder" = "vista de búsqueda";
+"satellite_choose" = "elegir satélite";
+"satellite_loading" = "cargando satélite...";
+"network_no_connection" = "sin conexión a Internet";
+"network_check_connection" = "comprueba tu conexión e inténtalo de nuevo.";
+
+/* Noticias */
+"news_already_downloaded" = "ya descargado";
+"news_article" = "artículo";
+"news_copy_link" = "copiar enlace";
+"news_filter_prompt" = "filtrar por título o resumen";
+"news_navigation_subtitle" = "noticias espaciales recientes de todo el mundo";
+"news_no_articles" = "no hay artículos disponibles";
+"sort_title_ascending" = "título (A–Z)";
+"sort_title_descending" = "título (Z–A)";
+"sort_oldest_first" = "más antiguos primero";
+"sort_newest_first" = "más recientes primero";
+
+/* Misiones */
+"missions_launch_unavailable" = "lanzamiento no disponible";
+"missions_navigation_subtitle" = "próximos lanzamientos de varias agencias";
+"missions_next" = "SIGUIENTE";
+"launch_agency" = "agencia";
+"launch_at" = "en";
+"launch_end" = "fin";
+"launch_host_feed_format" = "emisión de %@ %d";
+"launch_locate" = "localizar";
+"launch_location" = "ubicación";
+"launch_mission" = "misión";
+"launch_no_earlier_than" = "no antes de";
+"launch_rocket_manufacturer" = "fabricante del cohete";
+"launch_start" = "inicio";
+"launch_status" = "estado";
+"launch_video_feed_format" = "emisión de video %d";
+"launch_video_feeds" = "emisiones de video";
+"launch_window" = "ventana de lanzamiento";
+"trajectory_title" = "trayectoria";
+"trajectory_chart_title" = "gráfico de trayectoria simulada";
+"trajectory_not_loaded" = "la trayectoria aún no se ha cargado.";
+"trajectory_distance" = "distancia";
+"trajectory_altitude" = "altitud";
+"trajectory_selected" = "selección";
+"trajectory_distance_from_pad" = "distancia desde la plataforma (km)";
+"trajectory_elevation_km" = "elevación (km)";
+
+/* Aprendizaje */
+"learn_no_assets" = "no hay contenidos disponibles";
+"learn_asset_unavailable" = "contenido no disponible";
+"learn_components" = "componentes";
+"learn_subcomponents" = "subcomponentes";
+"learn_timeline" = "cronología";
+"learn_composed_of" = "compuesto por";
+"learn_manufacturers" = "fabricantes";
+"learn_contributions" = "contribuciones";
+"learn_loading_model" = "cargando modelo...";
+"component_count_singular" = "%d componente";
+"component_count_plural" = "%d componentes";
+"gesture_action_format" = "%@:";
+"gesture_double_tap" = "doble toque";
+"gesture_drag" = "arrastrar";
+"gesture_pan" = "desplazar";
+"gesture_rotate" = "girar";
+"gesture_two_finger_format" = "%@ con dos dedos";
+"gesture_zoom" = "acercar";
+"gesture_zoom_out" = "alejar";
+
+/* Mapa y satélites */
+"map_basemaps" = "mapas base";
+"map_overlays" = "capas";
+"map_indicators" = "indicadores";
+"map_standard" = "estándar";
+"map_satellite_imagery" = "imágenes satelitales";
+"map_night" = "mapa nocturno";
+"map_clouds" = "nubes";
+"map_light_pollution" = "contaminación lumínica";
+"map_visibility_radius" = "radio de visibilidad";
+"map_distance_to_satellite" = "distancia al satélite";
+"map_cloud_map_title" = "mapa de nubes";
+"map_cloud_map_description" = "planifica tus sesiones de observación con una cobertura de nubes casi en tiempo real. La capa muestra dónde está despejado y dónde las nubes pueden dificultar la visibilidad, para que encuentres rápidamente los mejores lugares y momentos para observar las estrellas o practicar astrofotografía. Las imágenes se actualizan cada tres horas.";
+"map_attribution" = "atribución";
+"map_live_cloud_maps" = "mapas de nubes en directo";
+"map_light_pollution_description" = "visualiza el brillo del cielo nocturno para identificar rápidamente lugares oscuros ideales para observar las estrellas y practicar astrofotografía.";
+"map_zone" = "zona";
+"map_surface_brightness_min" = "brillo superficial mínimo";
+"map_surface_brightness_max" = "brillo superficial máximo";
+"map_surface_brightness_unit" = "brillo superficial (mag/arcsec²)";
+"map_more_info_prefix" = "para obtener más información, visita";
+"map_light_pollution_atlas" = "light pollution atlas";
+"map_satellite_visibility_title" = "radio de visibilidad del satélite";
+"map_satellite_visibility_description" = "muestra el área de la superficie terrestre donde el satélite seleccionado se encuentra actualmente sobre el horizonte. El satélite puede observarse desde cualquier lugar dentro del círculo, mientras que fuera de él no es visible debido a la curvatura de la Tierra.";
+"map_distance_to_satellite_description" = "traza la ruta más corta desde la ubicación seleccionada hasta la posición actual del satélite sobre la Tierra. La ruta se actualiza continuamente a medida que se mueve el satélite para facilitar la visualización de su posición relativa y su distancia terrestre.";
+"satellite_generic" = "satélite";
+"satellite_none" = "no hay satélites";
+"satellite_plural" = "satélites";
+"satellite_stats_format" = "datos de %@";
+"satellite_latitude" = "latitud";
+"satellite_longitude" = "longitud";
+"satellite_altitude" = "altitud";
+"satellite_velocity" = "velocidad";
+"measurement_degrees_format" = "%.2f°";
+"measurement_kilometers_format" = "%.2f km";
+"measurement_kilometers_one_decimal_format" = "%.1f km";
+"measurement_kilometers_per_second_format" = "%.2f km/s";
+
+/* Errores de ubicación */
+"location_error_title" = "error de ubicación";
+"location_error_replaced_continuation" = "se ha sustituido la continuación.";
+"location_error_not_found" = "no se encontró la ubicación del usuario.";
+"location_error_permission_denied" = "se denegó el permiso de ubicación.";
+
+/* Ajustes y descargas */
+"settings_title" = "ajustes";
+"settings_account" = "cuenta";
+"settings_subscription" = "suscripción";
+"settings_downloads" = "descargas";
+"settings_about" = "acerca de";
+"settings_privacy_policy" = "política de privacidad";
+"settings_terms_of_service" = "términos del servicio";
+"settings_version" = "versión";
+"downloads_quick_summary" = "resumen rápido";
+"downloads_review_description" = "revisa todo lo que has descargado. Puedes eliminar las descargas individualmente o por categoría.";
+"downloads_total_storage" = "almacenamiento total utilizado";
+"downloads_by_category" = "descargas por categoría";
+"downloads_individual" = "descargas individuales";
+"downloads_kind_learn" = "contenidos 3D interactivos";
+"downloads_kind_satellites" = "modelos de satélites";
+"downloads_kind_archives" = "sitios web archivados";
+"downloads_kind_summary_format" = "%@ que descargaste desde la página %@.";
+
+/* Suscripción */
+"subscription_monthly" = "mensual";
+"subscription_yearly" = "anual";
+"subscription_free_title" = "aprende más sobre el espacio.";
+"subscription_pro_thanks_title" = "¡gracias por ser Pro!";
+"subscription_free_description" = "descubre más misiones espaciales, sigue numerosos satélites y profundiza aún más en tu pasión por el espacio.";
+"subscription_pro_thanks_description" = "tu apoyo nos ayuda a seguir creando una aplicación increíble para personas apasionadas por el espacio como tú. Te lo agradecemos de verdad.";
+"subscription_current_plan" = "plan actual";
+"subscription_astro_free" = "Astro Gratis";
+"subscription_product_option_format" = "%@ – %@/mes";
+"subscription_plan" = "plan";
+"subscription_choose_plan" = "elegir plan";
+"subscription_astro_pro_format" = "Astro Pro – %@";
+"subscription_renews_format" = "se renueva el %@";
+"subscription_advantages" = "ventajas";
+"subscription_restore_purchases" = "restaurar compras";
+"subscription_feature" = "función";
+"subscription_free" = "gratis";
+"subscription_pro" = "Pro";
+"subscription_included_free" = "incluido con Astro Gratis";
+"subscription_not_included_free" = "no incluido con Astro Gratis";
+"subscription_included_pro" = "incluido con Astro Pro";
+"purchase_pending_title" = "compra pendiente";
+"purchase_pending_description" = "tu compra está pendiente de aprobación o confirmación del pago.";
+"purchase_unverified_title" = "compra no verificada";
+"purchase_failed_title" = "error en la compra";
+"error_no_connection" = "no hay conexión a Internet disponible.";
+"error_no_subscription" = "no se puede realizar esta acción porque no hay una suscripción activa.";
+"error_fetch_products_format" = "no se pudieron obtener los productos: %@";
+"error_restore_purchases_format" = "no se pudieron restaurar las compras: %@";
+
+/* Pantalla de suscripción */
+"paywall_title" = "explora el espacio como nunca antes.";
+"paywall_description" = "sigue satélites, descubre misiones espaciales y planifica tu próxima noche bajo las estrellas.";
+"paywall_subscribe_format" = "suscribirse al plan %@";
+"paywall_recurring_billing" = "facturación recurrente. Cancela cuando quieras.";
+"paywall_billed_yearly_format" = "facturado a %@ al año";
+"paywall_monthly_price_format" = "%@/mes";
+"paywall_everything_included" = "todo incluido";
+"paywall_much_more" = "y mucho más...";
+"preview_hello_world" = "¡hola, mundo!";
+
+/* Funciones Pro */
+"feature_more_satellites_title" = "más satélites";
+"feature_more_satellites_description" = "sigue decenas de órbitas adicionales en tiempo real.";
+"feature_offline_access_title" = "acceso sin conexión";
+"feature_offline_access_description" = "descarga satélites, artículos y mucho más.";
+"feature_deep_history_title" = "historia detallada";
+"feature_deep_history_description" = "explora los orígenes de cohetes, satélites y naves espaciales.";
+"feature_live_launches_title" = "lanzamientos 3D en directo";
+"feature_live_launches_description" = "sigue lanzamientos en tiempo real con una simulación de vuelo 3D interactiva.";
+"feature_notifications_title" = "notificaciones de la app";
+"feature_notifications_description" = "recibe alertas oportunas sobre lanzamientos, misiones y eventos espaciales importantes.";
+"feature_live_activities_title" = "Actividades en directo";
+"feature_live_activities_description" = "sigue el progreso de los lanzamientos de un vistazo desde la pantalla bloqueada y Dynamic Island.";
+"feature_iss_tracking_title" = "seguimiento de la EEI en directo";
+"feature_iss_tracking_description" = "sigue la Estación Espacial Internacional alrededor de la Tierra en tiempo real.";
+"feature_nasa_news_title" = "noticias espaciales de la NASA";
+"feature_nasa_news_description" = "lee las últimas noticias y descubrimientos de la NASA.";
+"feature_launch_schedules_title" = "calendario de lanzamientos";
+"feature_launch_schedules_description" = "consulta los próximos lanzamientos y los detalles de las misiones.";
+"coming_soon" = "próximamente";
+"launch_notification_title_template" = "prepárate para el lanzamiento de %@";
+"launch_notification_body_template" = "el lazamiento de %@ se acerca. Abre la app para seguirlo en vivo.";

@@ -52,7 +52,8 @@ final class BootstrapViewModel: ObservableObject {
             print(error)
         }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+        let splashDelay = ScreenshotMode.isEnabled ? 0.0 : 1.0
+        DispatchQueue.main.asyncAfter(deadline: .now() + splashDelay) {
             self.isLoading = false
         }
     }

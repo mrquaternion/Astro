@@ -148,7 +148,7 @@ struct CustomTabBar<TabItemView: View>: UIViewRepresentable {
                 Image(systemName: tab.symbol)
                     .font(.title3)
                 
-                Text(tab.rawValue)
+                Text(tab.localizedTitle)
                     .font(.system(size: 10))
                     .fontWeight(.medium)
             }

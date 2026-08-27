@@ -23,7 +23,7 @@ struct LearnLoadingTemplateView: View {
                     .padding(.vertical)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
-                .navigationTitle("Learn")
+                .navigationTitle("tab_learn".localizedFirstCapitalized)
             }
         }
     }

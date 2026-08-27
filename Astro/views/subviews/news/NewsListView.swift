@@ -20,13 +20,13 @@ enum SortOrder: String, Identifiable, CaseIterable {
     var displayName: String {
         switch self {
         case .title:
-            "Title (A-Z)"
+            "sort_title_ascending".localizedFirstCapitalized
         case .titleReverse:
-            "Title (Z-A)"
+            "sort_title_descending".localizedFirstCapitalized
         case .date:
-            "Oldest first"
+            "sort_oldest_first".localizedFirstCapitalized
         case .dateReverse:
-            "Newest first"
+            "sort_newest_first".localizedFirstCapitalized
         }
     }
 }
@@ -92,8 +92,8 @@ struct NewsListView: View {
                 await viewModel.loadArticles()
             }
             .navigationBarTitleDisplayMode(.inline)
-            .navigationTitle("News")
-            .navigationSubtitle("Recent space-related news across the globe")
+            .navigationTitle("tab_news".localizedFirstCapitalized)
+            .navigationSubtitle("news_navigation_subtitle".localizedFirstCapitalized)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     HStack(spacing: 12) {
@@ -131,7 +131,7 @@ struct NewsListView: View {
                         }
                         
                         Menu {
-                            Picker("Sort", selection: Binding(
+                            Picker("common_sort".localizedFirstCapitalized, selection: Binding(
                                 get: { sortOrder },
                                 set: { viewModel.storedSortOrder = $0.rawValue }
                             )) {
@@ -149,7 +149,11 @@ struct NewsListView: View {
                 }
             }
         }
-        .searchable(text: $filter, placement: .navigationBarDrawer, prompt: Text("Filter on title or summary"))
+        .searchable(
+            text: $filter,
+            placement: .navigationBarDrawer,
+            prompt: Text("news_filter_prompt".localizedFirstCapitalized)
+        )
         .fullScreenCover(isPresented: Binding(
             get: { showPaywall || viewModel.showPaywall },
             set: {

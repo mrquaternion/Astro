@@ -1,0 +1,2137 @@
+"""
+A directive used by the Apollo iOS client to annotate operations or fragments that should be used exclusively for generating local cache mutations instead of as standard operations.
+"""
+directive @apollo_client_ios_localCacheMutation on QUERY | MUTATION | SUBSCRIPTION | FRAGMENT_DEFINITION
+
+"""
+A directive used by the Apollo iOS code generation engine to generate custom import statements in operation or fragment definition files. An import statement to import a module with the name provided in the `module` argument will be added to the generated definition file.
+"""
+directive @import(
+  """The name of the module to import."""
+  module: String!
+) repeatable on QUERY | MUTATION | SUBSCRIPTION | FRAGMENT_DEFINITION
+
+"""Attach extra information to a given type."""
+directive @typePolicy(
+  """
+  A selection set containing fields used to compute the cache key of an object. Referenced fields must have non-nullable scalar types. Order is important.
+  """
+  keyFields: String!
+) on OBJECT | INTERFACE
+
+"""
+A directive used by Apollo iOS to map query input data to cache keys of objects.
+"""
+directive @fieldPolicy(
+  """The field you are setting the @fieldPolicy for."""
+  forField: String!
+
+  """Set of fields used to compute the cache key."""
+  keyArgs: String!
+) repeatable on OBJECT | INTERFACE
+
+"""
+Directs the executor to defer this fragment when the `if` argument is true or undefined.
+"""
+directive @defer(
+  """Deferred when true or undefined."""
+  if: Boolean
+
+  """Unique name"""
+  label: String
+) on FRAGMENT_SPREAD | INLINE_FRAGMENT
+
+"""A high precision floating point value represented as a string"""
+scalar BigFloat
+
+"""
+Boolean expression comparing fields on type "BigFloat"
+"""
+input BigFloatFilter {
+  eq: BigFloat
+  gt: BigFloat
+  gte: BigFloat
+  in: [BigFloat!]
+  is: FilterIs
+  lt: BigFloat
+  lte: BigFloat
+  neq: BigFloat
+}
+
+"""
+Boolean expression comparing fields on type "BigFloatList"
+"""
+input BigFloatListFilter {
+  containedBy: [BigFloat!]
+  contains: [BigFloat!]
+  eq: [BigFloat!]
+  is: FilterIs
+  overlaps: [BigFloat!]
+}
+
+"""An arbitrary size integer represented as a string"""
+scalar BigInt
+
+"""
+Boolean expression comparing fields on type "BigInt"
+"""
+input BigIntFilter {
+  eq: BigInt
+  gt: BigInt
+  gte: BigInt
+  in: [BigInt!]
+  is: FilterIs
+  lt: BigInt
+  lte: BigInt
+  neq: BigInt
+}
+
+"""
+Boolean expression comparing fields on type "BigIntList"
+"""
+input BigIntListFilter {
+  containedBy: [BigInt!]
+  contains: [BigInt!]
+  eq: [BigInt!]
+  is: FilterIs
+  overlaps: [BigInt!]
+}
+
+"""
+Boolean expression comparing fields on type "Boolean"
+"""
+input BooleanFilter {
+  eq: Boolean
+  is: FilterIs
+}
+
+"""
+Boolean expression comparing fields on type "BooleanList"
+"""
+input BooleanListFilter {
+  containedBy: [Boolean!]
+  contains: [Boolean!]
+  eq: [Boolean!]
+  is: FilterIs
+  overlaps: [Boolean!]
+}
+
+"""
+An opaque string using for tracking a position in results during pagination
+"""
+scalar Cursor
+
+"""A date without time information"""
+scalar Date
+
+"""
+Boolean expression comparing fields on type "Date"
+"""
+input DateFilter {
+  eq: Date
+  gt: Date
+  gte: Date
+  in: [Date!]
+  is: FilterIs
+  lt: Date
+  lte: Date
+  neq: Date
+}
+
+"""
+Boolean expression comparing fields on type "DateList"
+"""
+input DateListFilter {
+  containedBy: [Date!]
+  contains: [Date!]
+  eq: [Date!]
+  is: FilterIs
+  overlaps: [Date!]
+}
+
+"""A date and time"""
+scalar Datetime
+
+"""
+Boolean expression comparing fields on type "Datetime"
+"""
+input DatetimeFilter {
+  eq: Datetime
+  gt: Datetime
+  gte: Datetime
+  in: [Datetime!]
+  is: FilterIs
+  lt: Datetime
+  lte: Datetime
+  neq: Datetime
+}
+
+"""
+Boolean expression comparing fields on type "DatetimeList"
+"""
+input DatetimeListFilter {
+  containedBy: [Datetime!]
+  contains: [Datetime!]
+  eq: [Datetime!]
+  is: FilterIs
+  overlaps: [Datetime!]
+}
+
+enum FilterIs {
+  NULL
+  NOT_NULL
+}
+
+"""
+Boolean expression comparing fields on type "Float"
+"""
+input FloatFilter {
+  eq: Float
+  gt: Float
+  gte: Float
+  in: [Float!]
+  is: FilterIs
+  lt: Float
+  lte: Float
+  neq: Float
+}
+
+"""
+Boolean expression comparing fields on type "FloatList"
+"""
+input FloatListFilter {
+  containedBy: [Float!]
+  contains: [Float!]
+  eq: [Float!]
+  is: FilterIs
+  overlaps: [Float!]
+}
+
+"""
+Boolean expression comparing fields on type "ID"
+"""
+input IDFilter {
+  eq: ID
+}
+
+"""
+Boolean expression comparing fields on type "Int"
+"""
+input IntFilter {
+  eq: Int
+  gt: Int
+  gte: Int
+  in: [Int!]
+  is: FilterIs
+  lt: Int
+  lte: Int
+  neq: Int
+}
+
+"""
+Boolean expression comparing fields on type "IntList"
+"""
+input IntListFilter {
+  containedBy: [Int!]
+  contains: [Int!]
+  eq: [Int!]
+  is: FilterIs
+  overlaps: [Int!]
+}
+
+"""A Javascript Object Notation value serialized as a string"""
+scalar JSON
+
+"""The root type for creating and mutating data"""
+type Mutation {
+  """Deletes zero or more records from the `article` collection"""
+  deleteFromarticleCollection(
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: articleFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): articleDeleteResponse!
+
+  """Deletes zero or more records from the `launch` collection"""
+  deleteFromlaunchCollection(
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: launchFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): launchDeleteResponse!
+
+  """Deletes zero or more records from the `launch_mission` collection"""
+  deleteFromlaunch_missionCollection(
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: launch_missionFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): launch_missionDeleteResponse!
+
+  """Deletes zero or more records from the `launch_pad` collection"""
+  deleteFromlaunch_padCollection(
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: launch_padFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): launch_padDeleteResponse!
+
+  """Deletes zero or more records from the `launch_rocket` collection"""
+  deleteFromlaunch_rocketCollection(
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: launch_rocketFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): launch_rocketDeleteResponse!
+
+  """
+  Deletes zero or more records from the `launch_service_provider` collection
+  """
+  deleteFromlaunch_service_providerCollection(
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: launch_service_providerFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): launch_service_providerDeleteResponse!
+
+  """Deletes zero or more records from the `launch_status` collection"""
+  deleteFromlaunch_statusCollection(
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: launch_statusFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): launch_statusDeleteResponse!
+
+  """Deletes zero or more records from the `launch_video_url` collection"""
+  deleteFromlaunch_video_urlCollection(
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: launch_video_urlFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): launch_video_urlDeleteResponse!
+
+  """Deletes zero or more records from the `learn_asset` collection"""
+  deleteFromlearn_assetCollection(
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: learn_assetFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): learn_assetDeleteResponse!
+
+  """Deletes zero or more records from the `learn_component` collection"""
+  deleteFromlearn_componentCollection(
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: learn_componentFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): learn_componentDeleteResponse!
+
+  """Deletes zero or more records from the `tracked_asset` collection"""
+  deleteFromtracked_assetCollection(
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: tracked_assetFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): tracked_assetDeleteResponse!
+
+  """Adds one or more `article` records to the collection"""
+  insertIntoarticleCollection(objects: [articleInsertInput!]!): articleInsertResponse
+
+  """Adds one or more `launch` records to the collection"""
+  insertIntolaunchCollection(objects: [launchInsertInput!]!): launchInsertResponse
+
+  """Adds one or more `launch_mission` records to the collection"""
+  insertIntolaunch_missionCollection(objects: [launch_missionInsertInput!]!): launch_missionInsertResponse
+
+  """Adds one or more `launch_pad` records to the collection"""
+  insertIntolaunch_padCollection(objects: [launch_padInsertInput!]!): launch_padInsertResponse
+
+  """Adds one or more `launch_rocket` records to the collection"""
+  insertIntolaunch_rocketCollection(objects: [launch_rocketInsertInput!]!): launch_rocketInsertResponse
+
+  """Adds one or more `launch_service_provider` records to the collection"""
+  insertIntolaunch_service_providerCollection(objects: [launch_service_providerInsertInput!]!): launch_service_providerInsertResponse
+
+  """Adds one or more `launch_status` records to the collection"""
+  insertIntolaunch_statusCollection(objects: [launch_statusInsertInput!]!): launch_statusInsertResponse
+
+  """Adds one or more `launch_video_url` records to the collection"""
+  insertIntolaunch_video_urlCollection(objects: [launch_video_urlInsertInput!]!): launch_video_urlInsertResponse
+
+  """Adds one or more `learn_asset` records to the collection"""
+  insertIntolearn_assetCollection(objects: [learn_assetInsertInput!]!): learn_assetInsertResponse
+
+  """Adds one or more `learn_component` records to the collection"""
+  insertIntolearn_componentCollection(objects: [learn_componentInsertInput!]!): learn_componentInsertResponse
+
+  """Adds one or more `tracked_asset` records to the collection"""
+  insertIntotracked_assetCollection(objects: [tracked_assetInsertInput!]!): tracked_assetInsertResponse
+
+  """Updates zero or more records in the `article` collection"""
+  updatearticleCollection(
+    """
+    Fields that are set will be updated for all records matching the `filter`
+    """
+    set: articleUpdateInput!
+
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: articleFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): articleUpdateResponse!
+
+  """Updates zero or more records in the `launch` collection"""
+  updatelaunchCollection(
+    """
+    Fields that are set will be updated for all records matching the `filter`
+    """
+    set: launchUpdateInput!
+
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: launchFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): launchUpdateResponse!
+
+  """Updates zero or more records in the `launch_mission` collection"""
+  updatelaunch_missionCollection(
+    """
+    Fields that are set will be updated for all records matching the `filter`
+    """
+    set: launch_missionUpdateInput!
+
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: launch_missionFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): launch_missionUpdateResponse!
+
+  """Updates zero or more records in the `launch_pad` collection"""
+  updatelaunch_padCollection(
+    """
+    Fields that are set will be updated for all records matching the `filter`
+    """
+    set: launch_padUpdateInput!
+
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: launch_padFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): launch_padUpdateResponse!
+
+  """Updates zero or more records in the `launch_rocket` collection"""
+  updatelaunch_rocketCollection(
+    """
+    Fields that are set will be updated for all records matching the `filter`
+    """
+    set: launch_rocketUpdateInput!
+
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: launch_rocketFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): launch_rocketUpdateResponse!
+
+  """
+  Updates zero or more records in the `launch_service_provider` collection
+  """
+  updatelaunch_service_providerCollection(
+    """
+    Fields that are set will be updated for all records matching the `filter`
+    """
+    set: launch_service_providerUpdateInput!
+
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: launch_service_providerFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): launch_service_providerUpdateResponse!
+
+  """Updates zero or more records in the `launch_status` collection"""
+  updatelaunch_statusCollection(
+    """
+    Fields that are set will be updated for all records matching the `filter`
+    """
+    set: launch_statusUpdateInput!
+
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: launch_statusFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): launch_statusUpdateResponse!
+
+  """Updates zero or more records in the `launch_video_url` collection"""
+  updatelaunch_video_urlCollection(
+    """
+    Fields that are set will be updated for all records matching the `filter`
+    """
+    set: launch_video_urlUpdateInput!
+
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: launch_video_urlFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): launch_video_urlUpdateResponse!
+
+  """Updates zero or more records in the `learn_asset` collection"""
+  updatelearn_assetCollection(
+    """
+    Fields that are set will be updated for all records matching the `filter`
+    """
+    set: learn_assetUpdateInput!
+
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: learn_assetFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): learn_assetUpdateResponse!
+
+  """Updates zero or more records in the `learn_component` collection"""
+  updatelearn_componentCollection(
+    """
+    Fields that are set will be updated for all records matching the `filter`
+    """
+    set: learn_componentUpdateInput!
+
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: learn_componentFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): learn_componentUpdateResponse!
+
+  """Updates zero or more records in the `tracked_asset` collection"""
+  updatetracked_assetCollection(
+    """
+    Fields that are set will be updated for all records matching the `filter`
+    """
+    set: tracked_assetUpdateInput!
+
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: tracked_assetFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): tracked_assetUpdateResponse!
+}
+
+interface Node {
+  """Retrieves a record by `ID`"""
+  nodeId: ID!
+}
+
+"""Any type not handled by the type system"""
+scalar Opaque
+
+"""
+Boolean expression comparing fields on type "Opaque"
+"""
+input OpaqueFilter {
+  eq: Opaque
+  is: FilterIs
+}
+
+"""Defines a per-field sorting order"""
+enum OrderByDirection {
+  """Ascending order, nulls first"""
+  AscNullsFirst
+
+  """Ascending order, nulls last"""
+  AscNullsLast
+
+  """Descending order, nulls first"""
+  DescNullsFirst
+
+  """Descending order, nulls last"""
+  DescNullsLast
+}
+
+type PageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+}
+
+"""The root type for querying data"""
+type Query {
+  """A pagable collection of type `article`"""
+  articleCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """
+    Skip n values from the after cursor. Alternative to cursor pagination. Backward pagination not supported.
+    """
+    offset: Int
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: articleFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [articleOrderBy!]
+  ): articleConnection
+
+  """A pagable collection of type `launch`"""
+  launchCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """
+    Skip n values from the after cursor. Alternative to cursor pagination. Backward pagination not supported.
+    """
+    offset: Int
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: launchFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [launchOrderBy!]
+  ): launchConnection
+
+  """A pagable collection of type `launch_mission`"""
+  launch_missionCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """
+    Skip n values from the after cursor. Alternative to cursor pagination. Backward pagination not supported.
+    """
+    offset: Int
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: launch_missionFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [launch_missionOrderBy!]
+  ): launch_missionConnection
+
+  """A pagable collection of type `launch_pad`"""
+  launch_padCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """
+    Skip n values from the after cursor. Alternative to cursor pagination. Backward pagination not supported.
+    """
+    offset: Int
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: launch_padFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [launch_padOrderBy!]
+  ): launch_padConnection
+
+  """A pagable collection of type `launch_rocket`"""
+  launch_rocketCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """
+    Skip n values from the after cursor. Alternative to cursor pagination. Backward pagination not supported.
+    """
+    offset: Int
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: launch_rocketFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [launch_rocketOrderBy!]
+  ): launch_rocketConnection
+
+  """A pagable collection of type `launch_service_provider`"""
+  launch_service_providerCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """
+    Skip n values from the after cursor. Alternative to cursor pagination. Backward pagination not supported.
+    """
+    offset: Int
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: launch_service_providerFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [launch_service_providerOrderBy!]
+  ): launch_service_providerConnection
+
+  """A pagable collection of type `launch_status`"""
+  launch_statusCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """
+    Skip n values from the after cursor. Alternative to cursor pagination. Backward pagination not supported.
+    """
+    offset: Int
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: launch_statusFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [launch_statusOrderBy!]
+  ): launch_statusConnection
+
+  """A pagable collection of type `launch_video_url`"""
+  launch_video_urlCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """
+    Skip n values from the after cursor. Alternative to cursor pagination. Backward pagination not supported.
+    """
+    offset: Int
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: launch_video_urlFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [launch_video_urlOrderBy!]
+  ): launch_video_urlConnection
+
+  """A pagable collection of type `learn_asset`"""
+  learn_assetCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """
+    Skip n values from the after cursor. Alternative to cursor pagination. Backward pagination not supported.
+    """
+    offset: Int
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: learn_assetFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [learn_assetOrderBy!]
+  ): learn_assetConnection
+
+  """A pagable collection of type `learn_component`"""
+  learn_componentCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """
+    Skip n values from the after cursor. Alternative to cursor pagination. Backward pagination not supported.
+    """
+    offset: Int
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: learn_componentFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [learn_componentOrderBy!]
+  ): learn_componentConnection
+
+  """Retrieve a record by its `ID`"""
+  node(
+    """The record's `ID`"""
+    nodeId: ID!
+  ): Node
+
+  """A pagable collection of type `tracked_asset`"""
+  tracked_assetCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """
+    Skip n values from the after cursor. Alternative to cursor pagination. Backward pagination not supported.
+    """
+    offset: Int
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: tracked_assetFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [tracked_assetOrderBy!]
+  ): tracked_assetConnection
+}
+
+"""
+Boolean expression comparing fields on type "String"
+"""
+input StringFilter {
+  eq: String
+  gt: String
+  gte: String
+  ilike: String
+  in: [String!]
+  iregex: String
+  is: FilterIs
+  like: String
+  lt: String
+  lte: String
+  neq: String
+  regex: String
+  startsWith: String
+}
+
+"""
+Boolean expression comparing fields on type "StringList"
+"""
+input StringListFilter {
+  containedBy: [String!]
+  contains: [String!]
+  eq: [String!]
+  is: FilterIs
+  overlaps: [String!]
+}
+
+"""A time without date information"""
+scalar Time
+
+"""
+Boolean expression comparing fields on type "Time"
+"""
+input TimeFilter {
+  eq: Time
+  gt: Time
+  gte: Time
+  in: [Time!]
+  is: FilterIs
+  lt: Time
+  lte: Time
+  neq: Time
+}
+
+"""
+Boolean expression comparing fields on type "TimeList"
+"""
+input TimeListFilter {
+  containedBy: [Time!]
+  contains: [Time!]
+  eq: [Time!]
+  is: FilterIs
+  overlaps: [Time!]
+}
+
+"""A universally unique identifier"""
+scalar UUID
+
+"""
+Boolean expression comparing fields on type "UUID"
+"""
+input UUIDFilter {
+  eq: UUID
+  in: [UUID!]
+  is: FilterIs
+  neq: UUID
+}
+
+"""
+Boolean expression comparing fields on type "UUIDList"
+"""
+input UUIDListFilter {
+  containedBy: [UUID!]
+  contains: [UUID!]
+  eq: [UUID!]
+  is: FilterIs
+  overlaps: [UUID!]
+}
+
+type article implements Node {
+  """Globally Unique Record Identifier"""
+  nodeId: ID!
+  id: BigInt!
+  title: String!
+  summary: String!
+  url_string: String!
+  published_at: Datetime!
+  website_name: String!
+  image_url_string: String!
+  launches: [String]!
+  events: [String]!
+  article_id: String!
+}
+
+type articleConnection {
+  edges: [articleEdge!]!
+  pageInfo: PageInfo!
+}
+
+type articleDeleteResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [article!]!
+}
+
+type articleEdge {
+  cursor: String!
+  node: article!
+}
+
+input articleFilter {
+  id: BigIntFilter
+  title: StringFilter
+  summary: StringFilter
+  url_string: StringFilter
+  published_at: DatetimeFilter
+  website_name: StringFilter
+  image_url_string: StringFilter
+  launches: StringListFilter
+  events: StringListFilter
+  article_id: StringFilter
+  nodeId: IDFilter
+
+  """
+  Returns true only if all its inner filters are true, otherwise returns false
+  """
+  and: [articleFilter!]
+
+  """
+  Returns true if at least one of its inner filters is true, otherwise returns false
+  """
+  or: [articleFilter!]
+
+  """Negates a filter"""
+  not: articleFilter
+}
+
+input articleInsertInput {
+  title: String
+  summary: String
+  url_string: String
+  published_at: Datetime
+  website_name: String
+  image_url_string: String
+  launches: [String]
+  events: [String]
+  article_id: String
+}
+
+type articleInsertResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [article!]!
+}
+
+input articleOrderBy {
+  id: OrderByDirection
+  title: OrderByDirection
+  summary: OrderByDirection
+  url_string: OrderByDirection
+  published_at: OrderByDirection
+  website_name: OrderByDirection
+  image_url_string: OrderByDirection
+  article_id: OrderByDirection
+}
+
+input articleUpdateInput {
+  title: String
+  summary: String
+  url_string: String
+  published_at: Datetime
+  website_name: String
+  image_url_string: String
+  launches: [String]
+  events: [String]
+  article_id: String
+}
+
+type articleUpdateResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [article!]!
+}
+
+type launch implements Node {
+  """Globally Unique Record Identifier"""
+  nodeId: ID!
+  id: BigInt!
+  name: String!
+  status_id: BigInt!
+  last_updated: Datetime!
+  net: Datetime!
+  window_start: Datetime!
+  window_end: Datetime!
+  launch_service_provider_id: BigInt!
+  rocket_id: BigInt!
+  mission_id: BigInt
+  pad_id: BigInt!
+  image_url_string: String
+  thumbnail_url_string: String
+  launch_id: String!
+  launch_video_urlCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """
+    Skip n values from the after cursor. Alternative to cursor pagination. Backward pagination not supported.
+    """
+    offset: Int
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: launch_video_urlFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [launch_video_urlOrderBy!]
+  ): launch_video_urlConnection
+}
+
+type launchConnection {
+  edges: [launchEdge!]!
+  pageInfo: PageInfo!
+}
+
+type launchDeleteResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [launch!]!
+}
+
+type launchEdge {
+  cursor: String!
+  node: launch!
+}
+
+input launchFilter {
+  id: BigIntFilter
+  name: StringFilter
+  status_id: BigIntFilter
+  last_updated: DatetimeFilter
+  net: DatetimeFilter
+  window_start: DatetimeFilter
+  window_end: DatetimeFilter
+  launch_service_provider_id: BigIntFilter
+  rocket_id: BigIntFilter
+  mission_id: BigIntFilter
+  pad_id: BigIntFilter
+  image_url_string: StringFilter
+  thumbnail_url_string: StringFilter
+  launch_id: StringFilter
+  nodeId: IDFilter
+
+  """
+  Returns true only if all its inner filters are true, otherwise returns false
+  """
+  and: [launchFilter!]
+
+  """
+  Returns true if at least one of its inner filters is true, otherwise returns false
+  """
+  or: [launchFilter!]
+
+  """Negates a filter"""
+  not: launchFilter
+}
+
+input launchInsertInput {
+  name: String
+  status_id: BigInt
+  last_updated: Datetime
+  net: Datetime
+  window_start: Datetime
+  window_end: Datetime
+  launch_service_provider_id: BigInt
+  rocket_id: BigInt
+  mission_id: BigInt
+  pad_id: BigInt
+  image_url_string: String
+  thumbnail_url_string: String
+  launch_id: String
+}
+
+type launchInsertResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [launch!]!
+}
+
+input launchOrderBy {
+  id: OrderByDirection
+  name: OrderByDirection
+  status_id: OrderByDirection
+  last_updated: OrderByDirection
+  net: OrderByDirection
+  window_start: OrderByDirection
+  window_end: OrderByDirection
+  launch_service_provider_id: OrderByDirection
+  rocket_id: OrderByDirection
+  mission_id: OrderByDirection
+  pad_id: OrderByDirection
+  image_url_string: OrderByDirection
+  thumbnail_url_string: OrderByDirection
+  launch_id: OrderByDirection
+}
+
+input launchUpdateInput {
+  name: String
+  status_id: BigInt
+  last_updated: Datetime
+  net: Datetime
+  window_start: Datetime
+  window_end: Datetime
+  launch_service_provider_id: BigInt
+  rocket_id: BigInt
+  mission_id: BigInt
+  pad_id: BigInt
+  image_url_string: String
+  thumbnail_url_string: String
+  launch_id: String
+}
+
+type launchUpdateResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [launch!]!
+}
+
+type launch_mission implements Node {
+  """Globally Unique Record Identifier"""
+  nodeId: ID!
+  id: BigInt!
+  mission_id: BigInt!
+  name: String!
+  type: String!
+  description: String!
+  orbit_name: String!
+  orbit_abbrev: String!
+  orbit_id: BigInt!
+}
+
+type launch_missionConnection {
+  edges: [launch_missionEdge!]!
+  pageInfo: PageInfo!
+}
+
+type launch_missionDeleteResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [launch_mission!]!
+}
+
+type launch_missionEdge {
+  cursor: String!
+  node: launch_mission!
+}
+
+input launch_missionFilter {
+  id: BigIntFilter
+  mission_id: BigIntFilter
+  name: StringFilter
+  type: StringFilter
+  description: StringFilter
+  orbit_name: StringFilter
+  orbit_abbrev: StringFilter
+  orbit_id: BigIntFilter
+  nodeId: IDFilter
+
+  """
+  Returns true only if all its inner filters are true, otherwise returns false
+  """
+  and: [launch_missionFilter!]
+
+  """
+  Returns true if at least one of its inner filters is true, otherwise returns false
+  """
+  or: [launch_missionFilter!]
+
+  """Negates a filter"""
+  not: launch_missionFilter
+}
+
+input launch_missionInsertInput {
+  mission_id: BigInt
+  name: String
+  type: String
+  description: String
+  orbit_name: String
+  orbit_abbrev: String
+  orbit_id: BigInt
+}
+
+type launch_missionInsertResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [launch_mission!]!
+}
+
+input launch_missionOrderBy {
+  id: OrderByDirection
+  mission_id: OrderByDirection
+  name: OrderByDirection
+  type: OrderByDirection
+  description: OrderByDirection
+  orbit_name: OrderByDirection
+  orbit_abbrev: OrderByDirection
+  orbit_id: OrderByDirection
+}
+
+input launch_missionUpdateInput {
+  mission_id: BigInt
+  name: String
+  type: String
+  description: String
+  orbit_name: String
+  orbit_abbrev: String
+  orbit_id: BigInt
+}
+
+type launch_missionUpdateResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [launch_mission!]!
+}
+
+type launch_pad implements Node {
+  """Globally Unique Record Identifier"""
+  nodeId: ID!
+  id: BigInt!
+  name: String!
+  latitude: Float!
+  longitude: Float!
+  country: String!
+  location: String!
+  pad_id: BigInt!
+  alpha_3_code: String!
+}
+
+type launch_padConnection {
+  edges: [launch_padEdge!]!
+  pageInfo: PageInfo!
+}
+
+type launch_padDeleteResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [launch_pad!]!
+}
+
+type launch_padEdge {
+  cursor: String!
+  node: launch_pad!
+}
+
+input launch_padFilter {
+  id: BigIntFilter
+  name: StringFilter
+  latitude: FloatFilter
+  longitude: FloatFilter
+  country: StringFilter
+  location: StringFilter
+  pad_id: BigIntFilter
+  alpha_3_code: StringFilter
+  nodeId: IDFilter
+
+  """
+  Returns true only if all its inner filters are true, otherwise returns false
+  """
+  and: [launch_padFilter!]
+
+  """
+  Returns true if at least one of its inner filters is true, otherwise returns false
+  """
+  or: [launch_padFilter!]
+
+  """Negates a filter"""
+  not: launch_padFilter
+}
+
+input launch_padInsertInput {
+  name: String
+  latitude: Float
+  longitude: Float
+  country: String
+  location: String
+  pad_id: BigInt
+  alpha_3_code: String
+}
+
+type launch_padInsertResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [launch_pad!]!
+}
+
+input launch_padOrderBy {
+  id: OrderByDirection
+  name: OrderByDirection
+  latitude: OrderByDirection
+  longitude: OrderByDirection
+  country: OrderByDirection
+  location: OrderByDirection
+  pad_id: OrderByDirection
+  alpha_3_code: OrderByDirection
+}
+
+input launch_padUpdateInput {
+  name: String
+  latitude: Float
+  longitude: Float
+  country: String
+  location: String
+  pad_id: BigInt
+  alpha_3_code: String
+}
+
+type launch_padUpdateResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [launch_pad!]!
+}
+
+type launch_rocket implements Node {
+  """Globally Unique Record Identifier"""
+  nodeId: ID!
+  id: BigInt!
+  rocket_id: BigInt!
+  full_name: String!
+  manufacturer: String!
+}
+
+type launch_rocketConnection {
+  edges: [launch_rocketEdge!]!
+  pageInfo: PageInfo!
+}
+
+type launch_rocketDeleteResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [launch_rocket!]!
+}
+
+type launch_rocketEdge {
+  cursor: String!
+  node: launch_rocket!
+}
+
+input launch_rocketFilter {
+  id: BigIntFilter
+  rocket_id: BigIntFilter
+  full_name: StringFilter
+  manufacturer: StringFilter
+  nodeId: IDFilter
+
+  """
+  Returns true only if all its inner filters are true, otherwise returns false
+  """
+  and: [launch_rocketFilter!]
+
+  """
+  Returns true if at least one of its inner filters is true, otherwise returns false
+  """
+  or: [launch_rocketFilter!]
+
+  """Negates a filter"""
+  not: launch_rocketFilter
+}
+
+input launch_rocketInsertInput {
+  rocket_id: BigInt
+  full_name: String
+  manufacturer: String
+}
+
+type launch_rocketInsertResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [launch_rocket!]!
+}
+
+input launch_rocketOrderBy {
+  id: OrderByDirection
+  rocket_id: OrderByDirection
+  full_name: OrderByDirection
+  manufacturer: OrderByDirection
+}
+
+input launch_rocketUpdateInput {
+  rocket_id: BigInt
+  full_name: String
+  manufacturer: String
+}
+
+type launch_rocketUpdateResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [launch_rocket!]!
+}
+
+type launch_service_provider implements Node {
+  """Globally Unique Record Identifier"""
+  nodeId: ID!
+  id: BigInt!
+  launch_service_provider_id: BigInt!
+  name: String!
+}
+
+type launch_service_providerConnection {
+  edges: [launch_service_providerEdge!]!
+  pageInfo: PageInfo!
+}
+
+type launch_service_providerDeleteResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [launch_service_provider!]!
+}
+
+type launch_service_providerEdge {
+  cursor: String!
+  node: launch_service_provider!
+}
+
+input launch_service_providerFilter {
+  id: BigIntFilter
+  launch_service_provider_id: BigIntFilter
+  name: StringFilter
+  nodeId: IDFilter
+
+  """
+  Returns true only if all its inner filters are true, otherwise returns false
+  """
+  and: [launch_service_providerFilter!]
+
+  """
+  Returns true if at least one of its inner filters is true, otherwise returns false
+  """
+  or: [launch_service_providerFilter!]
+
+  """Negates a filter"""
+  not: launch_service_providerFilter
+}
+
+input launch_service_providerInsertInput {
+  launch_service_provider_id: BigInt
+  name: String
+}
+
+type launch_service_providerInsertResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [launch_service_provider!]!
+}
+
+input launch_service_providerOrderBy {
+  id: OrderByDirection
+  launch_service_provider_id: OrderByDirection
+  name: OrderByDirection
+}
+
+input launch_service_providerUpdateInput {
+  launch_service_provider_id: BigInt
+  name: String
+}
+
+type launch_service_providerUpdateResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [launch_service_provider!]!
+}
+
+type launch_status implements Node {
+  """Globally Unique Record Identifier"""
+  nodeId: ID!
+  id: BigInt!
+  status_id: BigInt!
+  name: String!
+  abbrev: String!
+}
+
+type launch_statusConnection {
+  edges: [launch_statusEdge!]!
+  pageInfo: PageInfo!
+}
+
+type launch_statusDeleteResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [launch_status!]!
+}
+
+type launch_statusEdge {
+  cursor: String!
+  node: launch_status!
+}
+
+input launch_statusFilter {
+  id: BigIntFilter
+  status_id: BigIntFilter
+  name: StringFilter
+  abbrev: StringFilter
+  nodeId: IDFilter
+
+  """
+  Returns true only if all its inner filters are true, otherwise returns false
+  """
+  and: [launch_statusFilter!]
+
+  """
+  Returns true if at least one of its inner filters is true, otherwise returns false
+  """
+  or: [launch_statusFilter!]
+
+  """Negates a filter"""
+  not: launch_statusFilter
+}
+
+input launch_statusInsertInput {
+  status_id: BigInt
+  name: String
+  abbrev: String
+}
+
+type launch_statusInsertResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [launch_status!]!
+}
+
+input launch_statusOrderBy {
+  id: OrderByDirection
+  status_id: OrderByDirection
+  name: OrderByDirection
+  abbrev: OrderByDirection
+}
+
+input launch_statusUpdateInput {
+  status_id: BigInt
+  name: String
+  abbrev: String
+}
+
+type launch_statusUpdateResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [launch_status!]!
+}
+
+type launch_video_url implements Node {
+  """Globally Unique Record Identifier"""
+  nodeId: ID!
+  id: BigInt!
+  launch_id: String!
+  video_url: String!
+  launch: launch
+}
+
+type launch_video_urlConnection {
+  edges: [launch_video_urlEdge!]!
+  pageInfo: PageInfo!
+}
+
+type launch_video_urlDeleteResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [launch_video_url!]!
+}
+
+type launch_video_urlEdge {
+  cursor: String!
+  node: launch_video_url!
+}
+
+input launch_video_urlFilter {
+  id: BigIntFilter
+  launch_id: StringFilter
+  video_url: StringFilter
+  nodeId: IDFilter
+
+  """
+  Returns true only if all its inner filters are true, otherwise returns false
+  """
+  and: [launch_video_urlFilter!]
+
+  """
+  Returns true if at least one of its inner filters is true, otherwise returns false
+  """
+  or: [launch_video_urlFilter!]
+
+  """Negates a filter"""
+  not: launch_video_urlFilter
+}
+
+input launch_video_urlInsertInput {
+  launch_id: String
+  video_url: String
+}
+
+type launch_video_urlInsertResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [launch_video_url!]!
+}
+
+input launch_video_urlOrderBy {
+  id: OrderByDirection
+  launch_id: OrderByDirection
+  video_url: OrderByDirection
+}
+
+input launch_video_urlUpdateInput {
+  launch_id: String
+  video_url: String
+}
+
+type launch_video_urlUpdateResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [launch_video_url!]!
+}
+
+type learn_asset implements Node {
+  """Globally Unique Record Identifier"""
+  nodeId: ID!
+  id: BigInt!
+  default_component: String!
+  components: [String]!
+  updated_at: Datetime!
+  learn_asset_id: String!
+}
+
+type learn_assetConnection {
+  edges: [learn_assetEdge!]!
+  pageInfo: PageInfo!
+}
+
+type learn_assetDeleteResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [learn_asset!]!
+}
+
+type learn_assetEdge {
+  cursor: String!
+  node: learn_asset!
+}
+
+input learn_assetFilter {
+  id: BigIntFilter
+  default_component: StringFilter
+  components: StringListFilter
+  updated_at: DatetimeFilter
+  learn_asset_id: StringFilter
+  nodeId: IDFilter
+
+  """
+  Returns true only if all its inner filters are true, otherwise returns false
+  """
+  and: [learn_assetFilter!]
+
+  """
+  Returns true if at least one of its inner filters is true, otherwise returns false
+  """
+  or: [learn_assetFilter!]
+
+  """Negates a filter"""
+  not: learn_assetFilter
+}
+
+input learn_assetInsertInput {
+  default_component: String
+  components: [String]
+  updated_at: Datetime
+  learn_asset_id: String
+}
+
+type learn_assetInsertResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [learn_asset!]!
+}
+
+input learn_assetOrderBy {
+  id: OrderByDirection
+  default_component: OrderByDirection
+  updated_at: OrderByDirection
+  learn_asset_id: OrderByDirection
+}
+
+input learn_assetUpdateInput {
+  default_component: String
+  components: [String]
+  updated_at: Datetime
+  learn_asset_id: String
+}
+
+type learn_assetUpdateResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [learn_asset!]!
+}
+
+type learn_component implements Node {
+  """Globally Unique Record Identifier"""
+  nodeId: ID!
+  id: BigInt!
+  component_id: String!
+  short_name: String
+  display_name: String!
+  category: String!
+  group: String
+  agencies: [String]!
+  manufacturers: [String]!
+  materials: [String]!
+  summary: String!
+  source_ids: [String]!
+  timeline: JSON!
+  model_storage_path: String!
+  model_file_name: String!
+  snapshot_storage_path: String
+  snapshot_file_name: String
+  is_default_selection: Boolean!
+  details: JSON!
+}
+
+type learn_componentConnection {
+  edges: [learn_componentEdge!]!
+  pageInfo: PageInfo!
+}
+
+type learn_componentDeleteResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [learn_component!]!
+}
+
+type learn_componentEdge {
+  cursor: String!
+  node: learn_component!
+}
+
+input learn_componentFilter {
+  id: BigIntFilter
+  component_id: StringFilter
+  short_name: StringFilter
+  display_name: StringFilter
+  category: StringFilter
+  group: StringFilter
+  agencies: StringListFilter
+  manufacturers: StringListFilter
+  materials: StringListFilter
+  summary: StringFilter
+  source_ids: StringListFilter
+  model_storage_path: StringFilter
+  model_file_name: StringFilter
+  snapshot_storage_path: StringFilter
+  snapshot_file_name: StringFilter
+  is_default_selection: BooleanFilter
+  nodeId: IDFilter
+
+  """
+  Returns true only if all its inner filters are true, otherwise returns false
+  """
+  and: [learn_componentFilter!]
+
+  """
+  Returns true if at least one of its inner filters is true, otherwise returns false
+  """
+  or: [learn_componentFilter!]
+
+  """Negates a filter"""
+  not: learn_componentFilter
+}
+
+input learn_componentInsertInput {
+  component_id: String
+  short_name: String
+  display_name: String
+  category: String
+  group: String
+  agencies: [String]
+  manufacturers: [String]
+  materials: [String]
+  summary: String
+  source_ids: [String]
+  timeline: JSON
+  model_storage_path: String
+  model_file_name: String
+  snapshot_storage_path: String
+  snapshot_file_name: String
+  is_default_selection: Boolean
+  details: JSON
+}
+
+type learn_componentInsertResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [learn_component!]!
+}
+
+input learn_componentOrderBy {
+  id: OrderByDirection
+  component_id: OrderByDirection
+  short_name: OrderByDirection
+  display_name: OrderByDirection
+  category: OrderByDirection
+  group: OrderByDirection
+  summary: OrderByDirection
+  model_storage_path: OrderByDirection
+  model_file_name: OrderByDirection
+  snapshot_storage_path: OrderByDirection
+  snapshot_file_name: OrderByDirection
+  is_default_selection: OrderByDirection
+}
+
+input learn_componentUpdateInput {
+  component_id: String
+  short_name: String
+  display_name: String
+  category: String
+  group: String
+  agencies: [String]
+  manufacturers: [String]
+  materials: [String]
+  summary: String
+  source_ids: [String]
+  timeline: JSON
+  model_storage_path: String
+  model_file_name: String
+  snapshot_storage_path: String
+  snapshot_file_name: String
+  is_default_selection: Boolean
+  details: JSON
+}
+
+type learn_componentUpdateResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [learn_component!]!
+}
+
+type tracked_asset implements Node {
+  """Globally Unique Record Identifier"""
+  nodeId: ID!
+  id: BigInt!
+  name: String!
+  model_storage_path: String!
+  tle_storage_path: String!
+  updated_at: Datetime!
+  model_file_name: String!
+  tle_file_name: String!
+  summary: String!
+  snapshot_storage_path: String
+  snapshot_file_name: String
+}
+
+type tracked_assetConnection {
+  edges: [tracked_assetEdge!]!
+  pageInfo: PageInfo!
+}
+
+type tracked_assetDeleteResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [tracked_asset!]!
+}
+
+type tracked_assetEdge {
+  cursor: String!
+  node: tracked_asset!
+}
+
+input tracked_assetFilter {
+  id: BigIntFilter
+  name: StringFilter
+  model_storage_path: StringFilter
+  tle_storage_path: StringFilter
+  updated_at: DatetimeFilter
+  model_file_name: StringFilter
+  tle_file_name: StringFilter
+  summary: StringFilter
+  snapshot_storage_path: StringFilter
+  snapshot_file_name: StringFilter
+  nodeId: IDFilter
+
+  """
+  Returns true only if all its inner filters are true, otherwise returns false
+  """
+  and: [tracked_assetFilter!]
+
+  """
+  Returns true if at least one of its inner filters is true, otherwise returns false
+  """
+  or: [tracked_assetFilter!]
+
+  """Negates a filter"""
+  not: tracked_assetFilter
+}
+
+input tracked_assetInsertInput {
+  name: String
+  model_storage_path: String
+  tle_storage_path: String
+  updated_at: Datetime
+  model_file_name: String
+  tle_file_name: String
+  summary: String
+  snapshot_storage_path: String
+  snapshot_file_name: String
+}
+
+type tracked_assetInsertResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [tracked_asset!]!
+}
+
+input tracked_assetOrderBy {
+  id: OrderByDirection
+  name: OrderByDirection
+  model_storage_path: OrderByDirection
+  tle_storage_path: OrderByDirection
+  updated_at: OrderByDirection
+  model_file_name: OrderByDirection
+  tle_file_name: OrderByDirection
+  summary: OrderByDirection
+  snapshot_storage_path: OrderByDirection
+  snapshot_file_name: OrderByDirection
+}
+
+input tracked_assetUpdateInput {
+  name: String
+  model_storage_path: String
+  tle_storage_path: String
+  updated_at: Datetime
+  model_file_name: String
+  tle_file_name: String
+  summary: String
+  snapshot_storage_path: String
+  snapshot_file_name: String
+}
+
+type tracked_assetUpdateResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [tracked_asset!]!
+}

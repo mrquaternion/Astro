@@ -124,7 +124,7 @@ struct LearnItemTimelineView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Timeline")
+            Text("learn_timeline".localizedFirstCapitalized)
                 .font(.title2)
                 .bold()
             
@@ -228,7 +228,7 @@ struct LearnItemExtrasView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 32) {
             VStack(alignment: .leading, spacing: 12) {
-                Text("Composed of")
+                Text("learn_composed_of".localizedFirstCapitalized)
                     .font(.title2.weight(.semibold))
                 
                 Text(component.materials.map({ $0.capitalized }).joined(separator: ", "))
@@ -236,7 +236,7 @@ struct LearnItemExtrasView: View {
             }
             
             VStack(alignment: .leading, spacing: 12) {
-                Text("Manufacturers")
+                Text("learn_manufacturers".localizedFirstCapitalized)
                     .font(.title2.weight(.semibold))
                 
                 Text(component.manufacturers.joined(separator: ", "))
@@ -244,7 +244,7 @@ struct LearnItemExtrasView: View {
             }
             
             VStack(alignment: .leading, spacing: 12) {
-                Text("Contributions")
+                Text("learn_contributions".localizedFirstCapitalized)
                     .font(.title2.weight(.semibold))
                 
                 LazyVGrid(columns: logoColumns, alignment: .leading, spacing: 12) {

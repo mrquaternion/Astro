@@ -101,10 +101,21 @@ class LocalizationManager: NSObject, CLLocationManagerDelegate {
         }
     }
     
-    enum LocalizationError: String, Error {
-        case replacedContinuation = "Continuation has been replaced."
-        case noLocationFound = "No user location found."
-        case permissionDenied = "Localization permission has been denied."
+    enum LocalizationError: Error {
+        case replacedContinuation
+        case noLocationFound
+        case permissionDenied
+
+        var description: String {
+            switch self {
+            case .replacedContinuation:
+                "location_error_replaced_continuation".localizedFirstCapitalized
+            case .noLocationFound:
+                "location_error_not_found".localizedFirstCapitalized
+            case .permissionDenied:
+                "location_error_permission_denied".localizedFirstCapitalized
+            }
+        }
     }
 }
 

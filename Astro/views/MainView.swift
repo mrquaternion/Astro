@@ -84,6 +84,10 @@ struct MainView: View {
         activeTab == .home ? .satellite : .settings
     }
     
+    private func satelliteListColumnWidth(for width: CGFloat) -> CGFloat {
+        horizontalSizeClass == .regular ? width * 0.35 : width * 0.2
+    }
+    
     /// Current selected mode's tabs.
     var currentTabs: [CustomTab] { activeMode.tabs }
     
@@ -104,8 +108,13 @@ struct MainView: View {
     /// The adaptive tab shell that switches between phone and pad layouts.
     var body: some View {
         GeometryReader { proxy in
+            let satelliteListColumnWidth = satelliteListColumnWidth(for: proxy.size.width)
+            let mapTrailingPadding = isPad && activeTab == .home && isSatelliteListPresented
+                ? satelliteListColumnWidth
+                : .zero
+            
             ZStack {
-                tabsContent()
+                tabsContent(mapTrailingPadding: mapTrailingPadding)
                 
                 VStack(spacing: 12) {
                     // pushes the content down
@@ -116,7 +125,6 @@ struct MainView: View {
                             HStack(spacing: 12) {
                                 homeButton()
                                 tabBar()
-                                
                                 actionButton()
                             }
                         }
@@ -128,7 +136,7 @@ struct MainView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .overlay {
                 if homeViewModel.isAssetLoading {
-                    ProgressView("Loading satellite...")
+                    ProgressView("satellite_loading".localizedFirstCapitalized)
                         .padding()
                         .glassEffect(.regular, in: .rect(cornerRadius: 16))
                 }
@@ -137,7 +145,7 @@ struct MainView: View {
                 SatelliteListView(isPresented: $isSatelliteListPresented)
                     .environmentObject(homeViewModel)
                     .presentationDetents([.fraction(0.4), .fraction(0.9)])
-                    .inspectorColumnWidth(horizontalSizeClass == .regular ? proxy.size.width * 0.4 : proxy.size.width * 0.2)
+                    .inspectorColumnWidth(satelliteListColumnWidth)
             }
         }
         .fullScreenCover(isPresented: $isSettingsPresented) {
@@ -154,10 +162,16 @@ struct MainView: View {
                 isSatelliteListPresented = false
             }
         }
+        .onChange(of: appState.pendingMissionLaunchID, initial: true) { _, launchID in
+            guard launchID != nil else { return }
+            activeMode = .exploration
+            activeTab = .missions
+        }
         .task {
             do {
                 try await homeViewModel.fetchAssetsMetadata(networkMonitor: network)
                 try await learnViewModel.fetchAssetsMetadata(networkMonitor: network)
+                try await NotificationCenter.requestAuthorization()
             } catch {
                 print(error)
             }
@@ -165,11 +179,16 @@ struct MainView: View {
     }
     
     @ViewBuilder
-    func tabsContent() -> some View {
+    func tabsContent(mapTrailingPadding: CGFloat) -> some View {
         Group {
             switch activeTab {
             case .home:
-                HomeView(activeMode: $activeMode, openLayerMenu: $openLayerMenu, config: $mapConfig)
+                HomeView(
+                    activeMode: $activeMode,
+                    openLayerMenu: $openLayerMenu,
+                    config: $mapConfig,
+                    mapTrailingPadding: mapTrailingPadding
+                )
                     .environmentObject(homeViewModel)
                 
             case .missions:
@@ -189,12 +208,12 @@ struct MainView: View {
                     .environmentObject(learnViewModel)
                 
             case .lookup:
-                Text("Lookup View")
+                Text("lookup_placeholder".localizedFirstCapitalized)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(.black.mix(with: .gray, by: 0.4).mix(with: .blue, by: 0.3))
                 
             case .community:
-                Text("Community View")
+                Text("community_placeholder".localizedFirstCapitalized)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(.black.mix(with: .gray, by: 0.4).mix(with: .blue, by: 0.3))
             }
@@ -209,7 +228,7 @@ struct MainView: View {
             } label: {
                 Image(systemName: CustomTab.home.symbol)
                     .font(.system(size: 22, weight: .medium))
-                    .foregroundStyle(.mapGlassBackgroundContent())
+                    .foregroundStyle(.white)
                     .symbolVariant(activeTab == .home ? .fill : .none)
             }
         }
@@ -217,7 +236,7 @@ struct MainView: View {
         .contentShape(.circle)
         .background(Circle().fill(.mapGlassBackground()))
         .glassEffect(.clear.interactive(), in: .circle)
-        .accessibilityLabel("Home")
+        .accessibilityLabel("tab_home".localizedFirstCapitalized)
     }
     
     @ViewBuilder
@@ -234,7 +253,7 @@ struct MainView: View {
                     Image(systemName: tab.symbol)
                         .font(.title3)
                     
-                    Text(tab.rawValue)
+                    Text(tab.localizedTitle)
                         .font(.system(size: 10))
                         .fontWeight(.medium)
                 }
@@ -265,7 +284,7 @@ struct MainView: View {
         .buttonStyle(.plain)
         .contentShape(.circle)
         .glassEffect(.clear.interactive().tint(.mapGlassBackground()), in: .circle)
-        .accessibilityLabel("Choose satellite")
+        .accessibilityLabel("satellite_choose".localizedFirstCapitalized)
     }
 
     /// Accepts scroll views only from the tab that is still selected.

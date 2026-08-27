@@ -27,8 +27,8 @@ struct MissionsLoadingTemplateView: View {
                     .padding(.vertical)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
-                .navigationTitle("Missions")
-                .navigationSubtitle("Upcoming launches from multiple agencies")
+                .navigationTitle("tab_missions".localizedFirstCapitalized)
+                .navigationSubtitle("missions_navigation_subtitle".localizedFirstCapitalized)
             }
         }
     }

@@ -9,11 +9,17 @@ import Testing
 @testable import Astro
 
 struct AstroTests {
-
-    @Test func example() async throws {
-        // Write your test here and use APIs like `#expect(...)` to check expected conditions.
-        // Swift Testing Documentation
-        // https://developer.apple.com/documentation/testing
+    @Test func freeSatelliteAccessIsCaseInsensitive() {
+        #expect(SubscriptionHelper.isFree(.satellite(fileName: "ISS_LOWPOLY.GLB")))
+        #expect(!SubscriptionHelper.isFree(.satellite(fileName: "hubble.glb")))
     }
-
+    
+    @Test func freeNewsSourceAccessIsCaseInsensitive() {
+        #expect(SubscriptionHelper.isFree(.newsSource("nasa")))
+        #expect(!SubscriptionHelper.isFree(.newsSource("SpaceNews")))
+    }
+    
+    @Test func offlineDownloadsRequireSubscriptionByDefault() {
+        #expect(!SubscriptionHelper.isFree(.offlineDownload))
+    }
 }

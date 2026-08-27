@@ -157,6 +157,9 @@ enum StoreProduct: String, CaseIterable {
 
     /// Value used for displayName.
     var displayName: String {
-        rawValue.capitalized
+        switch self {
+        case .monthly: "subscription_monthly".localizedFirstCapitalized
+        case .yearly: "subscription_yearly".localizedFirstCapitalized
+        }
     }
 }

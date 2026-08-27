@@ -55,25 +55,25 @@ enum LocalDataKind: String, Identifiable {
     
     var menuPage: String {
         switch self {
-        case .learnAsset: "Learn"
-        case .trackedAsset: "Home"
-        case .webArchive: "News"
+        case .learnAsset: "tab_learn".localizedFirstCapitalized
+        case .trackedAsset: "tab_home".localizedFirstCapitalized
+        case .webArchive: "tab_news".localizedFirstCapitalized
         }
     }
     
     var name: String {
         switch self {
         case .learnAsset:
-            "Interactive 3D assets"
+            "downloads_kind_learn".localizedFirstCapitalized
         case .trackedAsset:
-            "Sattelites models"
+            "downloads_kind_satellites".localizedFirstCapitalized
         case .webArchive:
-            "Archived websites"
+            "downloads_kind_archives".localizedFirstCapitalized
         }
     }
     
     var summary: String {
-        "\(name) you downloaded in the \(menuPage) page."
+        "downloads_kind_summary_format".localizedFormat(name, menuPage)
     }
 }
 

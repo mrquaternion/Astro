@@ -48,8 +48,21 @@ class HomeViewMapController: UIViewController {
     /// Map layers configuration.
     var config: MapConfiguration?
     
+    /// Light preset of the device.
+    private var colorScheme: ColorScheme = .light
+    
     /// Callback fired when the user moves the map manually.
     var onUserInteraction: (() -> Void)?
+    
+    init(config: MapConfiguration, colorScheme: ColorScheme) {
+        self.config = config
+        self.colorScheme = colorScheme
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     /// Value used for displayedVisibleRegionCoordinates.
     private var displayedVisibleRegionCoordinates: [[Double]]? {
@@ -78,7 +91,7 @@ class HomeViewMapController: UIViewController {
         
         // init
         mapView = MapView(frame: view.bounds, mapInitOptions: .init(
-            mapStyle: config?.basemap.style
+            mapStyle: config?.basemap.style(for: colorScheme)
         ))
         mapView.gestures.delegate = self
         
@@ -90,16 +103,21 @@ class HomeViewMapController: UIViewController {
         .store(in: &cancellables)
         
         // set up mabpox required ornaments
+        let hiddenOrnamentMargins = CGPoint(x: -100.0, y: -100.0)
         mapView.ornaments.options = .init(
             scaleBar: ScaleBarViewOptions(visibility: .hidden),
             compass: CompassViewOptions(visibility: .hidden),
             logo: LogoViewOptions(
                 position: .bottomTrailing,
-                margins: CGPoint(x: Constants.logoTrailingMargin, y: Constants.defaultOrnamentBottomMargin)
+                margins: ScreenshotMode.isEnabled
+                    ? hiddenOrnamentMargins
+                    : CGPoint(x: Constants.logoTrailingMargin, y: Constants.defaultOrnamentBottomMargin)
             ),
             attributionButton: AttributionButtonOptions(
                 position: .bottomTrailing,
-                margins: CGPoint(x: Constants.attributionTrailingMargin, y: Constants.defaultOrnamentBottomMargin),
+                margins: ScreenshotMode.isEnabled
+                    ? hiddenOrnamentMargins
+                    : CGPoint(x: Constants.attributionTrailingMargin, y: Constants.defaultOrnamentBottomMargin),
                 tintColor: UIColor(white: 0.6, alpha: 1)
             )
         )
@@ -134,7 +152,7 @@ class HomeViewMapController: UIViewController {
                 .modelTranslation(x: 0, y: 0, z: 1_000_000)
                 .modelRotation(x: 0, y: 0, z: 0)
                 .modelOpacity(1)
-                .modelEmissiveStrength(0.8)
+                .modelEmissiveStrength(1)
             
             // satellite route line layer
             GeoJSONSource(id: Constants.routeSourceId)
@@ -176,7 +194,7 @@ class HomeViewMapController: UIViewController {
                 .textColor(initialIndicatorColor)
                 .textSize(20)
                 .textEmissiveStrength(0.8)
-                //.textRotate(90 - (proximityRoute?.midpointBearing ?? 0))
+            //.textRotate(90 - (proximityRoute?.midpointBearing ?? 0))
                 .textRotationAlignment(.viewport)
                 .textAllowOverlap(true)
         }
@@ -288,6 +306,7 @@ class HomeViewMapController: UIViewController {
     private func makeCloudLayer() -> RasterLayer {
         var rasterLayer = RasterLayer(id: Constants.cloudLayerId, source: Constants.cloudSourceId)
         rasterLayer.rasterOpacity = .constant(Constants.cloudOpacity)
+        rasterLayer.rasterEmissiveStrength = .constant(Constants.cloudEmissiveStrength)
         return rasterLayer
     }
     
@@ -427,14 +446,13 @@ extension HomeViewMapController {
         
         // MARK: - TICKET CODE
         let bearing = 90 - (displayedProximityRoute?.midpointBearing ?? 0)
-        print("Bearing: \(bearing)")
         
         /*
-        try? mapView.mapboxMap.setLayerProperty(
-            for: Constants.proximityRouteLabelLayerId,
-            property: "text-rotate",
-            value: bearing
-        )
+         try? mapView.mapboxMap.setLayerProperty(
+         for: Constants.proximityRouteLabelLayerId,
+         property: "text-rotate",
+         value: bearing
+         )
          */
         
         try? mapView.mapboxMap.setLayerProperty(
@@ -536,10 +554,11 @@ extension HomeViewMapController {
     func updateCamera(_ camera: CameraState) {
         mapView.mapboxMap.setCamera(
             to: CameraOptions(
-                center: camera.center,
-                zoom: Constants.defaultZoom,
-                bearing: Constants.defaultBearing,
-                pitch: Constants.defaultPitch
+                center: ScreenshotMode.cameraCenter ?? camera.center,
+                padding: camera.padding,
+                zoom: ScreenshotMode.cameraZoom ?? Constants.defaultZoom,
+                bearing: ScreenshotMode.cameraBearing ?? Constants.defaultBearing,
+                pitch: ScreenshotMode.cameraPitch ?? Constants.defaultPitch
             )
         )
     }
@@ -583,7 +602,7 @@ extension HomeViewMapController {
         self.config = config
         
         if previousConfig?.basemap != config.basemap {
-            applyMapStyleAndOverlays()
+            applyMapStyleAndOverlays(colorScheme: colorScheme)
         } else if isStyleLoaded {
             applyVisibleRegion()
             applyProximityRoute()
@@ -591,8 +610,16 @@ extension HomeViewMapController {
         }
     }
     
-    private func applyMapStyleAndOverlays() {
-        guard let style = config?.basemap.style else { return }
+    func updateColorScheme(_ newValue: ColorScheme) {
+        guard colorScheme != newValue else { return }
+        
+        colorScheme = newValue
+        guard isViewLoaded else { return }
+        applyMapStyleAndOverlays(colorScheme: newValue)
+    }
+    
+    private func applyMapStyleAndOverlays(colorScheme: ColorScheme) {
+        guard let style = config?.basemap.style(for: colorScheme) else { return }
         
         isStyleLoaded = false
         mapView.mapboxMap.mapStyle = style
@@ -669,6 +696,7 @@ extension HomeViewMapController {
             [-180.0, -90]
         ]
         static let cloudOpacity = 0.8
+        static let cloudEmissiveStrength = 0.8
         
         static let lightPollutionSourceId = "light-pollution-raster-source"
         static let lightPollutionLayerId = "light-pollution-raster-layer"
@@ -688,7 +716,6 @@ extension HomeViewMapController {
             guard UIDevice.current.userInterfaceIdiom == .pad else {
                 return 3
             }
-            
             return UIDevice.current.orientation.isLandscape ? 3 : 4
         }
         

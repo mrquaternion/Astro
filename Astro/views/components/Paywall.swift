@@ -103,7 +103,7 @@ struct Paywall: View {
                 selectedProduct = store.products.first
             }
             .alert(alertTitle, isPresented: $isShowingAlert) {
-                Button("OK", role: .cancel) { }
+                Button("common_ok".localized, role: .cancel) { }
             } message: {
                 Text(alertDescription)
             }
@@ -125,17 +125,21 @@ struct Paywall: View {
                         .contentShape(.capsule)
                         .glassEffect(.clear.interactive(), in: .capsule)
                 } else {
-                    Text("Subscribe \(selectedProduct.flatMap { StoreProduct(productId: $0.id) }?.displayName ?? "")")
-                        .font(.headline.weight(.semibold))
-                        .kerning(1)
-                        .foregroundStyle(.white)
-                        .frame(width: 300, height: 50)
-                        .contentShape(.capsule)
-                        .glassEffect(.clear.interactive(), in: .capsule)
+                    Text(
+                        "paywall_subscribe_format".localizedFormat(
+                            selectedProduct.flatMap { StoreProduct(productId: $0.id) }?.displayName ?? ""
+                        )
+                    )
+                    .font(.headline.weight(.semibold))
+                    .kerning(1)
+                    .foregroundStyle(.white)
+                    .frame(width: 300, height: 50)
+                    .contentShape(.capsule)
+                    .glassEffect(.clear.interactive(), in: .capsule)
                 }
             }
             
-            Text("Recurring billing. Cancel anytime.")
+            Text("paywall_recurring_billing".localizedFirstCapitalized)
                 .font(.footnote.weight(.medium))
                 .foregroundStyle(.white)
         }
@@ -176,8 +180,8 @@ struct Paywall: View {
                 
             case .pending:
                 showPurchaseAlert(
-                    title: "Purchase Pending",
-                    description: "Your purchase is awaiting approval or payment confirmation."
+                    title: "purchase_pending_title".localizedFirstCapitalized,
+                    description: "purchase_pending_description".localizedFirstCapitalized
                 )
                 
             case .userCancelled:
@@ -185,19 +189,19 @@ struct Paywall: View {
                 
             case .unverified(let message):
                 showPurchaseAlert(
-                    title: "Purchase Unverified",
+                    title: "purchase_unverified_title".localizedFirstCapitalized,
                     description: message
                 )
                 
             case .failed(let error):
                 showPurchaseAlert(
-                    title: "Purchase Failed",
+                    title: "purchase_failed_title".localizedFirstCapitalized,
                     description: error.localizedDescription
                 )
             }
         } catch {
             showPurchaseAlert(
-                title: "Purchase Failed",
+                title: "purchase_failed_title".localizedFirstCapitalized,
                 description: error.localizedDescription
             )
         }
@@ -244,7 +248,7 @@ fileprivate enum PaywallLayout {
         Button {
             isShowing.toggle()
         } label: {
-            Text("Hello, World!")
+            Text("preview_hello_world".localizedFirstCapitalized)
         }
         .buttonStyle(.bordered)
     }
@@ -309,9 +313,9 @@ fileprivate struct PaywallContentView: View {
         ScrollView {
             VStack(spacing: 34) {
                 VStack(spacing: 12) {
-                    Text("Explore space like never before.")
+                    Text("paywall_title".localizedFirstCapitalized)
                         .font(.largeTitle.weight(.bold))
-                    Text("Track satellites, discover space missions, and plan your next night under the stars.")
+                    Text("paywall_description".localizedFirstCapitalized)
                         .font(.callout)
                 }
                 .frame(width: contentWidth)
@@ -326,17 +330,22 @@ fileprivate struct PaywallContentView: View {
                                     VStack(alignment: .leading) {
                                         Text(storeProduct?.displayName ?? "")
                                             .font(.title2.weight(.semibold))
-                                        Text("Billed at \(product.displayPrice)/year")
+                                        Text("paywall_billed_yearly_format".localizedFormat(product.displayPrice))
                                             .font(.subheadline.weight(.medium))
                                     }
                                     Spacer()
-                                    Text("$\(yearlyPriceMonthly(product.price))/month")
+                                    Text(
+                                        "paywall_monthly_price_format".localizedFormat(
+                                            yearlyPriceMonthly(product.price)
+                                                .formatted(product.priceFormatStyle)
+                                        )
+                                    )
                                         .font(.callout)
                                 } else {
                                     Text(storeProduct?.displayName ?? "")
                                         .font(.title3.weight(.semibold))
                                     Spacer()
-                                    Text("\(product.displayPrice)/month")
+                                    Text("paywall_monthly_price_format".localizedFormat(product.displayPrice))
                                         .font(.callout)
                                 }
                             }
@@ -356,28 +365,37 @@ fileprivate struct PaywallContentView: View {
                         }
                     }
                     
-                    VStack(spacing: 16) {
-                        Text("Everything included")
-                            .font(.caption.weight(.medium))
-                            .kerning(1)
-                            .textCase(.uppercase)
-                            .foregroundStyle(.white.opacity(0.5))
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                    VStack(alignment: .leading, spacing: 10) {
+                        VStack(spacing: 16) {
+                            Text("paywall_everything_included".localizedFirstCapitalized)
+                                .font(.caption.weight(.medium))
+                                .kerning(1)
+                                .textCase(.uppercase)
+                                .foregroundStyle(.white.opacity(0.5))
+                                .frame(maxWidth: .infinity, alignment: .leading)
 
-                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
-                            ForEach(ProFeature.all) { feature in
-                                ProFeatureCard(feature: feature)
+                            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+                                ForEach(ProFeature.all) { feature in
+                                    ProFeatureCard(feature: feature)
+                                }
                             }
+                            
+                            Text("paywall_much_more".localizedFirstCapitalized)
+                                .font(.footnote.weight(.semibold))
+                                .foregroundStyle(.white.opacity(0.7))
+                                .padding(.top, 4)
                         }
+                        .padding()
+                        .frame(width: contentWidth)
+                        .background(RoundedRectangle(cornerRadius: 16).fill(.white.opacity(0.08)))
                         
-                        Text("and much more...")
-                            .font(.footnote.weight(.semibold))
-                            .foregroundStyle(.white.opacity(0.7))
-                            .padding(.top, 4)
+                        HStack {
+                            Text("(∗)")
+                            Text("coming_soon".localizedFirstCapitalized)
+                        }
+                        .font(.footnote.weight(.medium))
+                        .foregroundStyle(.secondary)
                     }
-                    .padding()
-                    .frame(width: contentWidth)
-                    .background(RoundedRectangle(cornerRadius: 16).fill(.white.opacity(0.08)))
                 }
                 .padding(.bottom, (botPaymentMarginsSize?.height ?? 0) + 20)
             }
@@ -397,4 +415,8 @@ fileprivate struct PaywallContentView: View {
         
         return truncated
     }
+}
+
+#Preview {
+    Paywall()
 }

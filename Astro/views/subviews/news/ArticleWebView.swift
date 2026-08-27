@@ -47,7 +47,7 @@ struct ArticlePresentation: View {
                 webArchiveName: destination.isDownloadedLocally ? destination.id : nil
             )
             .ignoresSafeArea(edges: .bottom)
-            .navigationTitle(destination.url.host() ?? "Article")
+            .navigationTitle(destination.url.host() ?? "news_article".localizedFirstCapitalized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {

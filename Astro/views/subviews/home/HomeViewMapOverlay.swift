@@ -201,7 +201,12 @@
         func issStats() -> some View {
             VStack(alignment: .center, spacing: 8) {
                 HStack {
-                    Text("\(viewViewModel.selectedSatellite?.shortName ?? "Satellite") Stats")
+                    Text(
+                        "satellite_stats_format".localizedFormat(
+                            viewViewModel.selectedSatellite?.shortName
+                                ?? "satellite_generic".localizedFirstCapitalized
+                        )
+                    )
                     Image(systemName: "antenna.radiowaves.left.and.right")
                 }
                 .font(isPad ? .title3 : .callout)
@@ -212,16 +217,16 @@
                 
                 Grid(alignment: .center, verticalSpacing: 4) {
                     GridRow {
-                        Text("Latitude:").frame(maxWidth: .infinity)
-                        Text("Longitude:").frame(maxWidth: .infinity)
-                        Text("Altitude:").frame(maxWidth: .infinity)
-                        Text("Velocity:").frame(maxWidth: .infinity)
+                        Text("satellite_latitude".localizedFirstCapitalized + ":").frame(maxWidth: .infinity)
+                        Text("satellite_longitude".localizedFirstCapitalized + ":").frame(maxWidth: .infinity)
+                        Text("satellite_altitude".localizedFirstCapitalized + ":").frame(maxWidth: .infinity)
+                        Text("satellite_velocity".localizedFirstCapitalized + ":").frame(maxWidth: .infinity)
                     }
                     GridRow {
-                        Text("\(String(format: "%.2f", tracker.model.position[1]))°").frame(maxWidth: .infinity)
-                        Text("\(String(format: "%.2f", tracker.model.position[0]))°").frame(maxWidth: .infinity)
-                        Text("\(String(format: "%.1f", tracker.model.altitude)) km").frame(maxWidth: .infinity)
-                        Text("\(String(format: "%.2f", tracker.model.velocity)) km/s").frame(maxWidth: .infinity)
+                        Text("measurement_degrees_format".localizedFormat(tracker.model.position[1])).frame(maxWidth: .infinity)
+                        Text("measurement_degrees_format".localizedFormat(tracker.model.position[0])).frame(maxWidth: .infinity)
+                        Text("measurement_kilometers_one_decimal_format".localizedFormat(tracker.model.altitude)).frame(maxWidth: .infinity)
+                        Text("measurement_kilometers_per_second_format".localizedFormat(tracker.model.velocity)).frame(maxWidth: .infinity)
                     }
                 }
                 .font(isPad ? .body : .footnote)

@@ -37,7 +37,9 @@ struct HomeViewMapContainer: View {
                 lng1: trackerViewModel.model.position[0],
                 alt: trackerViewModel.model.altitude
             ),
-            proximityRoute: viewViewModel.routeFromUser(from: trackerViewModel.model),
+            proximityRoute: ScreenshotMode.isEnabled
+                ? nil
+                : viewViewModel.routeFromUser(from: trackerViewModel.model),
             camera: $trackerViewModel.camera,
             isTrackingModel: $trackerViewModel.isTrackingModel,
             config: config
@@ -48,6 +50,13 @@ struct HomeViewMapContainer: View {
             trackerViewModel.isTrackingModel = true
             
             do {
+                if ScreenshotMode.isEnabled {
+                    try loadSelectedSatellitePosition(
+                        minutesAfterEpoch: ScreenshotMode.satelliteMinutesAfterEpoch
+                    )
+                    return
+                }
+                
                 while true {
                     try Task.checkCancellation()
                     try loadSelectedSatellitePosition()
@@ -60,28 +69,32 @@ struct HomeViewMapContainer: View {
             }
         }
         .task {
+            guard !ScreenshotMode.isEnabled else { return }
+            
             do {
                 try await localizationManager.verifyAuthorization()
                 let _ = try await localizationManager.currentLocation
             } catch {
-                errorMessage = (error as? LocalizationManager.LocalizationError)?.rawValue ?? error.localizedDescription
+                errorMessage = (error as? LocalizationManager.LocalizationError)?.description
+                    ?? error.localizedDescription
             }
         }
-        .alert("Localization error", isPresented: .constant(errorMessage != nil)) {
-            Button("OK") { errorMessage = nil }
+        .alert("location_error_title".localizedFirstCapitalized, isPresented: .constant(errorMessage != nil)) {
+            Button("common_ok".localized) { errorMessage = nil }
         } message: {
             Text(errorMessage ?? "")
         }
     }
     
-    private func loadSelectedSatellitePosition() throws {
+    private func loadSelectedSatellitePosition(minutesAfterEpoch: Double? = nil) throws {
         guard let selectedSatellite = viewViewModel.selectedSatellite else { return }
         
         let satellite = Satellite(elements: selectedSatellite.elements)
-        let lla = try satellite.geoPosition(minsAfterEpoch: satellite.minsAfterEpoch)
+        let propagationTime = minutesAfterEpoch ?? satellite.minsAfterEpoch
+        let lla = try satellite.geoPosition(minsAfterEpoch: propagationTime)
         let dt = 0.01
-        let nextLla = try satellite.geoPosition(minsAfterEpoch: satellite.minsAfterEpoch + dt)
-        let avgSpeed = try satellite.velocity(minsAfterEpoch: satellite.minsAfterEpoch)
+        let nextLla = try satellite.geoPosition(minsAfterEpoch: propagationTime + dt)
+        let avgSpeed = try satellite.velocity(minsAfterEpoch: propagationTime)
         
         let longitude = lla.lon > 180 ? lla.lon - 360 : lla.lon
         let bearing = GeoMaths.bearing(lat1: lla.lat, lon1: lla.lon, lat2: nextLla.lat, lon2: nextLla.lon)
@@ -95,7 +108,7 @@ struct HomeViewMapContainer: View {
         
         if trackerViewModel.isTrackingModel {
             trackerViewModel.camera = CameraState(
-                center: LocationCoordinate2D(
+                center: ScreenshotMode.cameraCenter ?? LocationCoordinate2D(
                     latitude: lla.lat,
                     longitude: longitude
                 ),

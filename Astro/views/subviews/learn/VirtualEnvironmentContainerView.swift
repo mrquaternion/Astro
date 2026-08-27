@@ -56,10 +56,30 @@ struct VirtualEnvironmentContainerView: View {
     
     /// List of gestures.
     private let gestures: [GestureInfo] = [
-        GestureInfo(icon: "plus.magnifyingglass", iconCount: 1, gestureName: "Double Tap", action: "Zoom"),
-        GestureInfo(icon: "minus.magnifyingglass", iconCount: 2, gestureName: "Double Tap", action: "Zoom Out"),
-        GestureInfo(icon: "hand.draw.fill", iconCount: 2, gestureName: "Drag", action: "Pan"),
-        GestureInfo(icon: "rotate.3d.fill", iconCount: 1, gestureName: "Drag", action: "Rotate")
+        GestureInfo(
+            icon: "plus.magnifyingglass",
+            iconCount: 1,
+            gestureName: "gesture_double_tap".localizedFirstCapitalized,
+            action: "gesture_zoom".localizedFirstCapitalized
+        ),
+        GestureInfo(
+            icon: "minus.magnifyingglass",
+            iconCount: 2,
+            gestureName: "gesture_double_tap".localizedFirstCapitalized,
+            action: "gesture_zoom_out".localizedFirstCapitalized
+        ),
+        GestureInfo(
+            icon: "hand.draw.fill",
+            iconCount: 2,
+            gestureName: "gesture_drag".localizedFirstCapitalized,
+            action: "gesture_pan".localizedFirstCapitalized
+        ),
+        GestureInfo(
+            icon: "rotate.3d.fill",
+            iconCount: 1,
+            gestureName: "gesture_drag".localizedFirstCapitalized,
+            action: "gesture_rotate".localizedFirstCapitalized
+        )
     ]
     
     var body: some View {
@@ -119,8 +139,15 @@ struct VirtualEnvironmentContainerView: View {
         Grid(alignment: .leading, horizontalSpacing: 24, verticalSpacing: 10) {
             ForEach(gestures) { gesture in
                 GridRow {
-                    Label("\(gesture.action) :", systemImage: gesture.icon)
-                    Text(gesture.iconCount == 2 ? "2-Finger \(gesture.gestureName)" : gesture.gestureName)
+                    Label(
+                        "gesture_action_format".localizedFormat(gesture.action),
+                        systemImage: gesture.icon
+                    )
+                    Text(
+                        gesture.iconCount == 2
+                            ? "gesture_two_finger_format".localizedFormat(gesture.gestureName)
+                            : gesture.gestureName
+                    )
                 }
             }
         }

@@ -39,32 +39,32 @@ struct SettingsView: View {
         NavigationStack {
             VStack {
                 List {
-                    Section("Account") {
-                        NavigationLink("Subscription") {
+                    Section("settings_account".localizedFirstCapitalized) {
+                        NavigationLink("settings_subscription".localizedFirstCapitalized) {
                             SubscriptionSettings()
                                 .environment(store)
-                                .navigationTitle("Subscription")
+                                .navigationTitle("settings_subscription".localizedFirstCapitalized)
                                 .navigationBarTitleDisplayMode(.inline)
                         }
-                        NavigationLink("Downloads") {
+                        NavigationLink("settings_downloads".localizedFirstCapitalized) {
                             DownloadSettings(dataController: dataController)
-                                .navigationTitle("Downloads")
+                                .navigationTitle("settings_downloads".localizedFirstCapitalized)
                                 .navigationBarTitleDisplayMode(.inline)
                         }
                     }
                     
-                    Section("About") {
-                        NavigationLink("Privacy Policy") {
+                    Section("settings_about".localizedFirstCapitalized) {
+                        NavigationLink("settings_privacy_policy".localizedFirstCapitalized) {
                             WebView(url: URL(string: "https://someonelostinspace.github.io/astro-web/privacy.html")!)
                                 .ignoresSafeArea()
                         }
-                        NavigationLink("Terms of Service") {
+                        NavigationLink("settings_terms_of_service".localizedFirstCapitalized) {
                             WebView(url: URL(string: "https://someonelostinspace.github.io/astro-web/terms.html")!)
                                 .ignoresSafeArea()
                         }
                         
                         HStack {
-                            Text("Version")
+                            Text("settings_version".localizedFirstCapitalized)
                             Spacer()
                             Text("1.0.0")
                                 .foregroundStyle(.secondary)
@@ -72,7 +72,7 @@ struct SettingsView: View {
                     }
                 }
                 .listStyle(.insetGrouped)
-                .navigationTitle("Settings")
+                .navigationTitle("settings_title".localizedFirstCapitalized)
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
                         Button {

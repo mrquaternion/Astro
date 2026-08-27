@@ -8,16 +8,110 @@
 import SwiftUI
 import SwiftData
 import Combine
+import CoreLocation
 
+enum ScreenshotMode {
+    #if DEBUG
+    static let isEnabled = ProcessInfo.processInfo.arguments.contains("--screenshot-mode")
+    #else
+    static let isEnabled = false
+    #endif
+    
+    /// A stable point in the orbit, measured from the epoch of the latest TLE.
+    static var satelliteMinutesAfterEpoch: Double {
+        argument(named: "--screenshot-satellite-minutes-after-epoch") ?? 30
+    }
+    
+    /// Optional camera center. When omitted, the camera remains centered on the satellite.
+    static var cameraCenter: CLLocationCoordinate2D? {
+        guard
+            let latitude: Double = argument(named: "--screenshot-camera-latitude"),
+            let longitude: Double = argument(named: "--screenshot-camera-longitude")
+        else {
+            return nil
+        }
+        
+        return CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+    }
+    
+    static var cameraZoom: CGFloat? {
+        let value: Double? = argument(named: "--screenshot-camera-zoom")
+        return value.map { CGFloat($0) }
+    }
+    
+    static var cameraBearing: CGFloat? {
+        let value: Double? = argument(named: "--screenshot-camera-bearing")
+        return value.map { CGFloat($0) }
+    }
+    
+    static var cameraPitch: CGFloat? {
+        let value: Double? = argument(named: "--screenshot-camera-pitch")
+        return value.map { CGFloat($0) }
+    }
+    
+    private static func argument<Value: LosslessStringConvertible>(named name: String) -> Value? {
+        let arguments = ProcessInfo.processInfo.arguments
+        let assignmentPrefix = "\(name)="
+        
+        if let assignment = arguments.first(where: { $0.hasPrefix(assignmentPrefix) }) {
+            return Value(String(assignment.dropFirst(assignmentPrefix.count)))
+        }
+        
+        guard
+            let nameIndex = arguments.firstIndex(of: name),
+            arguments.indices.contains(arguments.index(after: nameIndex))
+        else {
+            return nil
+        }
+        
+        return Value(arguments[arguments.index(after: nameIndex)])
+    }
+}
+
+final class AppDelegate: NSObject, UIApplicationDelegate {
+    func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+        UNUserNotificationCenter.current().delegate = self
+        return true
+    }
+}
+
+extension AppDelegate: UNUserNotificationCenterDelegate {
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
+        guard
+            let urlString = response.notification.request.content.userInfo["url"] as? String,
+            let url = URL(string: urlString)
+        else { return }
+        await UIApplication.shared.open(url)
+    }
+}
 
 @main
 struct AstroApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
+
     /// The app scene that hosts Astro's root view.
     var body: some Scene {
         WindowGroup {
             AppRootView()
         }
         .modelContainer(for: AppConstants.modelTypes)
+    }
+}
+
+private extension URL {
+    /// Launch ID carried by Astro notification deep links.
+    var launchDeepLinkID: String? {
+        if
+            let components = URLComponents(url: self, resolvingAgainstBaseURL: false),
+            let queryLaunchID = components.queryItems?.first(where: { $0.name == "launch_id" })?.value
+        {
+            return queryLaunchID
+        }
+
+        guard let host else { return nil }
+        let parts = host.split(separator: "=", maxSplits: 1)
+        guard parts.count == 2, parts[0] == "launch_id" else { return nil }
+        return String(parts[1])
     }
 }
 
@@ -67,31 +161,46 @@ struct AppRootView: View {
     /// News state retained for the lifetime of the main interface.
     @State private var newsViewModel: SpaceNewsViewModel?
     
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
+    
     /// The root view content shown after bootstrap completes.
     var body: some View {
         GeometryReader { proxy in
             let isLandscape = proxy.size.isLandscape
             
-            Group {
-                if
-                    !bootstrapper.isLoading,
-                    let dataController,
-                    let homeViewModel,
-                    let learnViewModel,
-                    let missionsViewModel,
-                    let newsViewModel
-                {
-                    MainView(
-                        homeViewModel: homeViewModel,
-                        learnViewModel: learnViewModel,
-                        missionsViewModel: missionsViewModel,
-                        newsViewModel: newsViewModel,
-                        dataController: dataController
-                    )
-                } else {
-                    SplashScreenView()
+            ZStack {
+                Color.black
+                    .ignoresSafeArea()
+                
+                Group {
+                    if
+                        !bootstrapper.isLoading,
+                        let dataController,
+                        let homeViewModel,
+                        let learnViewModel,
+                        let missionsViewModel,
+                        let newsViewModel
+                    {
+                        if !hasCompletedOnboarding && !ScreenshotMode.isEnabled {
+                            OnboardingScreenView(onFinish: { hasCompletedOnboarding = true })
+                                .transition(.opacity)
+                        } else {
+                            MainView(
+                                homeViewModel: homeViewModel,
+                                learnViewModel: learnViewModel,
+                                missionsViewModel: missionsViewModel,
+                                newsViewModel: newsViewModel,
+                                dataController: dataController
+                            )
+                            .transition(.opacity)
+                        }
+                    } else {
+                        SplashScreenView()
+                            .transition(.opacity)
+                    }
                 }
             }
+            .animation(.easeInOut(duration: 0.8), value: bootstrapper.isLoading)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .environmentObject(bootstrapper)
             .environmentObject(networkMonitor)
@@ -100,6 +209,10 @@ struct AppRootView: View {
             .environment(\.isPhone, DeviceIdiom.isPhone)
             .environment(\.isPad, DeviceIdiom.isPad)
             .environment(\.isLandscape, isLandscape)
+            .onOpenURL { url in
+                guard let launchID = url.launchDeepLinkID else { return }
+                appState.requestMissionLaunchDetails(for: launchID)
+            }
             .task {
                 guard dataController == nil else { return }
                 

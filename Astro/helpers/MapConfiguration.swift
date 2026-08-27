@@ -7,6 +7,7 @@
 
 import MapboxMaps
 import UIKit.UIColor
+import SwiftUI
 
 struct MapConfiguration: Equatable {
     
@@ -16,8 +17,8 @@ struct MapConfiguration: Equatable {
         
         var name: String {
             switch self {
-            case .angularRadius: "Visibility radius"
-            case .proximityRoute: "Distance to satellite"
+            case .angularRadius: "map_visibility_radius".localizedFirstCapitalized
+            case .proximityRoute: "map_distance_to_satellite".localizedFirstCapitalized
             }
         }
         
@@ -35,8 +36,8 @@ struct MapConfiguration: Equatable {
         
         var name: String {
             switch self {
-            case .clouds: "Clouds"
-            case .lightPollution: "Light pollution"
+            case .clouds: "map_clouds".localizedFirstCapitalized
+            case .lightPollution: "map_light_pollution".localizedFirstCapitalized
             }
         }
         
@@ -62,9 +63,9 @@ struct MapConfiguration: Equatable {
         
         var name: String {
             switch self {
-            case .standard: "Standard"
-            case .satellite: "Satellite imagery"
-            case .night: "Night map"
+            case .standard: "map_standard".localizedFirstCapitalized
+            case .satellite: "map_satellite_imagery".localizedFirstCapitalized
+            case .night: "map_night".localizedFirstCapitalized
             }
         }
         
@@ -76,11 +77,14 @@ struct MapConfiguration: Equatable {
             }
         }
         
-        var style: MapStyle {
-            switch self {
-            case .standard: .standard(lightPreset: .day, showPointOfInterestLabels: false, showPlaceLabels: false, showRoadLabels: false)
-            case .satellite: .standardSatellite(lightPreset: .day, showPointOfInterestLabels: false, showPlaceLabels: false, showRoadLabels: false, showRoadsAndTransit: false)
-            case .night: .standard(theme: .monochrome, lightPreset: .night, showPointOfInterestLabels: false, showTransitLabels: false, showPlaceLabels: false, showRoadLabels: false, showPedestrianRoads: false, showAdminBoundaries: false)
+        func style(for colorScheme: ColorScheme) -> MapStyle {
+            switch (self, colorScheme) {
+            case (.standard, .light): .standard(lightPreset: .day, showPointOfInterestLabels: false, showPlaceLabels: false, showRoadLabels: false)
+            case (.standard, .dark): .standard(lightPreset: .night, showPointOfInterestLabels: false, showPlaceLabels: false, showRoadLabels: false)
+            case (.satellite, .light): .standardSatellite(lightPreset: .day, showPointOfInterestLabels: false, showPlaceLabels: false, showRoadLabels: false, showRoadsAndTransit: false)
+            case (.satellite, .dark): .standardSatellite(lightPreset: .night, showPointOfInterestLabels: false, showPlaceLabels: false, showRoadLabels: false, showRoadsAndTransit: false)
+            case (.night, _): .standard(theme: .monochrome, lightPreset: .night, showPointOfInterestLabels: false, showTransitLabels: false, showPlaceLabels: false, showRoadLabels: false, showPedestrianRoads: false, showAdminBoundaries: false)
+            default: .standard(lightPreset: .day, showPointOfInterestLabels: false, showPlaceLabels: false, showRoadLabels: false)
             }
         }
     }

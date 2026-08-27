@@ -8,6 +8,21 @@
 import Foundation
 
 extension String {
+    /// Localizes the string key without changing its casing.
+    var localized: String {
+        NSLocalizedString(self, comment: "")
+    }
+    
+    /// Localizes the string key and capitalizes its first character.
+    var localizedFirstCapitalized: String {
+        localized.localizedFirstCapitalizedProtocol
+    }
+    
+    /// Localizes a printf-style format string and inserts its arguments.
+    func localizedFormat(_ arguments: CVarArg...) -> String {
+        String(format: localized.localizedFirstCapitalized, locale: .current, arguments: arguments)
+    }
+    
     /// Shared value used for loremSmall.
     static let loremSmall = """
     Lorem ipsum dolor sit amet, consectetur adipiscing elit.
@@ -47,4 +62,11 @@ extension String {
 
     Morbi vitae ante. Vivamus ultrices luctus nunc. Suspendisse et dolor. Etiam dignissim. Proin malesuada adipiscing lacus. Donec metus. Curabitur gravida. Vivamus pharetra pede quis arcu. Nulla facilisi. Sed a turpis eu lacus commodo facilisis. Morbi fringilla, wisi in dignissim interdum, justo lectus sagittis dui, et vehicula libero dui cursus dui. Mauris tempor ligula sed lacus. Duis cursus enim ut augue. Cras ac magna. Cras nulla. Nulla egestas. Curabitur a leo. Quisque egestas wisi eget nunc. Nam feugiat lacus vel est. Curabitur consectetuer.
     """
+}
+
+extension StringProtocol {
+    /// Capitalizes only the first character using the current locale.
+    var localizedFirstCapitalizedProtocol: String {
+        prefix(1).capitalized(with: .current) + dropFirst()
+    }
 }

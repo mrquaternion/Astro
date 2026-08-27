@@ -13,7 +13,7 @@ struct ProFeatureCard: View {
 
     /// The feature card content.
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 6) {
             HStack {
                 VStack(alignment: .leading, spacing: 8) {
                     Group {
@@ -30,9 +30,18 @@ struct ProFeatureCard: View {
                     .frame(width: 32, height: 32)
                     .background(feature.tint.opacity(0.1), in: RoundedRectangle(cornerRadius: 8))
 
-                    Text(feature.title)
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.white)
+                    HStack(alignment: .top, spacing: 4) {
+                        Text(feature.title)
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.white)
+                            .multilineTextAlignment(.leading)
+                        
+                        if feature.isComingSoon {
+                            Text("(∗)")
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
                 }
                 Spacer()
             }
@@ -44,7 +53,7 @@ struct ProFeatureCard: View {
                 .fixedSize(horizontal: false, vertical: true)
         }
         .padding(12)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 12))
         .overlay(
             RoundedRectangle(cornerRadius: 12)
@@ -77,48 +86,53 @@ struct ProFeature: Identifiable {
     
     /// Whether the feature is also available without a subscription.
     var isIncludedInFree: Bool = false
+    
+    /// Whether the feature is already implemented or coming soon.
+    var isComingSoon: Bool = false
 
     /// Features advertised in the paywall grid.
     static let all: [ProFeature] = [
         .init(
             icon: "satellite",
-            title: "More satellites",
-            description: "Track tens of additional orbits in real time.",
+            title: "feature_more_satellites_title".localizedFirstCapitalized,
+            description: "feature_more_satellites_description".localizedFirstCapitalized,
             tint: .blue,
             isCustom: true,
             isHandmade: true
         ),
         .init(
             icon: "wifi.slash",
-            title: "Offline access",
-            description: "Download satellites, articles and more.",
+            title: "feature_offline_access_title".localizedFirstCapitalized,
+            description: "feature_offline_access_description".localizedFirstCapitalized,
             tint: .secondary
         ),
         .init(
             icon: "books.vertical.fill",
-            title: "Deep history",
-            description: "Explore the origins of rockets, satellites, and spaceships.",
+            title: "feature_deep_history_title".localizedFirstCapitalized,
+            description: "feature_deep_history_description".localizedFirstCapitalized,
             tint: .red
         ),
         .init(
             icon: "rocket",
-            title: "Live 3D launches",
-            description: "Follow launches in real time with an interactive 3D flight simulation.",
+            title: "feature_live_launches_title".localizedFirstCapitalized,
+            description: "feature_live_launches_description".localizedFirstCapitalized,
             tint: .teal,
             isCustom: true,
-            isHandmade: true
+            isHandmade: true,
+            isComingSoon: true
         ),
         .init(
             icon: "bell.badge.fill",
-            title: "App notifications",
-            description: "Be ready and get timely alerts for launches, missions, and important space events.",
+            title: "feature_notifications_title".localizedFirstCapitalized,
+            description: "feature_notifications_description".localizedFirstCapitalized,
             tint: .orange
         ),
         .init(
             icon: "iphone.radiowaves.left.and.right",
-            title: "Live Activities",
-            description: "Follow launch progress at a glance from your Lock Screen and Dynamic Island.",
-            tint: .purple
+            title: "feature_live_activities_title".localizedFirstCapitalized,
+            description: "feature_live_activities_description".localizedFirstCapitalized,
+            tint: .purple,
+            isComingSoon: true
         )
     ]
     
@@ -126,22 +140,22 @@ struct ProFeature: Identifiable {
     static let freeTierFeatures: [ProFeature] = [
         .init(
             icon: "globe.americas.fill",
-            title: "Live ISS tracking",
-            description: "Follow the International Space Station around Earth in real time.",
+            title: "feature_iss_tracking_title".localizedFirstCapitalized,
+            description: "feature_iss_tracking_description".localizedFirstCapitalized,
             tint: .blue,
             isIncludedInFree: true
         ),
         .init(
             icon: "newspaper.fill",
-            title: "NASA Space news",
-            description: "Read the latest stories and discoveries from NASA.",
+            title: "feature_nasa_news_title".localizedFirstCapitalized,
+            description: "feature_nasa_news_description".localizedFirstCapitalized,
             tint: .orange,
             isIncludedInFree: true
         ),
         .init(
             icon: "calendar.badge.clock",
-            title: "Launch schedules",
-            description: "Browse upcoming launches and mission details.",
+            title: "feature_launch_schedules_title".localizedFirstCapitalized,
+            description: "feature_launch_schedules_description".localizedFirstCapitalized,
             tint: .teal,
             isIncludedInFree: true
         )
@@ -152,5 +166,5 @@ struct ProFeature: Identifiable {
 }
 
 #Preview {
-    ProFeatureCard(feature: ProFeature.all.last!)
+    ProFeatureCard(feature: ProFeature.all[3])
 }

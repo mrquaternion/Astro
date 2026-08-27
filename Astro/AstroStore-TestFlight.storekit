@@ -24,10 +24,10 @@
     "_developerTeamID" : "LLT44AL679",
     "_disableDialogs" : false,
     "_failTransactionsEnabled" : false,
-    "_lastSynchronizedDate" : 803607060.384359,
-    "_locale" : "en_US",
+    "_lastSynchronizedDate" : 809016227.53835797,
+    "_locale" : "en_CA",
     "_renewalBillingIssuesEnabled" : false,
-    "_storefront" : "USA",
+    "_storefront" : "CAN",
     "_storeKitErrors" : [
 
     ],
@@ -37,7 +37,11 @@
     {
       "id" : "22169788",
       "localizations" : [
-
+        {
+          "description" : "",
+          "displayName" : "Pro Sub Group",
+          "locale" : "en_CA"
+        }
       ],
       "name" : "Pro",
       "subscriptions" : [
@@ -87,8 +91,8 @@
           "billingPlans" : [
             {
               "billingPlanType" : "BILLED_UPFRONT",
-              "commitmentDisplayPrice" : "29.99",
-              "displayPrice" : "29.99",
+              "commitmentDisplayPrice" : "24.99",
+              "displayPrice" : "24.99",
               "internalID" : "6782196813_BILLED_UPFRONT",
               "isEnabled" : true
             }
@@ -96,7 +100,7 @@
           "codeOffers" : [
 
           ],
-          "displayPrice" : "29.99",
+          "displayPrice" : "24.99",
           "familyShareable" : false,
           "groupNumber" : 2,
           "internalID" : "6782196813",

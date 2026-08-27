@@ -34,7 +34,7 @@ struct TrajectoryChart: View {
     var body: some View {
         if let data {
             VStack(alignment: .leading) {
-                Text("Simulated trajectory graph".capitalized)
+                Text("trajectory_chart_title".localizedFirstCapitalized)
                     .font(.title3)
                     .fontWeight(.semibold)
                     
@@ -43,7 +43,10 @@ struct TrajectoryChart: View {
                 Spacer()
             }
         } else {
-            ContentUnavailableView("Trajectory has not been loaded yet.", systemImage: "bolt.horizontal.circle")
+            ContentUnavailableView(
+                "trajectory_not_loaded".localizedFirstCapitalized,
+                systemImage: "bolt.horizontal.circle"
+            )
         }
     }
 
@@ -51,13 +54,13 @@ struct TrajectoryChart: View {
         Chart {
             ForEach(data, id: \.id) { point in
                 LineMark(
-                    x: .value("Distance", point.distance),
-                    y: .value("Altitude", point.value)
+                    x: .value("trajectory_distance".localizedFirstCapitalized, point.distance),
+                    y: .value("trajectory_altitude".localizedFirstCapitalized, point.value)
                 )
                 
                 AreaMark(
-                    x: .value("Distance", point.distance),
-                    y: .value("Altitude", point.value)
+                    x: .value("trajectory_distance".localizedFirstCapitalized, point.distance),
+                    y: .value("trajectory_altitude".localizedFirstCapitalized, point.value)
                 )
                 .foregroundStyle(
                     .linearGradient(
@@ -70,26 +73,26 @@ struct TrajectoryChart: View {
             
             if let selectedX {
                 RuleMark(
-                    x: .value("Selected", selectedX.distance),
+                    x: .value("trajectory_selected".localizedFirstCapitalized, selectedX.distance),
                     yStart: .value("", 0),
                     yEnd: .value("", (data.map(\.value).max() ?? 0) + 50)
                 )
                 
                 .annotation(position: .top) {
-                    Text(String(format: "%.2f km", selectedX.value))
+                    Text("measurement_kilometers_format".localizedFormat(selectedX.value))
                 }
                 
                 PointMark(
-                    x: .value("Distance", selectedX.distance),
-                    y: .value("Altitude", selectedX.value)
+                    x: .value("trajectory_distance".localizedFirstCapitalized, selectedX.distance),
+                    y: .value("trajectory_altitude".localizedFirstCapitalized, selectedX.value)
                 )
             }
         }
         .chartXSelection(value: $selectedDistance)
         .chartXScale(domain: 0...(data.map(\.distance).max() ?? 0))
         .chartYScale(domain: 0...((data.map(\.value).max() ?? 0) + 150))
-        .chartXAxisLabel("Distance from pad (km)")
-        .chartYAxisLabel("Elevation (km)")
+        .chartXAxisLabel("trajectory_distance_from_pad".localizedFirstCapitalized)
+        .chartYAxisLabel("trajectory_elevation_km".localizedFirstCapitalized)
         .chartXAxis {
             AxisMarks(values: .automatic(desiredCount: 5))
         }

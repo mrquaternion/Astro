@@ -23,7 +23,7 @@ struct LearnView: View {
                 LearnLoadingTemplateView()
             } else { // fetched
                 if learnViewModel.assets.isEmpty {
-                    ContentUnavailableView("No assets available", systemImage: "book")
+                    ContentUnavailableView("learn_no_assets".localizedFirstCapitalized, systemImage: "book")
                         .foregroundStyle(.white)
                 } else {
                     LearnListView(onScrollViewResolved: onScrollViewResolved)
@@ -69,7 +69,7 @@ struct LearnListView: View {
             }
             .introspect(.scrollView, on: .iOS(.v26), customize: onScrollViewResolved)
             .scrollBounceBehavior(.basedOnSize)
-            .navigationTitle("Learn")
+            .navigationTitle("tab_learn".localizedFirstCapitalized)
             .fullScreenCover(isPresented: $learnViewModel.showPaywall) {
                 Paywall()
                     .environment(store)
@@ -88,7 +88,7 @@ struct LearnListView: View {
                 .navigationBarBackButtonHidden()
                 .toolbarColorScheme(.dark, for: .navigationBar)
         } else {
-            ContentUnavailableView("Asset unavailable", systemImage: "cube.transparent")
+            ContentUnavailableView("learn_asset_unavailable".localizedFirstCapitalized, systemImage: "cube.transparent")
         }
     }
 }

@@ -39,6 +39,18 @@ enum CustomTab: String, CaseIterable {
     case lookup = "Lookup"
     case community = "Community"
     
+    /// Localized title displayed for this tab.
+    var localizedTitle: String {
+        switch self {
+        case .home: "tab_home".localizedFirstCapitalized
+        case .news: "tab_news".localizedFirstCapitalized
+        case .missions: "tab_missions".localizedFirstCapitalized
+        case .learn: "tab_learn".localizedFirstCapitalized
+        case .lookup: "tab_lookup".localizedFirstCapitalized
+        case .community: "tab_community".localizedFirstCapitalized
+        }
+    }
+    
     /// The SF Symbol used for this tab.
     var symbol: String {
         switch self {

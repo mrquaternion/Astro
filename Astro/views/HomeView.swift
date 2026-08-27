@@ -8,6 +8,7 @@
 import SwiftUI
 import MapboxMaps
 import SwiftData
+import UIKit
 
 struct HomeView: View {
     /// Whether the current interface space is wider than it is tall.
@@ -28,6 +29,9 @@ struct HomeView: View {
     ///  Map layers configuration.
     @Binding var config: MapConfiguration
     
+    /// Trailing screen-space inset reserved for the satellite inspector.
+    let mapTrailingPadding: CGFloat
+    
     /// The home map with its satellite tracking overlay.
     var body: some View {
         ZStack {
@@ -42,11 +46,27 @@ struct HomeView: View {
                 openLayerMenu: $openLayerMenu
             )
         }
+        .onAppear {
+            updateCameraPadding()
+        }
+        .onChange(of: mapTrailingPadding) {
+            updateCameraPadding()
+        }
         .animation(.default, value: satelliteTracker.isTrackingModel)
         .sheet(isPresented: $openLayerMenu) {
             HomeViewLayerMenu(config: $config)
                 .presentationDetents(horizontalSizeClass == .compact ? [.medium] : [])
         }
+    }
+    
+    private func updateCameraPadding() {
+        satelliteTracker.camera = CameraState(
+            center: satelliteTracker.camera.center,
+            padding: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: mapTrailingPadding),
+            zoom: satelliteTracker.camera.zoom,
+            bearing: satelliteTracker.camera.bearing,
+            pitch: satelliteTracker.camera.pitch
+        )
     }
 }
 
@@ -54,7 +74,8 @@ struct HomeView: View {
     HomeView(
         activeMode: .constant(CustomMode.exploration),
         openLayerMenu: .constant(true),
-        config: .constant(MapConfiguration())
+        config: .constant(MapConfiguration()),
+        mapTrailingPadding: .zero
     )
     .environmentObject(HomeViewModel(dataController: SwiftDataController(modelContext: previewContainer.mainContext), subscriptionManager: SubscriptionManager()))
     .environmentObject(NetworkMonitor())

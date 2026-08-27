@@ -116,7 +116,7 @@ struct ProgressRing: View {
         Button {
             isDownloadToggled = true
         } label: {
-            Text("Download")
+            Text("common_download".localizedFirstCapitalized)
                 .font(.footnote)
         }
         .buttonStyle(.glassProminent)
@@ -144,7 +144,7 @@ struct ProgressRing: View {
                 isDownloadToggled = true
             }
         } label: {
-            Text("Download")
+            Text("common_download".localizedFirstCapitalized)
                 .font(.footnote)
         }
         .buttonStyle(.glassProminent)

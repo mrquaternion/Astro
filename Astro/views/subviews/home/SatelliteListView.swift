@@ -49,14 +49,14 @@ struct SatelliteListView: View {
         .overlay {
             if homeViewModel.assets.isEmpty {
                 ContentUnavailableView(
-                    "No Satellites",
+                    "satellite_none".localizedFirstCapitalized,
                     systemImage: "antenna.radiowaves.left.and.right"
                 )
             }
         }
         .safeAreaInset(edge: .top) {
             ZStack {
-                Text("Satellites")
+                Text("satellite_plural".localizedFirstCapitalized)
                     .font(.headline)
                 
                 HStack {

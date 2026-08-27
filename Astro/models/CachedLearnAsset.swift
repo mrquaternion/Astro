@@ -25,7 +25,8 @@ class CachedLearnAsset: LocalDataProviding, Downloadable {
     /// Number of unique components included in this Learn download.
     var localDataDetail: String? {
         let count = uniqueComponents.count
-        return "\(count) \(count == 1 ? "component" : "components")"
+        let key = count == 1 ? "component_count_singular" : "component_count_plural"
+        return key.localizedFormat(count)
     }
 
     /// Combined local files for every component in this Learn asset.
