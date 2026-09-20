@@ -28,26 +28,6 @@ Astro is a SwiftUI iOS app for exploring orbital assets, space news, and related
 - Swift 6 toolchain included with Xcode
 - A Supabase project with GraphQL enabled
 
-## Configuration
-
-Runtime values are read from `Astro/resources/ConfigDev.xcconfig` and `Astro/resources/ConfigRelease.xcconfig`, then exposed through `Info.plist` and `AppEnv`.
-
-Required values:
-
-- `SUPABASE_URL`
-- `SUPABASE_KEY`
-- `GRAPHQL_ENDPOINT`
-- `MBXAccessToken`
-- `HAS_UNIQUE_BUCKETS`
-
-For private local overrides, create `Astro/resources/ConfigDev.local.xcconfig` and `Astro/resources/ConfigRelease.local.xcconfig`. Those files are ignored by Git.
-
-## GraphQL
-
-GraphQL operations live in `Astro/graphql/queries/`. Generated Apollo Swift files live under `Astro/graphql/generated/` so the app can build from a fresh checkout without requiring code generation first.
-
-If the schema or operations change, regenerate the Apollo files before committing.
-
 ## Development
 
 Open `Astro.xcodeproj` in Xcode, select the Astro scheme, and run on a simulator or device.
