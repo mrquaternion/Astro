@@ -17,9 +17,10 @@ Astro is a SwiftUI iOS app for exploring orbital assets, space news, and related
 - SwiftData
 - MapKit
 - StoreKit
+- RealityKit
+- Mapbox Maps iOS SDK
 - Supabase
 - Apollo iOS / GraphQL
-- Xcode project-based iOS build
 
 ## Requirements
 
